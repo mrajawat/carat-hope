@@ -1,0 +1,12 @@
+[04-Jun-2026 13:39:52 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Http\Kernel" not found in /home/threatex/api.threatcon.online/app/Http/Kernel.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Kernel.php on line 7
+[04-Jun-2026 13:45:46 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Http\Kernel" not found in /home/threatex/api.threatcon.online/app/Http/Kernel.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Kernel.php on line 7
+[13-Jun-2026 07:43:13 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Http\Kernel" not found in /home/threatex/api.threatcon.online/app/Http/Kernel.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Kernel.php on line 7

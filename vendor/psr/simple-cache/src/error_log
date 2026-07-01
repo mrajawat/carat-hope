@@ -1,0 +1,12 @@
+[04-Jun-2026 17:08:19 UTC] PHP Fatal error:  Uncaught Error: Interface "Psr\SimpleCache\CacheException" not found in /home/threatex/api.threatcon.online/vendor/psr/simple-cache/src/InvalidArgumentException.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/psr/simple-cache/src/InvalidArgumentException.php on line 11
+[13-Jun-2026 07:49:43 UTC] PHP Fatal error:  Uncaught Error: Interface "Psr\SimpleCache\CacheException" not found in /home/threatex/api.threatcon.online/vendor/psr/simple-cache/src/InvalidArgumentException.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/psr/simple-cache/src/InvalidArgumentException.php on line 11
+[21-Jun-2026 10:31:21 UTC] PHP Fatal error:  Uncaught Error: Interface "Psr\SimpleCache\CacheException" not found in /home/threatex/api.threatcon.online/vendor/psr/simple-cache/src/InvalidArgumentException.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/psr/simple-cache/src/InvalidArgumentException.php on line 11

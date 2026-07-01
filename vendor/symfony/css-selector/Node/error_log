@@ -1,0 +1,40 @@
+[04-Jun-2026 17:47:56 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\CssSelector\Node\AbstractNode" not found in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/FunctionNode.php:26
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/FunctionNode.php on line 26
+[04-Jun-2026 17:48:28 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\CssSelector\Node\NodeInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/AbstractNode.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/AbstractNode.php on line 24
+[04-Jun-2026 17:48:28 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\CssSelector\Node\AbstractNode" not found in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/HashNode.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/HashNode.php on line 24
+[04-Jun-2026 17:48:32 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\CssSelector\Node\AbstractNode" not found in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/ElementNode.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/ElementNode.php on line 24
+[04-Jun-2026 17:48:32 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\CssSelector\Node\AbstractNode" not found in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/AttributeNode.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/AttributeNode.php on line 24
+[04-Jun-2026 17:48:40 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\CssSelector\Node\AbstractNode" not found in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/SelectorNode.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/SelectorNode.php on line 24
+[04-Jun-2026 17:48:46 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\CssSelector\Node\AbstractNode" not found in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/NegationNode.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/NegationNode.php on line 24
+[04-Jun-2026 17:48:46 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\CssSelector\Node\AbstractNode" not found in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/ClassNode.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/ClassNode.php on line 24
+[13-Jun-2026 07:50:08 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\CssSelector\Node\AbstractNode" not found in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/FunctionNode.php:26
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/FunctionNode.php on line 26
+[13-Jun-2026 08:00:28 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\CssSelector\Node\AbstractNode" not found in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/ElementNode.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/Node/ElementNode.php on line 24

@@ -1,0 +1,20 @@
+[04-Jun-2026 15:00:38 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\String\AbstractUnicodeString" not found in /home/threatex/api.threatcon.online/vendor/symfony/string/UnicodeString.php:33
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/string/UnicodeString.php on line 33
+[04-Jun-2026 16:02:05 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\String\AbstractUnicodeString" not found in /home/threatex/api.threatcon.online/vendor/symfony/string/CodePointString.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/string/CodePointString.php on line 25
+[04-Jun-2026 17:01:24 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\String\AbstractString" not found in /home/threatex/api.threatcon.online/vendor/symfony/string/AbstractUnicodeString.php:29
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/string/AbstractUnicodeString.php on line 29
+[04-Jun-2026 17:02:26 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\String\AbstractString" not found in /home/threatex/api.threatcon.online/vendor/symfony/string/ByteString.php:26
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/string/ByteString.php on line 26
+[13-Jun-2026 07:46:05 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\String\AbstractUnicodeString" not found in /home/threatex/api.threatcon.online/vendor/symfony/string/CodePointString.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/string/CodePointString.php on line 25

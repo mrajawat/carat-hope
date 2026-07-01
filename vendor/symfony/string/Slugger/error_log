@@ -1,0 +1,4 @@
+[04-Jun-2026 16:09:56 UTC] PHP Fatal error:  Uncaught LogicException: You cannot use the "Symfony\Component\String\Slugger\AsciiSlugger" as the "symfony/translation-contracts" package is not installed. Try running "composer require symfony/translation-contracts". in /home/threatex/api.threatcon.online/vendor/symfony/string/Slugger/AsciiSlugger.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/string/Slugger/AsciiSlugger.php on line 19

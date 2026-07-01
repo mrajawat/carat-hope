@@ -1,0 +1,5 @@
+[21-Jun-2026 04:37:02 UTC] PHP Fatal error:  Uncaught Error: Class "Psr\Log\AbstractLogger" not found in /home/threatex/api.threatcon.online/vendor/psr/log/src/NullLogger.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/psr/log/src/NullLogger.php on line 13
+[21-Jun-2026 04:47:53 UTC] PHP Fatal error:  Trait "Psr\Log\LoggerTrait" not found in /home/threatex/api.threatcon.online/vendor/psr/log/src/AbstractLogger.php on line 12

@@ -1,0 +1,5 @@
+[21-Jun-2026 03:16:12 UTC] PHP Fatal error:  Uncaught Error: Interface "GuzzleHttp\Promise\PromisorInterface" not found in /home/threatex/api.threatcon.online/vendor/guzzlehttp/guzzle/src/Pool.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/guzzlehttp/guzzle/src/Pool.php on line 24
+[21-Jun-2026 06:44:22 UTC] PHP Fatal error:  Trait "GuzzleHttp\ClientTrait" not found in /home/threatex/api.threatcon.online/vendor/guzzlehttp/guzzle/src/Client.php on line 17

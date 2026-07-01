@@ -1,0 +1,28 @@
+[04-Jun-2026 18:39:26 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Output\StreamOutput" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/ConsoleOutput.php:30
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/ConsoleOutput.php on line 30
+[04-Jun-2026 18:39:29 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Output\StreamOutput" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/ConsoleSectionOutput.php:22
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/ConsoleSectionOutput.php on line 22
+[04-Jun-2026 18:39:44 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\Console\Output\OutputInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/Output.php:30
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/Output.php on line 30
+[04-Jun-2026 18:39:46 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\Console\Output\OutputInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/NullOutput.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/NullOutput.php on line 25
+[04-Jun-2026 18:39:58 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Output\Output" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/BufferedOutput.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/BufferedOutput.php on line 17
+[04-Jun-2026 18:42:06 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Output\Output" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/TrimmedBufferOutput.php:22
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/TrimmedBufferOutput.php on line 22
+[13-Jun-2026 07:50:03 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Output\Output" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/StreamOutput.php:30
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Output/StreamOutput.php on line 30

@@ -1,0 +1,8 @@
+[21-Jun-2026 05:00:42 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Extension\ConfigurableExtensionInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/DisallowedRawHtml/DisallowedRawHtmlExtension.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/DisallowedRawHtml/DisallowedRawHtmlExtension.php on line 25
+[21-Jun-2026 05:44:42 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Renderer\NodeRendererInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/DisallowedRawHtml/DisallowedRawHtmlRenderer.php:22
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/DisallowedRawHtml/DisallowedRawHtmlRenderer.php on line 22

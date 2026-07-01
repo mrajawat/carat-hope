@@ -1,0 +1,12 @@
+[04-Jun-2026 19:59:03 UTC] PHP Fatal error:  Uncaught Error: Interface "Psy\ManualUpdater\Checker" not found in /home/threatex/api.threatcon.online/vendor/psy/psysh/src/ManualUpdater/IntervalChecker.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/psy/psysh/src/ManualUpdater/IntervalChecker.php on line 19
+[04-Jun-2026 19:59:36 UTC] PHP Fatal error:  Uncaught Error: Interface "Psy\ManualUpdater\Checker" not found in /home/threatex/api.threatcon.online/vendor/psy/psysh/src/ManualUpdater/GitHubChecker.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/psy/psysh/src/ManualUpdater/GitHubChecker.php on line 16
+[13-Jun-2026 07:53:31 UTC] PHP Fatal error:  Uncaught Error: Interface "Psy\ManualUpdater\Checker" not found in /home/threatex/api.threatcon.online/vendor/psy/psysh/src/ManualUpdater/IntervalChecker.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/psy/psysh/src/ManualUpdater/IntervalChecker.php on line 19

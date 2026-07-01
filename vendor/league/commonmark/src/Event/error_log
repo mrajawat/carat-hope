@@ -1,0 +1,20 @@
+[21-Jun-2026 02:16:44 UTC] PHP Fatal error:  Uncaught Error: Interface "Psr\EventDispatcher\StoppableEventInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Event/AbstractEvent.php:30
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Event/AbstractEvent.php on line 30
+[21-Jun-2026 04:35:25 UTC] PHP Fatal error:  Uncaught Error: Class "League\CommonMark\Event\AbstractEvent" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Event/DocumentParsedEvent.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Event/DocumentParsedEvent.php on line 21
+[21-Jun-2026 10:13:46 UTC] PHP Fatal error:  Uncaught Error: Class "League\CommonMark\Event\AbstractEvent" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Event/DocumentPreRenderEvent.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Event/DocumentPreRenderEvent.php on line 21
+[21-Jun-2026 10:15:38 UTC] PHP Fatal error:  Uncaught Error: Class "League\CommonMark\Event\AbstractEvent" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Event/DocumentRenderedEvent.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Event/DocumentRenderedEvent.php on line 18
+[21-Jun-2026 10:16:11 UTC] PHP Fatal error:  Uncaught Error: Class "League\CommonMark\Event\AbstractEvent" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Event/DocumentPreParsedEvent.php:22
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Event/DocumentPreParsedEvent.php on line 22

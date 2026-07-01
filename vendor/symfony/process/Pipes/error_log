@@ -1,0 +1,8 @@
+[04-Jun-2026 16:04:42 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\Process\Pipes\PipesInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/process/Pipes/AbstractPipes.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/process/Pipes/AbstractPipes.php on line 21
+[04-Jun-2026 17:07:11 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Process\Pipes\AbstractPipes" not found in /home/threatex/api.threatcon.online/vendor/symfony/process/Pipes/WindowsPipes.php:27
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/process/Pipes/WindowsPipes.php on line 27

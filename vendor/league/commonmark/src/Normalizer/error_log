@@ -1,0 +1,16 @@
+[21-Jun-2026 05:31:49 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Normalizer\TextNormalizerInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Normalizer/UniqueSlugNormalizerInterface.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Normalizer/UniqueSlugNormalizerInterface.php on line 16
+[21-Jun-2026 05:33:48 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Normalizer\TextNormalizerInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Normalizer/TextNormalizer.php:23
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Normalizer/TextNormalizer.php on line 23
+[21-Jun-2026 05:34:58 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Normalizer\TextNormalizerInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Normalizer/SlugNormalizer.php:22
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Normalizer/SlugNormalizer.php on line 22
+[21-Jun-2026 10:24:45 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Normalizer\UniqueSlugNormalizerInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Normalizer/UniqueSlugNormalizer.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Normalizer/UniqueSlugNormalizer.php on line 17

@@ -1,0 +1,4 @@
+[21-Jun-2026 07:52:29 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\ServiceProvider" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/Laravel/ServiceProvider.php:27
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/Laravel/ServiceProvider.php on line 27

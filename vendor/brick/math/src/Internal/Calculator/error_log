@@ -1,0 +1,12 @@
+[04-Jun-2026 19:55:10 UTC] PHP Fatal error:  Uncaught Error: Class "Brick\Math\Internal\Calculator" not found in /home/threatex/api.threatcon.online/vendor/brick/math/src/Internal/Calculator/BcMathCalculator.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/brick/math/src/Internal/Calculator/BcMathCalculator.php on line 16
+[04-Jun-2026 19:55:10 UTC] PHP Fatal error:  Uncaught Error: Class "Brick\Math\Internal\Calculator" not found in /home/threatex/api.threatcon.online/vendor/brick/math/src/Internal/Calculator/NativeCalculator.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/brick/math/src/Internal/Calculator/NativeCalculator.php on line 16
+[04-Jun-2026 19:55:57 UTC] PHP Fatal error:  Uncaught Error: Class "Brick\Math\Internal\Calculator" not found in /home/threatex/api.threatcon.online/vendor/brick/math/src/Internal/Calculator/GmpCalculator.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/brick/math/src/Internal/Calculator/GmpCalculator.php on line 16

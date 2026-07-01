@@ -1,0 +1,120 @@
+[04-Jun-2026 14:41:02 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/0001_01_01_000001_create_cache_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/0001_01_01_000001_create_cache_table.php on line 7
+[04-Jun-2026 14:41:12 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/0001_01_01_000000_create_users_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/0001_01_01_000000_create_users_table.php on line 7
+[04-Jun-2026 14:41:22 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094105_create_coupons_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094105_create_coupons_table.php on line 7
+[04-Jun-2026 14:41:27 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094057_create_banners_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094057_create_banners_table.php on line 7
+[04-Jun-2026 14:41:32 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_163501_create_otps_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_163501_create_otps_table.php on line 7
+[04-Jun-2026 14:42:02 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_150541_add_checkout_fields_to_orders_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_150541_add_checkout_fields_to_orders_table.php on line 7
+[04-Jun-2026 14:42:12 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094101_create_products_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094101_create_products_table.php on line 7
+[04-Jun-2026 14:42:31 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/0001_01_01_000002_create_jobs_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/0001_01_01_000002_create_jobs_table.php on line 7
+[04-Jun-2026 14:42:46 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094102_create_product_images_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094102_create_product_images_table.php on line 7
+[04-Jun-2026 14:42:57 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_163458_add_is_guest_to_users_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_163458_add_is_guest_to_users_table.php on line 7
+[04-Jun-2026 15:03:59 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094106_create_orders_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094106_create_orders_table.php on line 7
+[04-Jun-2026 15:05:41 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_154514_create_product_reviews_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_154514_create_product_reviews_table.php on line 7
+[04-Jun-2026 15:44:24 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094106_create_orders_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094106_create_orders_table.php on line 7
+[04-Jun-2026 15:44:28 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094055_create_admins_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094055_create_admins_table.php on line 7
+[04-Jun-2026 15:44:45 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094108_create_order_items_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094108_create_order_items_table.php on line 7
+[04-Jun-2026 16:04:47 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/0001_01_01_000001_create_cache_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/0001_01_01_000001_create_cache_table.php on line 7
+[04-Jun-2026 16:05:55 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_163458_add_is_guest_to_users_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_163458_add_is_guest_to_users_table.php on line 7
+[04-Jun-2026 17:07:39 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094055_create_admins_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094055_create_admins_table.php on line 7
+[04-Jun-2026 17:11:08 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_06_04_065713_add_badge_to_banners_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_06_04_065713_add_badge_to_banners_table.php on line 7
+[04-Jun-2026 18:42:54 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_150541_add_checkout_fields_to_orders_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_150541_add_checkout_fields_to_orders_table.php on line 7
+[13-Jun-2026 07:53:28 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094055_create_admins_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094055_create_admins_table.php on line 7
+[13-Jun-2026 07:53:33 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094108_create_order_items_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094108_create_order_items_table.php on line 7
+[13-Jun-2026 07:53:43 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094106_create_orders_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094106_create_orders_table.php on line 7
+[13-Jun-2026 07:54:20 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_163501_create_otps_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_163501_create_otps_table.php on line 7
+[13-Jun-2026 07:54:29 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094059_create_categories_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094059_create_categories_table.php on line 7
+[13-Jun-2026 07:55:07 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094057_create_banners_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094057_create_banners_table.php on line 7
+[13-Jun-2026 07:55:09 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094101_create_products_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_05_25_094101_create_products_table.php on line 7
+[13-Jun-2026 07:57:03 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/0001_01_01_000002_create_jobs_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/0001_01_01_000002_create_jobs_table.php on line 7
+[13-Jun-2026 07:57:08 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_150541_add_checkout_fields_to_orders_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_150541_add_checkout_fields_to_orders_table.php on line 7
+[13-Jun-2026 07:57:49 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Migrations\Migration" not found in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_150541_add_checkout_fields_to_orders_table.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/migrations/2026_06_03_150541_add_checkout_fields_to_orders_table.php on line 7

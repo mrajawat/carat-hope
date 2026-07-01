@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# OPTIONS preflight requests ko directly allow karo
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ public/index.php [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/$1 [L]

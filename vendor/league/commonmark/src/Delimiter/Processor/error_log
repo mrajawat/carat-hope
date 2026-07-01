@@ -1,0 +1,8 @@
+[21-Jun-2026 04:06:32 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Delimiter\Processor\DelimiterProcessorInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Delimiter/Processor/CacheableDelimiterProcessorInterface.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Delimiter/Processor/CacheableDelimiterProcessorInterface.php on line 25
+[21-Jun-2026 06:44:08 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Delimiter\Processor\DelimiterProcessorInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Delimiter/Processor/StaggeredDelimiterProcessor.php:31
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Delimiter/Processor/StaggeredDelimiterProcessor.php on line 31

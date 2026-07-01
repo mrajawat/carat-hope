@@ -1,0 +1,4 @@
+[21-Jun-2026 02:17:29 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Extension\ConfigurableExtensionInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/ExternalLink/ExternalLinkExtension.php:22
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/ExternalLink/ExternalLinkExtension.php on line 22

@@ -1,0 +1,8 @@
+[21-Jun-2026 04:36:00 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\Translation\Formatter\MessageFormatterInterface" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/lazy/Carbon/MessageFormatter/MessageFormatterMapperWeakType.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/lazy/Carbon/MessageFormatter/MessageFormatterMapperWeakType.php on line 18
+[21-Jun-2026 04:36:05 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\Translation\Formatter\MessageFormatterInterface" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/lazy/Carbon/MessageFormatter/MessageFormatterMapperStrongType.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/lazy/Carbon/MessageFormatter/MessageFormatterMapperStrongType.php on line 17

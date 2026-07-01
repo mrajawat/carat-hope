@@ -1,0 +1,16 @@
+[04-Jun-2026 17:08:47 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Question\Question" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Question/ChoiceQuestion.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Question/ChoiceQuestion.php on line 21
+[04-Jun-2026 17:08:52 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Question\Question" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Question/ConfirmationQuestion.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Question/ConfirmationQuestion.php on line 19
+[13-Jun-2026 07:50:18 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Question\Question" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Question/ChoiceQuestion.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Question/ChoiceQuestion.php on line 21
+[13-Jun-2026 07:50:28 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Question\Question" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Question/ConfirmationQuestion.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Question/ConfirmationQuestion.php on line 19

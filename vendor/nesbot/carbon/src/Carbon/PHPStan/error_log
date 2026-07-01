@@ -1,0 +1,13 @@
+[21-Jun-2026 07:42:37 UTC] PHP Fatal error:  Uncaught ReflectionException: Class "PHPStan\Reflection\Php\BuiltinMethodReflection" does not exist in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/PHPStan/Macro.php:20
+Stack trace:
+#0 /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/PHPStan/Macro.php(20): ReflectionMethod->__construct()
+#1 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/PHPStan/Macro.php on line 20
+[21-Jun-2026 07:43:43 UTC] PHP Fatal error:  Uncaught Error: Interface "PHPStan\Reflection\Php\BuiltinMethodReflection" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/PHPStan/AbstractMacro.php:33
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/PHPStan/AbstractMacro.php on line 33
+[21-Jun-2026 07:49:56 UTC] PHP Fatal error:  Uncaught Error: Interface "PHPStan\Reflection\MethodsClassReflectionExtension" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/PHPStan/MacroExtension.php:35
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/PHPStan/MacroExtension.php on line 35

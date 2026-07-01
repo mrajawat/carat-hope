@@ -1,0 +1,16 @@
+[04-Jun-2026 19:55:28 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Mime\Part\DataPart" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/Part/MessagePart.php:22
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/Part/MessagePart.php on line 22
+[04-Jun-2026 19:55:29 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Mime\Part\AbstractPart" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/Part/AbstractMultipartPart.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/Part/AbstractMultipartPart.php on line 19
+[04-Jun-2026 19:56:01 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Mime\Part\TextPart" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/Part/DataPart.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/Part/DataPart.php on line 21
+[04-Jun-2026 19:57:20 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Mime\Part\AbstractPart" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/Part/SMimePart.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/Part/SMimePart.php on line 19

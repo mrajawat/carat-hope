@@ -1,0 +1,20 @@
+[04-Jun-2026 16:03:20 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Descriptor\Descriptor" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Descriptor/TextDescriptor.php:29
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Descriptor/TextDescriptor.php on line 29
+[04-Jun-2026 16:04:32 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Descriptor\Descriptor" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Descriptor/JsonDescriptor.php:27
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Descriptor/JsonDescriptor.php on line 27
+[04-Jun-2026 16:04:57 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Descriptor\Descriptor" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Descriptor/MarkdownDescriptor.php:29
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Descriptor/MarkdownDescriptor.php on line 29
+[04-Jun-2026 16:05:02 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Descriptor\Descriptor" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Descriptor/XmlDescriptor.php:27
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Descriptor/XmlDescriptor.php on line 27
+[04-Jun-2026 17:48:56 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\Console\Descriptor\DescriptorInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Descriptor/Descriptor.php:27
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Descriptor/Descriptor.php on line 27

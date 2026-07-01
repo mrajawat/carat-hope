@@ -1,0 +1,8 @@
+[21-Jun-2026 10:28:21 UTC] PHP Fatal error:  Uncaught Error: Interface "Psr\Http\Message\RequestInterface" not found in /home/threatex/api.threatcon.online/vendor/psr/http-message/src/ServerRequestInterface.php:43
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/psr/http-message/src/ServerRequestInterface.php on line 43
+[21-Jun-2026 10:42:32 UTC] PHP Fatal error:  Uncaught Error: Interface "Psr\Http\Message\MessageInterface" not found in /home/threatex/api.threatcon.online/vendor/psr/http-message/src/RequestInterface.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/psr/http-message/src/RequestInterface.php on line 24

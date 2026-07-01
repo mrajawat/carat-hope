@@ -1,0 +1,102 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\AdminReviewController;
+use App\Http\Controllers\Public\PublicController;
+use App\Http\Controllers\Public\CustomerAuthController;
+use App\Http\Controllers\Public\CustomerOrderController;
+use App\Http\Controllers\Public\ReviewController;
+use App\Http\Controllers\Public\GuestAuthController;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+*/
+
+// Public Client/Frontend Routes
+Route::prefix('public')->middleware('throttle:60,1')->group(function () {
+    Route::get('/banners', [PublicController::class, 'banners']);
+    Route::get('/categories', [PublicController::class, 'categories']);
+    Route::get('/products', [PublicController::class, 'products']);
+    Route::get('/products/{slug_or_id}', [PublicController::class, 'productDetail']);
+    Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
+
+    // Sensitive Public Routes (Protected with stricter rate limiting)
+    Route::middleware('throttle:5,1')->group(function () {
+        Route::post('/coupons/validate', [PublicController::class, 'validateCoupon']);
+        Route::post('/orders/checkout', [PublicController::class, 'checkout']);
+        
+        // Customer Authentication (Guest)
+        Route::post('/register', [CustomerAuthController::class, 'register']);
+        Route::post('/login', [CustomerAuthController::class, 'login']);
+
+        // Guest Auth
+        Route::post('/guest/send-otp', [GuestAuthController::class, 'sendOtp']);
+        Route::post('/guest/verify-otp', [GuestAuthController::class, 'verifyOtp']);
+    });
+
+    // Authenticated Customer Profile & Orders
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [CustomerAuthController::class, 'logout']);
+        Route::get('/profile', [CustomerAuthController::class, 'profile']);
+        Route::put('/profile', [CustomerAuthController::class, 'updateProfile']);
+
+        Route::get('/orders', [CustomerOrderController::class, 'index']);
+        Route::get('/orders/{id}', [CustomerOrderController::class, 'show']);
+        
+        Route::post('/products/{productId}/reviews', [ReviewController::class, 'store']);
+    });
+});
+
+// Admin Authentication (Public Route - rate limited)
+Route::post('/admin/login', [AdminAuthController::class, 'login'])->middleware('throttle:5,1');
+
+// Admin Protected Routes (Sanctum Protected)
+Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
+    Route::post('/logout', [AdminAuthController::class, 'logout']);
+    Route::get('/me', [AdminAuthController::class, 'me']);
+    
+    // Dashboard Stats
+    Route::get('/dashboard/stats', [AdminDashboardController::class, 'stats']);
+
+    // Banners CRUD + Toggle Status
+    Route::apiResource('/banners', BannerController::class);
+    Route::patch('/banners/{id}/toggle-status', [BannerController::class, 'toggleStatus']);
+
+    // Categories CRUD + Toggle Status
+    Route::apiResource('/categories', CategoryController::class);
+    Route::patch('/categories/{id}/toggle-status', [CategoryController::class, 'toggleStatus']);
+
+    // Products CRUD + Toggle Status + Toggle Featured
+    Route::apiResource('/products', ProductController::class);
+    Route::patch('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus']);
+    Route::patch('/products/{id}/toggle-featured', [ProductController::class, 'toggleFeatured']);
+
+    // Coupons CRUD + Toggle Status
+    Route::apiResource('/coupons', CouponController::class);
+    Route::patch('/coupons/{id}/toggle-status', [CouponController::class, 'toggleStatus']);
+
+    // Users (Customers) Management
+    Route::get('/users', [UserController::class, 'index']);
+    Route::patch('/users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+
+    // Orders Management
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{id}', [OrderController::class, 'show']);
+    Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus']);
+
+    // Reviews Management
+    Route::get('/reviews', [AdminReviewController::class, 'index']);
+    Route::patch('/reviews/{id}/status', [AdminReviewController::class, 'updateStatus']);
+    Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy']);
+});

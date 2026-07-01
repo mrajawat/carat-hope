@@ -1,0 +1,24 @@
+[04-Jun-2026 17:08:08 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Command\Command" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Command/HelpCommand.php:28
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Command/HelpCommand.php on line 28
+[04-Jun-2026 17:08:21 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Command\Command" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Command/ListCommand.php:28
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Command/ListCommand.php on line 28
+[04-Jun-2026 17:08:25 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Command\Command" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Command/CompleteCommand.php:29
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Command/CompleteCommand.php on line 29
+[04-Jun-2026 17:08:43 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Command\Command" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Command/DumpCompletionCommand.php:28
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Command/DumpCompletionCommand.php on line 28
+[13-Jun-2026 07:48:41 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Command\Command" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Command/HelpCommand.php:26
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Command/HelpCommand.php on line 26
+[13-Jun-2026 07:50:13 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Console\Command\Command" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/Command/DumpCompletionCommand.php:28
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/Command/DumpCompletionCommand.php on line 28

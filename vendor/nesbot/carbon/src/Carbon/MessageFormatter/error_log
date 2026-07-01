@@ -1,0 +1,5 @@
+[21-Jun-2026 07:50:27 UTC] PHP Fatal error:  Uncaught ReflectionException: Class "Symfony\Component\Translation\Formatter\MessageFormatterInterface" does not exist in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/MessageFormatter/MessageFormatterMapper.php:21
+Stack trace:
+#0 /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/MessageFormatter/MessageFormatterMapper.php(21): ReflectionMethod->__construct()
+#1 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/MessageFormatter/MessageFormatterMapper.php on line 21

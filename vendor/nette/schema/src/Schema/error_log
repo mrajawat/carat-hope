@@ -1,0 +1,8 @@
+[04-Jun-2026 18:39:26 UTC] PHP Fatal error:  Trait "Nette\SmartObject" not found in /home/threatex/api.threatcon.online/vendor/nette/schema/src/Schema/Expect.php on line 33
+[04-Jun-2026 18:39:29 UTC] PHP Fatal error:  Uncaught Error: Class "Nette\InvalidStateException" not found in /home/threatex/api.threatcon.online/vendor/nette/schema/src/Schema/ValidationException.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/nette/schema/src/Schema/ValidationException.php on line 18
+[04-Jun-2026 18:39:44 UTC] PHP Fatal error:  Trait "Nette\SmartObject" not found in /home/threatex/api.threatcon.online/vendor/nette/schema/src/Schema/Context.php on line 15
+[04-Jun-2026 18:39:59 UTC] PHP Fatal error:  Trait "Nette\StaticClass" not found in /home/threatex/api.threatcon.online/vendor/nette/schema/src/Schema/Helpers.php on line 19
+[04-Jun-2026 19:44:10 UTC] PHP Fatal error:  Trait "Nette\SmartObject" not found in /home/threatex/api.threatcon.online/vendor/nette/schema/src/Schema/Processor.php on line 18

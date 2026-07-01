@@ -1,0 +1,8 @@
+[04-Jun-2026 19:57:10 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/DependencyInjection/AddMimeTypeGuesserPass.php:23
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/DependencyInjection/AddMimeTypeGuesserPass.php on line 23
+[13-Jun-2026 07:56:02 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/DependencyInjection/AddMimeTypeGuesserPass.php:23
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/DependencyInjection/AddMimeTypeGuesserPass.php on line 23

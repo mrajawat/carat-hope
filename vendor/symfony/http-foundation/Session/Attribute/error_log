@@ -1,0 +1,8 @@
+[04-Jun-2026 19:57:15 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Attribute/AttributeBag.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Attribute/AttributeBag.php on line 19
+[04-Jun-2026 19:59:17 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\HttpFoundation\Session\SessionBagInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Attribute/AttributeBagInterface.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Attribute/AttributeBagInterface.php on line 21

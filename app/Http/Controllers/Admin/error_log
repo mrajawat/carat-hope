@@ -1,0 +1,128 @@
+[04-Jun-2026 15:40:31 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminReviewController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminReviewController.php on line 9
+[04-Jun-2026 15:40:31 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminAuthController.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminAuthController.php on line 11
+[04-Jun-2026 15:40:31 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/OrderController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/OrderController.php on line 9
+[04-Jun-2026 15:40:32 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/UserController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/UserController.php on line 9
+[04-Jun-2026 15:40:52 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/BannerController.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/BannerController.php on line 10
+[04-Jun-2026 15:40:53 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/ProductController.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/ProductController.php on line 12
+[04-Jun-2026 15:41:29 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminDashboardController.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminDashboardController.php on line 14
+[04-Jun-2026 15:41:29 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CouponController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CouponController.php on line 9
+[04-Jun-2026 15:41:29 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CategoryController.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CategoryController.php on line 11
+[04-Jun-2026 16:39:35 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/OrderController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/OrderController.php on line 9
+[04-Jun-2026 16:39:35 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminAuthController.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminAuthController.php on line 11
+[04-Jun-2026 16:39:35 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/UserController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/UserController.php on line 9
+[04-Jun-2026 16:39:48 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminReviewController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminReviewController.php on line 9
+[04-Jun-2026 16:39:48 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/BannerController.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/BannerController.php on line 10
+[04-Jun-2026 16:39:58 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/ProductController.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/ProductController.php on line 12
+[04-Jun-2026 16:40:55 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminDashboardController.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminDashboardController.php on line 14
+[04-Jun-2026 16:40:55 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CategoryController.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CategoryController.php on line 11
+[04-Jun-2026 16:41:02 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CouponController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CouponController.php on line 9
+[13-Jun-2026 07:43:11 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/OrderController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/OrderController.php on line 9
+[13-Jun-2026 07:43:11 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/UserController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/UserController.php on line 9
+[13-Jun-2026 07:43:51 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/ProductController.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/ProductController.php on line 12
+[13-Jun-2026 07:43:52 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/BannerController.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/BannerController.php on line 10
+[13-Jun-2026 07:43:52 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminAuthController.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminAuthController.php on line 11
+[13-Jun-2026 07:43:57 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminReviewController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminReviewController.php on line 9
+[13-Jun-2026 07:44:48 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/OrderController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/OrderController.php on line 9
+[13-Jun-2026 07:44:49 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/UserController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/UserController.php on line 9
+[13-Jun-2026 07:44:55 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CouponController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CouponController.php on line 9
+[13-Jun-2026 07:45:04 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminDashboardController.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminDashboardController.php on line 14
+[13-Jun-2026 07:45:50 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminReviewController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminReviewController.php on line 9
+[13-Jun-2026 07:47:15 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CouponController.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CouponController.php on line 9
+[13-Jun-2026 07:47:16 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminDashboardController.php:14
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/AdminDashboardController.php on line 14
+[13-Jun-2026 07:47:26 UTC] PHP Fatal error:  Uncaught Error: Class "App\Http\Controllers\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CategoryController.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Admin/CategoryController.php on line 11

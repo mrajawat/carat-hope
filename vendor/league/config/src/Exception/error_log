@@ -1,0 +1,24 @@
+[04-Jun-2026 19:24:16 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Config\Exception\ConfigurationExceptionInterface" not found in /home/threatex/api.threatcon.online/vendor/league/config/src/Exception/InvalidConfigurationException.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/config/src/Exception/InvalidConfigurationException.php on line 16
+[04-Jun-2026 19:25:18 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Config\Exception\ConfigurationExceptionInterface" not found in /home/threatex/api.threatcon.online/vendor/league/config/src/Exception/UnknownOptionException.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/config/src/Exception/UnknownOptionException.php on line 18
+[04-Jun-2026 19:26:25 UTC] PHP Fatal error:  Uncaught Error: Class "League\Config\Exception\InvalidConfigurationException" not found in /home/threatex/api.threatcon.online/vendor/league/config/src/Exception/ValidationException.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/config/src/Exception/ValidationException.php on line 18
+[13-Jun-2026 07:53:50 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Config\Exception\ConfigurationExceptionInterface" not found in /home/threatex/api.threatcon.online/vendor/league/config/src/Exception/UnknownOptionException.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/config/src/Exception/UnknownOptionException.php on line 18
+[21-Jun-2026 04:33:27 UTC] PHP Fatal error:  Uncaught Error: Class "League\Config\Exception\InvalidConfigurationException" not found in /home/threatex/api.threatcon.online/vendor/league/config/src/Exception/ValidationException.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/config/src/Exception/ValidationException.php on line 18
+[21-Jun-2026 08:02:56 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Config\Exception\ConfigurationExceptionInterface" not found in /home/threatex/api.threatcon.online/vendor/league/config/src/Exception/InvalidConfigurationException.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/config/src/Exception/InvalidConfigurationException.php on line 16

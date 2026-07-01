@@ -1,0 +1,97 @@
+[04-Jun-2026 17:45:52 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemOperationFailed" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToWriteFile.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToWriteFile.php on line 10
+[04-Jun-2026 17:45:52 UTC] PHP Fatal error:  Uncaught Error: Class "League\Flysystem\UnableToCheckExistence" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToCheckFileExistence.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToCheckFileExistence.php on line 7
+[04-Jun-2026 17:47:08 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemOperationFailed" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToSetVisibility.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToSetVisibility.php on line 13
+[04-Jun-2026 17:48:26 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemAdapter" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/DecoratedAdapter.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/DecoratedAdapter.php on line 7
+[13-Jun-2026 07:47:42 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemOperationFailed" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToWriteFile.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToWriteFile.php on line 10
+[13-Jun-2026 07:50:46 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemOperationFailed" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToSetVisibility.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToSetVisibility.php on line 13
+[13-Jun-2026 07:55:13 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemException" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/SymbolicLinkEncountered.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/SymbolicLinkEncountered.php on line 9
+[21-Jun-2026 09:00:11 UTC] PHP Fatal error:  Uncaught Error: Class "League\Flysystem\UnableToCheckExistence" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToCheckDirectoryExistence.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToCheckDirectoryExistence.php on line 7
+[21-Jun-2026 09:00:59 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemOperationFailed" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToDeleteDirectory.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToDeleteDirectory.php on line 10
+[21-Jun-2026 09:02:23 UTC] PHP Fatal error:  Uncaught Error: Class "League\Flysystem\UnableToCheckExistence" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToCheckFileExistence.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToCheckFileExistence.php on line 7
+[21-Jun-2026 09:03:01 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemReader" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/FilesystemOperator.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/FilesystemOperator.php on line 7
+[21-Jun-2026 09:04:09 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemException" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/InvalidVisibilityProvided.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/InvalidVisibilityProvided.php on line 11
+[21-Jun-2026 09:05:17 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemOperationFailed" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToWriteFile.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToWriteFile.php on line 10
+[21-Jun-2026 09:08:16 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemException" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToGeneratePublicUrl.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToGeneratePublicUrl.php on line 10
+[21-Jun-2026 09:13:58 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemException" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/FilesystemOperationFailed.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/FilesystemOperationFailed.php on line 7
+[21-Jun-2026 09:15:33 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemOperationFailed" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToCreateDirectory.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToCreateDirectory.php on line 10
+[21-Jun-2026 09:17:55 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemException" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToProvideChecksum.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToProvideChecksum.php on line 10
+[21-Jun-2026 09:18:59 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemException" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/SymbolicLinkEncountered.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/SymbolicLinkEncountered.php on line 9
+[21-Jun-2026 09:23:46 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemOperationFailed" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToDeleteFile.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToDeleteFile.php on line 10
+[21-Jun-2026 09:24:56 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemException" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToResolveFilesystemMount.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToResolveFilesystemMount.php on line 9
+[21-Jun-2026 09:25:37 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemOperationFailed" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToCheckExistence.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToCheckExistence.php on line 10
+[21-Jun-2026 09:27:40 UTC] PHP Fatal error:  Trait "League\Flysystem\ProxyArrayAccessToProperties" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/FileAttributes.php on line 7
+[21-Jun-2026 09:35:10 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemOperationFailed" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToSetVisibility.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToSetVisibility.php on line 13
+[21-Jun-2026 09:37:09 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemException" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToGenerateTemporaryUrl.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/UnableToGenerateTemporaryUrl.php on line 10
+[21-Jun-2026 11:50:29 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Flysystem\FilesystemException" not found in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/InvalidStreamProvided.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/flysystem/src/InvalidStreamProvided.php on line 9

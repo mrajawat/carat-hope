@@ -1,0 +1,8 @@
+[21-Jun-2026 03:50:35 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Parser\Block\BlockStartParserInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Attributes/Parser/AttributesBlockStartParser.php:23
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Attributes/Parser/AttributesBlockStartParser.php on line 23
+[21-Jun-2026 08:47:46 UTC] PHP Fatal error:  Uncaught Error: Class "League\CommonMark\Parser\Block\AbstractBlockContinueParser" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Attributes/Parser/AttributesBlockContinueParser.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Attributes/Parser/AttributesBlockContinueParser.php on line 25

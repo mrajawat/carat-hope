@@ -1,0 +1,8 @@
+[04-Jun-2026 14:37:36 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Routing\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Controller.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Controller.php on line 10
+[04-Jun-2026 14:37:46 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Routing\Controller" not found in /home/threatex/api.threatcon.online/app/Http/Controllers/Controller.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Http/Controllers/Controller.php on line 10

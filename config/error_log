@@ -1,0 +1,252 @@
+[04-Jun-2026 10:03:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function resource_path() in /home/threatex/api.threatcon.online/config/view.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/view.php on line 17
+[04-Jun-2026 10:03:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/broadcasting.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/broadcasting.php on line 18
+[04-Jun-2026 10:03:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/app.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/app.php on line 18
+[04-Jun-2026 10:03:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/cache.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/cache.php on line 18
+[04-Jun-2026 10:03:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/filesystems.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/filesystems.php on line 16
+[04-Jun-2026 10:03:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/hashing.php:32
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/hashing.php on line 32
+[04-Jun-2026 10:03:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/database.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/database.php on line 18
+[04-Jun-2026 10:03:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/mail.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/mail.php on line 16
+[04-Jun-2026 10:03:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/logging.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/logging.php on line 20
+[04-Jun-2026 10:03:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/services.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/services.php on line 18
+[04-Jun-2026 10:03:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/queue.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/queue.php on line 16
+[04-Jun-2026 10:03:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/sanctum.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/sanctum.php on line 16
+[04-Jun-2026 10:03:55 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/session.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/session.php on line 21
+[04-Jun-2026 12:46:51 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/session.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/session.php on line 21
+[04-Jun-2026 12:46:52 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/database.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/database.php on line 18
+[04-Jun-2026 12:46:52 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/cache.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/cache.php on line 18
+[04-Jun-2026 12:46:53 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/queue.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/queue.php on line 16
+[04-Jun-2026 12:46:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/broadcasting.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/broadcasting.php on line 18
+[04-Jun-2026 12:46:55 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/app.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/app.php on line 18
+[04-Jun-2026 12:46:56 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/logging.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/logging.php on line 20
+[04-Jun-2026 12:46:56 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/services.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/services.php on line 18
+[04-Jun-2026 12:47:22 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/cache.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/cache.php on line 18
+[04-Jun-2026 12:47:22 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/database.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/database.php on line 18
+[04-Jun-2026 12:47:23 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/queue.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/queue.php on line 16
+[04-Jun-2026 12:48:24 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/hashing.php:32
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/hashing.php on line 32
+[04-Jun-2026 12:48:39 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/broadcasting.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/broadcasting.php on line 18
+[04-Jun-2026 12:48:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/services.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/services.php on line 18
+[04-Jun-2026 12:48:59 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/logging.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/logging.php on line 20
+[04-Jun-2026 12:49:04 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function resource_path() in /home/threatex/api.threatcon.online/config/view.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/view.php on line 17
+[04-Jun-2026 13:43:11 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/filesystems.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/filesystems.php on line 16
+[04-Jun-2026 13:43:11 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/hashing.php:32
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/hashing.php on line 32
+[04-Jun-2026 13:44:00 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/mail.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/mail.php on line 16
+[04-Jun-2026 13:46:20 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/app.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/app.php on line 18
+[04-Jun-2026 13:47:51 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/sanctum.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/sanctum.php on line 16
+[04-Jun-2026 13:48:10 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/mail.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/mail.php on line 16
+[04-Jun-2026 13:49:17 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/session.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/session.php on line 21
+[04-Jun-2026 13:50:08 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/filesystems.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/filesystems.php on line 16
+[13-Jun-2026 07:43:10 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/cache.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/cache.php on line 18
+[13-Jun-2026 07:43:14 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/database.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/database.php on line 19
+[13-Jun-2026 07:43:14 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/queue.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/queue.php on line 16
+[13-Jun-2026 07:43:51 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/services.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/services.php on line 18
+[13-Jun-2026 07:44:12 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/app.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/app.php on line 16
+[13-Jun-2026 07:44:13 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/broadcasting.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/broadcasting.php on line 18
+[13-Jun-2026 07:44:23 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/logging.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/logging.php on line 21
+[13-Jun-2026 07:45:49 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/cache.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/cache.php on line 18
+[13-Jun-2026 07:45:55 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/database.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/database.php on line 19
+[13-Jun-2026 07:46:10 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/filesystems.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/filesystems.php on line 16
+[13-Jun-2026 07:47:36 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/session.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/session.php on line 21
+[13-Jun-2026 07:47:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/hashing.php:32
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/hashing.php on line 32
+[13-Jun-2026 07:48:46 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/mail.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/mail.php on line 17
+[13-Jun-2026 07:49:18 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/filesystems.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/filesystems.php on line 16
+[21-Jun-2026 00:53:03 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/hashing.php:32
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/hashing.php on line 32
+[21-Jun-2026 00:53:04 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/session.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/session.php on line 21
+[21-Jun-2026 00:53:26 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/sanctum.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/sanctum.php on line 21
+[21-Jun-2026 00:53:45 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/auth.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/auth.php on line 17
+[21-Jun-2026 00:53:50 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/mail.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/mail.php on line 17
+[21-Jun-2026 00:55:54 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/cache.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/cache.php on line 18
+[21-Jun-2026 00:56:55 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/queue.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/queue.php on line 16
+[21-Jun-2026 00:58:23 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/services.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/services.php on line 18
+[21-Jun-2026 00:58:59 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function resource_path() in /home/threatex/api.threatcon.online/config/view.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/view.php on line 17
+[21-Jun-2026 01:03:42 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/broadcasting.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/broadcasting.php on line 18
+[21-Jun-2026 01:15:27 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/app.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/app.php on line 16
+[21-Jun-2026 01:18:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/config/logging.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/config/logging.php on line 21

@@ -1,0 +1,12 @@
+[21-Jun-2026 11:23:48 UTC] PHP Fatal error:  Uncaught Error: Class "League\CommonMark\Node\Block\AbstractBlock" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Footnote/Node/FootnoteContainer.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Footnote/Node/FootnoteContainer.php on line 19
+[21-Jun-2026 11:25:00 UTC] PHP Fatal error:  Uncaught Error: Class "League\CommonMark\Node\Inline\AbstractInline" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Footnote/Node/FootnoteRef.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Footnote/Node/FootnoteRef.php on line 21
+[21-Jun-2026 11:27:54 UTC] PHP Fatal error:  Uncaught Error: Class "League\CommonMark\Node\Block\AbstractBlock" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Footnote/Node/Footnote.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Footnote/Node/Footnote.php on line 21

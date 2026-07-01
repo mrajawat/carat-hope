@@ -1,0 +1,20 @@
+[21-Jun-2026 02:36:17 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Exception\CommonMarkException" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Exception/UnexpectedEncodingException.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Exception/UnexpectedEncodingException.php on line 16
+[21-Jun-2026 02:45:46 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Exception\CommonMarkException" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Exception/LogicException.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Exception/LogicException.php on line 16
+[21-Jun-2026 02:58:10 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Exception\CommonMarkException" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Exception/IOException.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Exception/IOException.php on line 16
+[21-Jun-2026 08:02:26 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Exception\CommonMarkException" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Exception/MissingDependencyException.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Exception/MissingDependencyException.php on line 16
+[21-Jun-2026 08:04:07 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Exception\CommonMarkException" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Exception/InvalidArgumentException.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Exception/InvalidArgumentException.php on line 16

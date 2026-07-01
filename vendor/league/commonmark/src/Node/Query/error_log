@@ -1,0 +1,8 @@
+[21-Jun-2026 06:21:04 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Node\Query\ExpressionInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Node/Query/AndExpr.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Node/Query/AndExpr.php on line 21
+[21-Jun-2026 06:33:00 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Node\Query\ExpressionInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Node/Query/OrExpr.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Node/Query/OrExpr.php on line 21

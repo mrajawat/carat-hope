@@ -1,0 +1,20 @@
+[04-Jun-2026 15:03:49 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\Mime\MimeTypesInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/MimeTypes.php:37
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/MimeTypes.php on line 37
+[04-Jun-2026 16:03:47 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Mime\RawMessage" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/Message.php:22
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/Message.php on line 22
+[04-Jun-2026 17:05:51 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\Mime\MimeTypeGuesserInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/MimeTypesInterface.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/MimeTypesInterface.php on line 17
+[04-Jun-2026 17:07:11 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Mime\Message" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/Email.php:25
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/Email.php on line 25
+[15-Jun-2026 09:21:26 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\Mime\MimeTypesInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/MimeTypes.php:37
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/MimeTypes.php on line 37

@@ -1,0 +1,36 @@
+[04-Jun-2026 21:03:58 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\HttpFoundation\Session\Storage\Handler\AbstractSessionHandler" not found in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/PdoSessionHandler.php:41
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/PdoSessionHandler.php on line 41
+[04-Jun-2026 21:04:16 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\HttpFoundation\Session\Storage\Handler\AbstractSessionHandler" not found in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/MongoDbSessionHandler.php:27
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/MongoDbSessionHandler.php on line 27
+[04-Jun-2026 21:05:14 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\HttpFoundation\Session\Storage\Handler\AbstractSessionHandler" not found in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/StrictSessionHandler.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/StrictSessionHandler.php on line 19
+[04-Jun-2026 21:05:56 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\Cache\Marshaller\MarshallerInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/IdentityMarshaller.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/IdentityMarshaller.php on line 19
+[04-Jun-2026 21:05:56 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\HttpFoundation\Session\Storage\Handler\AbstractSessionHandler" not found in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/MemcachedSessionHandler.php:22
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/MemcachedSessionHandler.php on line 22
+[04-Jun-2026 21:06:49 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\HttpFoundation\Session\Storage\Handler\AbstractSessionHandler" not found in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/NullSessionHandler.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/NullSessionHandler.php on line 19
+[04-Jun-2026 21:07:34 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\HttpFoundation\Session\Storage\Handler\AbstractSessionHandler" not found in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/RedisSessionHandler.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/RedisSessionHandler.php on line 24
+[13-Jun-2026 07:56:11 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\Cache\Marshaller\MarshallerInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/IdentityMarshaller.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/IdentityMarshaller.php on line 19
+[13-Jun-2026 07:59:00 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\HttpFoundation\Session\Storage\Handler\AbstractSessionHandler" not found in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/StrictSessionHandler.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/http-foundation/Session/Storage/Handler/StrictSessionHandler.php on line 19

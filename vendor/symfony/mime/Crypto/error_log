@@ -1,0 +1,12 @@
+[04-Jun-2026 17:27:55 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Mime\Crypto\SMime" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/Crypto/SMimeSigner.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/Crypto/SMimeSigner.php on line 20
+[04-Jun-2026 17:28:19 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Mime\Crypto\SMime" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/Crypto/SMimeEncrypter.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/Crypto/SMimeEncrypter.php on line 20
+[13-Jun-2026 07:57:20 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Mime\Crypto\SMime" not found in /home/threatex/api.threatcon.online/vendor/symfony/mime/Crypto/SMimeSigner.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/symfony/mime/Crypto/SMimeSigner.php on line 20

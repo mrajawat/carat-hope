@@ -1,0 +1,8 @@
+[21-Jun-2026 02:56:16 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Config\ConfigurationAwareInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Footnote/Event/AnonymousFootnotesListener.php:27
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Footnote/Event/AnonymousFootnotesListener.php on line 27
+[21-Jun-2026 03:03:23 UTC] PHP Fatal error:  Uncaught Error: Interface "League\Config\ConfigurationAwareInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Footnote/Event/GatherFootnotesListener.php:27
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Footnote/Event/GatherFootnotesListener.php on line 27

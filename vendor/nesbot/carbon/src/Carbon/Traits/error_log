@@ -1,0 +1,7 @@
+[21-Jun-2026 07:03:53 UTC] PHP Fatal error:  Trait "Carbon\Traits\Cast" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/Traits/Mutability.php on line 24
+[21-Jun-2026 07:04:20 UTC] PHP Fatal error:  Trait "Carbon\Traits\IntervalRounding" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/Traits/Rounding.php on line 31
+[21-Jun-2026 07:07:23 UTC] PHP Fatal error:  Trait "Carbon\Traits\Boundaries" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/Traits/Date.php on line 863
+[21-Jun-2026 07:17:56 UTC] PHP Fatal error:  Trait "Carbon\Traits\StaticOptions" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/Traits/Options.php on line 29
+[21-Jun-2026 07:21:50 UTC] PHP Fatal error:  Trait "Carbon\Traits\ObjectInitialisation" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/Traits/Serialization.php on line 39
+[21-Jun-2026 07:22:57 UTC] PHP Fatal error:  Trait "Carbon\Traits\StaticLocalization" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/Traits/Localization.php on line 32
+[21-Jun-2026 07:33:43 UTC] PHP Fatal error:  Trait "Carbon\Traits\Mixin" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/src/Carbon/Traits/Macro.php on line 23

@@ -1,0 +1,9 @@
+[21-Jun-2026 04:34:20 UTC] PHP Fatal error:  Access level to Carbon\DatePeriodBase::$start must be public (as in class DatePeriod) in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/lazy/Carbon/ProtectedDatePeriod.php on line 17
+[21-Jun-2026 06:15:00 UTC] PHP Fatal error:  Uncaught Error: Class "Carbon\AbstractTranslator" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/lazy/Carbon/TranslatorStrongType.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/lazy/Carbon/TranslatorStrongType.php on line 17
+[21-Jun-2026 09:53:27 UTC] PHP Fatal error:  Uncaught Error: Class "Carbon\AbstractTranslator" not found in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/lazy/Carbon/TranslatorWeakType.php:15
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/nesbot/carbon/lazy/Carbon/TranslatorWeakType.php on line 15

@@ -1,0 +1,1 @@
+[04-Jun-2026 18:10:19 UTC] PHP Fatal error:  Cannot declare class CURLStringFile, because the name is already in use in /home/threatex/api.threatcon.online/vendor/symfony/polyfill-php81/Resources/stubs/CURLStringFile.php on line 16

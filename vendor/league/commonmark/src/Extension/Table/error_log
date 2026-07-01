@@ -1,0 +1,28 @@
+[21-Jun-2026 01:32:11 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Extension\ConfigurableExtensionInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/TableExtension.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/TableExtension.php on line 24
+[21-Jun-2026 01:32:59 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Renderer\NodeRendererInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/TableSectionRenderer.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/TableSectionRenderer.php on line 24
+[21-Jun-2026 01:46:55 UTC] PHP Fatal error:  Uncaught Error: Class "League\CommonMark\Node\Block\AbstractBlock" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/Table.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/Table.php on line 20
+[21-Jun-2026 01:47:35 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Parser\Block\BlockStartParserInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/TableStartParser.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/TableStartParser.php on line 24
+[21-Jun-2026 01:48:41 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Renderer\NodeRendererInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/TableRowRenderer.php:24
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/TableRowRenderer.php on line 24
+[21-Jun-2026 05:24:21 UTC] PHP Fatal error:  Uncaught Error: Class "League\CommonMark\Node\Block\AbstractBlock" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/TableCell.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/TableCell.php on line 20
+[21-Jun-2026 06:05:17 UTC] PHP Fatal error:  Uncaught Error: Class "League\CommonMark\Node\Block\AbstractBlock" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/TableRow.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Extension/Table/TableRow.php on line 20
