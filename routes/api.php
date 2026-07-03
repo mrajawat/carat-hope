@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\UserController;
@@ -76,7 +77,20 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::apiResource('/categories', CategoryController::class);
     Route::patch('/categories/{id}/toggle-status', [CategoryController::class, 'toggleStatus']);
 
+    // Subcategories API
+    Route::get('/subcategories', [SubcategoryController::class, 'index']);
+    Route::post('/subcategories', [SubcategoryController::class, 'store']);
+    Route::get('/subcategories/{id}', [SubcategoryController::class, 'show']);
+    Route::put('/subcategories/{id}', [SubcategoryController::class, 'update']);
+    Route::delete('/subcategories/{id}', [SubcategoryController::class, 'destroy']);
+    Route::patch('/subcategories/{id}/toggle-status', [SubcategoryController::class, 'toggleStatus']);
+
+    // Nested Subcategories API under category
+    Route::get('/categories/{category}/subcategories', [SubcategoryController::class, 'subcategoriesByCategory']);
+    Route::post('/categories/{category}/subcategories', [SubcategoryController::class, 'storeByCategory']);
+
     // Products CRUD + Toggle Status + Toggle Featured
+    Route::post('/products/bulk-toggle-featured', [ProductController::class, 'bulkToggleFeatured']);
     Route::apiResource('/products', ProductController::class);
     Route::patch('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus']);
     Route::patch('/products/{id}/toggle-featured', [ProductController::class, 'toggleFeatured']);

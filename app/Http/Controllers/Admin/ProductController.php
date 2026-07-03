@@ -11,9 +11,15 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['category', 'product_images'])->orderBy('created_at', 'desc')->get();
+        $query = Product::with(['category', 'product_images'])->orderBy('created_at', 'desc');
+
+        if ($request->get('paginate') === 'true') {
+            $products = $query->paginate($request->get('per_page', 15));
+        } else {
+            $products = $query->get();
+        }
 
         return response()->json([
             'success' => true,
@@ -42,6 +48,7 @@ class ProductController extends Controller
             'local_prices' => 'nullable|array',
             'stock_qty' => 'required|integer|min:0',
             'description' => 'nullable|string',
+            'video' => 'nullable',
             'images' => 'required|array|min:1',
             'images.*' => 'required|string',
         ]);
@@ -60,6 +67,21 @@ class ProductController extends Controller
                 'status' => 'active'
             ]);
 
+            if ($request->has('video') && !empty($request->video)) {
+                try {
+                    $videoUrl = \App\Helpers\VideoHelper::upload($request->video, 'products/videos');
+                } catch (\Exception $e) {
+                    throw new \Exception('Video upload failed: ' . $e->getMessage());
+                }
+
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image_path' => $videoUrl,
+                    'type' => 'video',
+                    'is_primary' => false
+                ]);
+            }
+
             foreach ($request->images as $index => $imageData) {
                 try {
                     $imageUrl = ImageHelper::uploadBase64($imageData, 'products');
@@ -70,6 +92,7 @@ class ProductController extends Controller
                 ProductImage::create([
                     'product_id' => $product->id,
                     'image_path' => $imageUrl,
+                    'type' => 'image',
                     'is_primary' => $index === 0 // Designate first image as primary
                 ]);
             }
@@ -95,6 +118,7 @@ class ProductController extends Controller
             'local_prices' => 'nullable|array',
             'stock_qty' => 'required|integer|min:0',
             'description' => 'nullable|string',
+            'video' => 'nullable',
             'images' => 'nullable|array',
             'images.*' => 'required|string',
         ]);
@@ -111,9 +135,29 @@ class ProductController extends Controller
                 'description' => $request->description,
             ]);
 
-            if ($request->has('images')) {
-                // Remove old product images records
-                $product->product_images()->delete();
+            if ($request->has('video')) {
+                // Delete existing videos
+                $product->product_images()->where('type', 'video')->delete();
+
+                if (!empty($request->video)) {
+                    try {
+                        $videoUrl = \App\Helpers\VideoHelper::upload($request->video, 'products/videos');
+                    } catch (\Exception $e) {
+                        throw new \Exception('Video upload failed: ' . $e->getMessage());
+                    }
+
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image_path' => $videoUrl,
+                        'type' => 'video',
+                        'is_primary' => false
+                    ]);
+                }
+            }
+
+            if ($request->has('images') && is_array($request->images)) {
+                // Remove old product images records (only of type 'image')
+                $product->product_images()->where('type', 'image')->delete();
 
                 foreach ($request->images as $index => $imageData) {
                     try {
@@ -125,6 +169,7 @@ class ProductController extends Controller
                     ProductImage::create([
                         'product_id' => $product->id,
                         'image_path' => $imageUrl,
+                        'type' => 'image',
                         'is_primary' => $index === 0
                     ]);
                 }
@@ -172,6 +217,24 @@ class ProductController extends Controller
             'success' => true,
             'message' => 'Product featured status updated successfully',
             'data' => $product
+        ]);
+    }
+
+    public function bulkToggleFeatured(Request $request)
+    {
+        $request->validate([
+            'product_ids' => 'required|array',
+            'product_ids.*' => 'required|exists:products,id',
+        ]);
+
+        foreach (Product::whereIn('id', $request->product_ids)->get() as $product) {
+            $product->is_featured = !$product->is_featured;
+            $product->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Products featured status toggled successfully.'
         ]);
     }
 }

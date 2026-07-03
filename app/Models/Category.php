@@ -18,6 +18,10 @@ class Category extends Model
         'status',
     ];
 
+    protected $casts = [
+        'parent_id' => 'integer',
+    ];
+
     protected static function booted()
     {
         static::saved(function () {
