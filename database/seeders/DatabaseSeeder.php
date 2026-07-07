@@ -561,5 +561,11 @@ class DatabaseSeeder extends Seeder
             'quantity' => 1,
             'price' => 69999.00,
         ]);
+
+        $this->call([
+            RegionSeeder::class,
+            RegionTaxRuleSeeder::class,
+            JewelryAttributeSeeder::class,
+        ]);
     }
 }

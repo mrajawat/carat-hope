@@ -1,0 +1,132 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\ProductVariant;
+use App\Models\Region;
+use App\Models\RegionTaxRule;
+use App\Models\VariantPrice;
+
+class VariantPricingService
+{
+    /**
+     * Get price for a variant in a specific region, applying fallbacks if prices_vary is enabled.
+     *
+     * @param ProductVariant $variant
+     * @param int $regionId
+     * @return array
+     */
+    public function getPriceForRegion(ProductVariant $variant, int $regionId): array
+    {
+        $region = Region::find($regionId);
+        if (!$region) {
+            $region = Region::where('is_default', true)->first();
+        }
+
+        $product = $variant->product;
+        $price = 0.00;
+        $compareAtPrice = null;
+
+        if (!$product->prices_vary) {
+            // pricing resolves from variant's base_price, falling back to parent product price
+            if ($variant->base_price !== null && $variant->base_price > 0) {
+                $price = $variant->base_price;
+                $compareAtPrice = null;
+            } else {
+                $price = $product->discount_price ?? $product->price;
+                $compareAtPrice = $product->discount_price ? $product->price : null;
+            }
+        } else {
+            // Find regional price for this variant
+            $variantPrice = VariantPrice::where('product_variant_id', $variant->id)
+                ->where('region_id', $region->id)
+                ->first();
+
+            if (!$variantPrice) {
+                // Fallback to the default region's price
+                $defaultRegion = Region::where('is_default', true)->first();
+                if ($defaultRegion) {
+                    $variantPrice = VariantPrice::where('product_variant_id', $variant->id)
+                        ->where('region_id', $defaultRegion->id)
+                        ->first();
+                }
+            }
+
+            if ($variantPrice) {
+                $price = $variantPrice->price;
+                $compareAtPrice = $variantPrice->compare_at_price;
+            } else {
+                // If no regional price is set at all, use variant base_price or product price
+                if ($variant->base_price !== null && $variant->base_price > 0) {
+                    $price = $variant->base_price;
+                    $compareAtPrice = null;
+                } else {
+                    $price = $product->discount_price ?? $product->price;
+                    $compareAtPrice = $product->discount_price ? $product->price : null;
+                }
+            }
+        }
+
+        return [
+            'price' => (float)$price,
+            'compare_at_price' => $compareAtPrice !== null ? (float)$compareAtPrice : null,
+            'currency_symbol' => $region->currency_symbol,
+            'currency_code' => $region->currency_code,
+        ];
+    }
+
+    /**
+     * Get price details including tax breakdown for a variant in a specific region.
+     *
+     * @param ProductVariant $variant
+     * @param int $regionId
+     * @return array
+     */
+    public function getPriceWithTax(ProductVariant $variant, int $regionId): array
+    {
+        $priceData = $this->getPriceForRegion($variant, $regionId);
+        $price = $priceData['price'];
+
+        $taxRule = RegionTaxRule::where('region_id', $regionId)->first();
+
+        if (!$taxRule) {
+            // Fallback to default region tax rule if none defined for this region
+            $defaultRegion = Region::where('is_default', true)->first();
+            if ($defaultRegion && $defaultRegion->id !== $regionId) {
+                $taxRule = RegionTaxRule::where('region_id', $defaultRegion->id)->first();
+            }
+        }
+
+        $taxName = $taxRule ? $taxRule->tax_name : 'Tax';
+        $taxPercentage = $taxRule ? (float)$taxRule->tax_percentage : 0.00;
+        $inclusive = $taxRule ? (bool)$taxRule->inclusive : false;
+
+        if ($taxPercentage > 0) {
+            if ($inclusive) {
+                // Tax is included: Subtotal = Price / (1 + (tax% / 100))
+                $subtotal = $price / (1 + ($taxPercentage / 100));
+                $taxAmount = $price - $subtotal;
+                $total = $price;
+            } else {
+                // Tax is excluded: Subtotal = Price, Tax = Price * (tax% / 100), Total = Price + Tax
+                $subtotal = $price;
+                $taxAmount = $price * ($taxPercentage / 100);
+                $total = $price + $taxAmount;
+            }
+        } else {
+            $subtotal = $price;
+            $taxAmount = 0.00;
+            $total = $price;
+        }
+
+        return [
+            'subtotal' => round($subtotal, 2),
+            'tax_amount' => round($taxAmount, 2),
+            'tax_name' => $taxName,
+            'total' => round($total, 2),
+            'currency_symbol' => $priceData['currency_symbol'],
+            'currency_code' => $priceData['currency_code'],
+            'compare_at_price' => $priceData['compare_at_price'],
+        ];
+    }
+}

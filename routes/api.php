@@ -16,6 +16,11 @@ use App\Http\Controllers\Public\CustomerAuthController;
 use App\Http\Controllers\Public\CustomerOrderController;
 use App\Http\Controllers\Public\ReviewController;
 use App\Http\Controllers\Public\GuestAuthController;
+use App\Http\Controllers\Admin\AttributeController;
+use App\Http\Controllers\Admin\CategoryAttributeController;
+use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\RegionController;
+use App\Http\Controllers\Frontend\ProductPriceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +40,7 @@ Route::prefix('public')->middleware('throttle:60,1')->group(function () {
     Route::middleware('throttle:5,1')->group(function () {
         Route::post('/coupons/validate', [PublicController::class, 'validateCoupon']);
         Route::post('/orders/checkout', [PublicController::class, 'checkout']);
-        
+
         // Customer Authentication (Guest)
         Route::post('/register', [CustomerAuthController::class, 'register']);
         Route::post('/login', [CustomerAuthController::class, 'login']);
@@ -53,7 +58,7 @@ Route::prefix('public')->middleware('throttle:60,1')->group(function () {
 
         Route::get('/orders', [CustomerOrderController::class, 'index']);
         Route::get('/orders/{id}', [CustomerOrderController::class, 'show']);
-        
+
         Route::post('/products/{productId}/reviews', [ReviewController::class, 'store']);
     });
 });
@@ -65,7 +70,7 @@ Route::post('/admin/login', [AdminAuthController::class, 'login'])->middleware('
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::post('/logout', [AdminAuthController::class, 'logout']);
     Route::get('/me', [AdminAuthController::class, 'me']);
-    
+
     // Dashboard Stats
     Route::get('/dashboard/stats', [AdminDashboardController::class, 'stats']);
 
@@ -113,4 +118,25 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('/reviews', [AdminReviewController::class, 'index']);
     Route::patch('/reviews/{id}/status', [AdminReviewController::class, 'updateStatus']);
     Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy']);
+
+    // Admin Product Variations & Global Region Pricing Routes
+    Route::post('/attributes/{attribute}/values', [AttributeController::class, 'storeValue']);
+    Route::apiResource('/attributes', AttributeController::class);
+
+    Route::post('/category-attributes', [CategoryAttributeController::class, 'store']);
+    Route::delete('/category-attributes/{id}', [CategoryAttributeController::class, 'destroy']);
+
+    Route::post('/products/{product}/variants/generate-combinations', [ProductVariantController::class, 'generateCombinations']);
+    Route::get('/products/{product}/variants', [ProductVariantController::class, 'index']);
+    Route::post('/products/{product}/variants', [ProductVariantController::class, 'store']);
+    Route::put('/variants/{variant}', [ProductVariantController::class, 'update']);
+    Route::delete('/variants/{variant}', [ProductVariantController::class, 'destroy']);
+    Route::put('/variants/{variant}/prices', [ProductVariantController::class, 'bulkUpdatePricing']);
+
+    Route::apiResource('/regions', RegionController::class);
 });
+
+// Public Routes
+Route::get('/categories/{category}/attributes', [CategoryAttributeController::class, 'getAttributesForCategory']);
+Route::get('/regions', [RegionController::class, 'index']);
+Route::get('/products/{product}/price', [ProductPriceController::class, 'getPrice']);

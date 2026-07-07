@@ -20,6 +20,11 @@ class Product extends Model
         'description',
         'is_featured',
         'status',
+        'prices_vary',
+        'quantities_vary',
+        'skus_vary',
+        'max_variation_axes',
+        'total_stock',
     ];
 
     protected $casts = [
@@ -27,11 +32,21 @@ class Product extends Model
         'discount_price' => 'decimal:2',
         'local_prices' => 'array',
         'is_featured' => 'boolean',
+        'prices_vary' => 'boolean',
+        'quantities_vary' => 'boolean',
+        'skus_vary' => 'boolean',
+        'max_variation_axes' => 'integer',
+        'total_stock' => 'integer',
     ];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
     }
 
     public function product_images()
