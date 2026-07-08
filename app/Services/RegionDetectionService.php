@@ -56,7 +56,19 @@ class RegionDetectionService
         }
 
         // 3. Fallback to the default region
-        return Region::where('is_default', true)->first() ?? Region::first();
+        $defaultRegion = Region::where('is_default', true)->first() ?? Region::first();
+
+        if (!$defaultRegion) {
+            // Auto-create a default region if none exists (safety net for fresh/live deployments)
+            $defaultRegion = Region::create([
+                'name' => 'India',
+                'currency_code' => 'INR',
+                'currency_symbol' => '₹',
+                'is_default' => true,
+            ]);
+        }
+
+        return $defaultRegion;
     }
 
     /**
