@@ -121,6 +121,7 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 
     // Admin Product Variations & Global Region Pricing Routes
     Route::post('/attributes/{attribute}/values', [AttributeController::class, 'storeValue']);
+    Route::delete('/attributes/values/{value}', [AttributeController::class, 'destroyValue']);
     Route::apiResource('/attributes', AttributeController::class);
 
     Route::post('/category-attributes', [CategoryAttributeController::class, 'store']);

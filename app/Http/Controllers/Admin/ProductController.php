@@ -6,14 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Helpers\ImageHelper;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Http\Requests\StoreProductRequest;
+use App\Services\ProductService;
+use App\Services\RegionDetectionService;
+use App\Http\Resources\ProductListResource;
+use App\Http\Resources\ProductDetailResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, RegionDetectionService $regionDetectionService)
     {
-        $query = Product::with(['category', 'product_images'])->orderBy('created_at', 'desc');
+        $region = $regionDetectionService->detect($request);
+        ProductListResource::$regionId = $region->id;
+
+        $query = Product::with([
+            'category',
+            'product_images',
+            'variants' => fn ($q) => $q->where('is_active', true),
+            'variants.prices' => fn ($q) => $q->where('region_id', $region->id)
+        ])->orderBy('created_at', 'desc');
 
         if ($request->get('paginate') === 'true') {
             $products = $query->paginate($request->get('per_page', 15));
@@ -21,88 +34,48 @@ class ProductController extends Controller
             $products = $query->get();
         }
 
-        return response()->json([
+        return ProductListResource::collection($products)->additional([
+            'status' => true,
             'success' => true,
-            'data' => $products
+            'message' => 'Products retrieved successfully',
         ]);
     }
 
-    public function show($id)
+    public function show($id, Request $request, RegionDetectionService $regionDetectionService)
     {
-        $product = Product::with(['category', 'product_images'])->findOrFail($id);
+        $region = $regionDetectionService->detect($request);
+        ProductDetailResource::$regionId = $region->id;
 
-        return response()->json([
+        $product = Product::with([
+            'category',
+            'product_images',
+            'variants' => fn ($q) => $q->where('is_active', true),
+            'variants.attributeValues',
+            'variants.prices' => fn ($q) => $q->where('region_id', $region->id),
+        ])->findOrFail($id);
+
+        return (new ProductDetailResource($product))->additional([
+            'status' => true,
             'success' => true,
-            'data' => $product
+            'message' => 'Product retrieved successfully',
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreProductRequest $request, ProductService $productService)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'sku' => 'required|string|unique:products,sku',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'discount_price' => 'nullable|numeric|min:0|lt:price',
-            'local_prices' => 'nullable|array',
-            'stock_qty' => 'required|integer|min:0',
-            'description' => 'nullable|string',
-            'video' => 'nullable',
-            'images' => 'required|array|min:1',
-            'images.*' => 'required|string',
-        ]);
+        $product = $productService->store($request->validated());
 
-        return DB::transaction(function () use ($request) {
-            $product = Product::create([
-                'name' => $request->name,
-                'sku' => $request->sku,
-                'category_id' => $request->category_id,
-                'price' => $request->price,
-                'discount_price' => $request->discount_price,
-                'local_prices' => $request->local_prices,
-                'stock_qty' => $request->stock_qty,
-                'description' => $request->description,
-                'is_featured' => false,
-                'status' => 'active'
-            ]);
+        $data = $product->load('product_images')->toArray();
+        if ($product->has_variants) {
+            $data['next_step'] = "Add variants via POST /api/admin/products/{$product->id}/variants/generate-combinations";
+        }
 
-            if ($request->has('video') && !empty($request->video)) {
-                try {
-                    $videoUrl = \App\Helpers\VideoHelper::upload($request->video, 'products/videos');
-                } catch (\Exception $e) {
-                    throw new \Exception('Video upload failed: ' . $e->getMessage());
-                }
-
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => $videoUrl,
-                    'type' => 'video',
-                    'is_primary' => false
-                ]);
-            }
-
-            foreach ($request->images as $index => $imageData) {
-                try {
-                    $imageUrl = ImageHelper::uploadBase64($imageData, 'products');
-                } catch (\Exception $e) {
-                    throw new \Exception('Image upload failed: ' . $e->getMessage());
-                }
-
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => $imageUrl,
-                    'type' => 'image',
-                    'is_primary' => $index === 0 // Designate first image as primary
-                ]);
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Product created successfully',
-                'data' => $product->load('product_images')
-            ], 201);
-        });
+        return response()->json([
+            'status' => true,
+            'success' => true,
+            'message' => 'Product created successfully',
+            'data' => $data
+        ], 201);
     }
 
     public function update(Request $request, $id)

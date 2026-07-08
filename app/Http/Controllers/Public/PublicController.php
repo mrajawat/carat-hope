@@ -10,6 +10,9 @@ use App\Models\Coupon;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\RegionDetectionService;
+use App\Http\Resources\ProductListResource;
+use App\Http\Resources\ProductDetailResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +45,15 @@ class PublicController extends Controller
 
     public function products(Request $request)
     {
-        $query = Product::with(['category', 'product_images'])
+        $region = app(RegionDetectionService::class)->detect($request);
+        ProductListResource::$regionId = $region->id;
+
+        $query = Product::with([
+            'category',
+            'product_images',
+            'variants' => fn ($q) => $q->where('is_active', true),
+            'variants.prices' => fn ($q) => $q->where('region_id', $region->id)
+        ])
             ->withCount(['reviews' => function($q) {
                 $q->where('status', 'approved');
             }])
@@ -82,25 +93,25 @@ class PublicController extends Controller
 
         $products = $query->paginate($request->get('per_page', 12));
 
-        $countryCode = $this->getDetectedCountry();
-        
-        $products->getCollection()->transform(function ($product) use ($countryCode) {
-            $product->display_price = $product->getLocalPrice($countryCode);
-            $product->display_original_price = $product->getLocalOriginalPrice($countryCode);
-            $product->display_currency = $product->hasLocalPrice($countryCode) ? $countryCode : 'US';
-            $product->makeHidden(['local_prices']); // Hide raw local_prices from public API
-            return $product;
-        });
-
-        return response()->json([
+        return ProductListResource::collection($products)->additional([
             'success' => true,
-            'data' => $products
+            'status' => true,
+            'message' => 'Products retrieved successfully',
         ]);
     }
 
-    public function productDetail($slug_or_id)
+    public function productDetail($slug_or_id, Request $request)
     {
-        $product = Product::with(['category', 'product_images'])
+        $region = app(RegionDetectionService::class)->detect($request);
+        ProductDetailResource::$regionId = $region->id;
+
+        $product = Product::with([
+            'category',
+            'product_images',
+            'variants' => fn ($q) => $q->where('is_active', true),
+            'variants.attributeValues',
+            'variants.prices' => fn ($q) => $q->where('region_id', $region->id),
+        ])
             ->where('status', 'active')
             ->where(function ($query) use ($slug_or_id) {
                 $query->where('id', $slug_or_id)
@@ -108,15 +119,10 @@ class PublicController extends Controller
             })
             ->firstOrFail();
 
-        $countryCode = $this->getDetectedCountry();
-        $product->display_price = $product->getLocalPrice($countryCode);
-        $product->display_original_price = $product->getLocalOriginalPrice($countryCode);
-        $product->display_currency = $product->hasLocalPrice($countryCode) ? $countryCode : 'US';
-        $product->makeHidden(['local_prices']); // Hide raw local_prices from public API
-
-        return response()->json([
+        return (new ProductDetailResource($product))->additional([
             'success' => true,
-            'data' => $product
+            'status' => true,
+            'message' => 'Product retrieved successfully',
         ]);
     }
 

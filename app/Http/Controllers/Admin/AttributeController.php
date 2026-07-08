@@ -123,4 +123,19 @@ class AttributeController extends Controller
             'data' => $value
         ], 201);
     }
+
+    /**
+     * Remove an attribute value option.
+     */
+    public function destroyValue($valueId)
+    {
+        $value = AttributeValue::findOrFail($valueId);
+        $value->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Attribute value deleted successfully',
+            'data' => null
+        ]);
+    }
 }

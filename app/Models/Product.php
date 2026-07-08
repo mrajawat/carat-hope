@@ -25,6 +25,7 @@ class Product extends Model
         'skus_vary',
         'max_variation_axes',
         'total_stock',
+        'has_variants',
     ];
 
     protected $casts = [
@@ -37,6 +38,7 @@ class Product extends Model
         'skus_vary' => 'boolean',
         'max_variation_axes' => 'integer',
         'total_stock' => 'integer',
+        'has_variants' => 'boolean',
     ];
 
     public function category()
@@ -66,11 +68,29 @@ class Product extends Model
 
     public function hasLocalPrice($countryCode)
     {
+        if ($this->has_variants) {
+            return true;
+        }
         return !empty($this->local_prices) && isset($this->local_prices[$countryCode]);
     }
 
     public function getLocalPrice($countryCode)
     {
+        if ($this->has_variants) {
+            $region = Region::where('currency_code', $countryCode)->first();
+            if (!$region) {
+                $region = Region::where('is_default', true)->first();
+            }
+            if ($region) {
+                $discountPrice = app(\App\Services\VariantPricingService::class)->getStartingDiscountPrice($this, $region->id);
+                if ($discountPrice !== null) {
+                    return $discountPrice;
+                }
+                return app(\App\Services\VariantPricingService::class)->getStartingPrice($this, $region->id);
+            }
+            return null;
+        }
+
         // 1. Agar country ka price set hai, toh wo return karo
         if (!empty($this->local_prices) && isset($this->local_prices[$countryCode])) {
             $local = $this->local_prices[$countryCode];
@@ -89,6 +109,17 @@ class Product extends Model
 
     public function getLocalOriginalPrice($countryCode)
     {
+        if ($this->has_variants) {
+            $region = Region::where('currency_code', $countryCode)->first();
+            if (!$region) {
+                $region = Region::where('is_default', true)->first();
+            }
+            if ($region) {
+                return app(\App\Services\VariantPricingService::class)->getStartingPrice($this, $region->id);
+            }
+            return null;
+        }
+
         if (!empty($this->local_prices) && isset($this->local_prices[$countryCode])) {
             $local = $this->local_prices[$countryCode];
             return is_array($local) ? $local['price'] : $local;
@@ -100,5 +131,52 @@ class Product extends Model
         }
 
         return $this->price;
+    }
+
+    public function getPriceAttribute($value)
+    {
+        if ($this->has_variants) {
+            $regionId = $this->getCurrentRegionId();
+            return app(\App\Services\VariantPricingService::class)->getStartingPrice($this, $regionId);
+        }
+        return $value;
+    }
+
+    public function getDiscountPriceAttribute($value)
+    {
+        if ($this->has_variants) {
+            $regionId = $this->getCurrentRegionId();
+            return app(\App\Services\VariantPricingService::class)->getStartingDiscountPrice($this, $regionId);
+        }
+        return $value;
+    }
+
+    public function getStockQtyAttribute($value)
+    {
+        if ($this->has_variants) {
+            if (!$this->quantities_vary) {
+                return $this->total_stock;
+            }
+            return (int) $this->variants()->where('is_active', true)->sum('stock_quantity');
+        }
+        return $value;
+    }
+
+    public function getSkuAttribute($value)
+    {
+        if ($this->has_variants) {
+            return null;
+        }
+        return $value;
+    }
+
+    protected function getCurrentRegionId(): int
+    {
+        try {
+            $region = app(\App\Services\RegionDetectionService::class)->detect(request());
+            return $region ? $region->id : 1;
+        } catch (\Exception $e) {
+            return 1;
+        }
     }
 }

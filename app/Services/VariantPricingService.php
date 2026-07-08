@@ -9,6 +9,9 @@ use App\Models\VariantPrice;
 
 class VariantPricingService
 {
+    private static array $regionsCache = [];
+    private static ?Region $defaultRegionCache = null;
+
     /**
      * Get price for a variant in a specific region, applying fallbacks if prices_vary is enabled.
      *
@@ -18,10 +21,14 @@ class VariantPricingService
      */
     public function getPriceForRegion(ProductVariant $variant, int $regionId): array
     {
-        $region = Region::find($regionId);
-        if (!$region) {
-            $region = Region::where('is_default', true)->first();
+        if (!isset(self::$regionsCache[$regionId])) {
+            $region = Region::find($regionId);
+            if (!$region) {
+                $region = self::$defaultRegionCache ??= Region::where('is_default', true)->first();
+            }
+            self::$regionsCache[$regionId] = $region;
         }
+        $region = self::$regionsCache[$regionId] ?? self::$defaultRegionCache ??= Region::where('is_default', true)->first();
 
         $product = $variant->product;
         $price = 0.00;
@@ -38,17 +45,21 @@ class VariantPricingService
             }
         } else {
             // Find regional price for this variant
-            $variantPrice = VariantPrice::where('product_variant_id', $variant->id)
-                ->where('region_id', $region->id)
-                ->first();
+            $variantPrice = $variant->relationLoaded('prices')
+                ? $variant->prices->firstWhere('region_id', $region->id)
+                : VariantPrice::where('product_variant_id', $variant->id)
+                    ->where('region_id', $region->id)
+                    ->first();
 
             if (!$variantPrice) {
                 // Fallback to the default region's price
-                $defaultRegion = Region::where('is_default', true)->first();
+                $defaultRegion = self::$defaultRegionCache ??= Region::where('is_default', true)->first();
                 if ($defaultRegion) {
-                    $variantPrice = VariantPrice::where('product_variant_id', $variant->id)
-                        ->where('region_id', $defaultRegion->id)
-                        ->first();
+                    $variantPrice = $variant->relationLoaded('prices')
+                        ? $variant->prices->firstWhere('region_id', $defaultRegion->id)
+                        : VariantPrice::where('product_variant_id', $variant->id)
+                            ->where('region_id', $defaultRegion->id)
+                            ->first();
                 }
             }
 
@@ -128,5 +139,70 @@ class VariantPricingService
             'currency_code' => $priceData['currency_code'],
             'compare_at_price' => $priceData['compare_at_price'],
         ];
+    }
+
+    /**
+     * Get starting (lowest) price for a product.
+     *
+     * @param \App\Models\Product $product
+     * @param int $regionId
+     * @return float|null
+     */
+    public function getStartingPrice(\App\Models\Product $product, int $regionId): ?float
+    {
+        $variants = $product->relationLoaded('variants')
+            ? $product->variants->where('is_active', true)
+            : $product->variants()->where('is_active', true)->get();
+
+        if ($variants->isEmpty()) {
+            return null;
+        }
+
+        $minOriginalPrice = null;
+        foreach ($variants as $variant) {
+            $variant->setRelation('product', $product);
+            $priceData = $this->getPriceForRegion($variant, $regionId);
+            $origPrice = $priceData['compare_at_price'] ?? $priceData['price'];
+            if ($minOriginalPrice === null || $origPrice < $minOriginalPrice) {
+                $minOriginalPrice = $origPrice;
+            }
+        }
+
+        return $minOriginalPrice !== null ? (float)$minOriginalPrice : null;
+    }
+
+    /**
+     * Get starting (lowest) discount price for a product.
+     *
+     * @param \App\Models\Product $product
+     * @param int $regionId
+     * @return float|null
+     */
+    public function getStartingDiscountPrice(\App\Models\Product $product, int $regionId): ?float
+    {
+        $variants = $product->relationLoaded('variants')
+            ? $product->variants->where('is_active', true)
+            : $product->variants()->where('is_active', true)->get();
+
+        if ($variants->isEmpty()) {
+            return null;
+        }
+
+        $minDiscountPrice = null;
+        $hasAnyDiscount = false;
+
+        foreach ($variants as $variant) {
+            $variant->setRelation('product', $product);
+            $priceData = $this->getPriceForRegion($variant, $regionId);
+            if ($priceData['compare_at_price'] !== null) {
+                $hasAnyDiscount = true;
+                $discPrice = $priceData['price'];
+                if ($minDiscountPrice === null || $discPrice < $minDiscountPrice) {
+                    $minDiscountPrice = $discPrice;
+                }
+            }
+        }
+
+        return $hasAnyDiscount && $minDiscountPrice !== null ? (float)$minDiscountPrice : null;
     }
 }
