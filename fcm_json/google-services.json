@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "19786942576",
+    "project_id": "carathope",
+    "storage_bucket": "carathope.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19786942576:android:89f50eb77f075a3c458cb5",
+        "android_client_info": {
+          "package_name": "com.carathope.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPob94fBqMY9MZhwMUAR_hTUee5ELKcfY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

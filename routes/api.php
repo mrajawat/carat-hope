@@ -16,6 +16,7 @@ use App\Http\Controllers\Public\CustomerAuthController;
 use App\Http\Controllers\Public\CustomerOrderController;
 use App\Http\Controllers\Public\ReviewController;
 use App\Http\Controllers\Public\GuestAuthController;
+use App\Http\Controllers\Public\DeviceTokenController;
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\CategoryAttributeController;
 use App\Http\Controllers\Admin\ProductVariantController;
@@ -43,7 +44,9 @@ Route::prefix('public')->middleware('throttle:60,1')->group(function () {
 
         // Customer Authentication (Guest)
         Route::post('/register', [CustomerAuthController::class, 'register']);
-        Route::post('/login', [CustomerAuthController::class, 'login']);
+        Route::post('/register/verify-email', [CustomerAuthController::class, 'verifyRegisterEmail']);
+        Route::post('/login/send-otp', [CustomerAuthController::class, 'login']);
+        Route::post('/login/verify-otp', [CustomerAuthController::class, 'verifyOtp']);
 
         // Guest Auth
         Route::post('/guest/send-otp', [GuestAuthController::class, 'sendOtp']);
@@ -60,6 +63,10 @@ Route::prefix('public')->middleware('throttle:60,1')->group(function () {
         Route::get('/orders/{id}', [CustomerOrderController::class, 'show']);
 
         Route::post('/products/{productId}/reviews', [ReviewController::class, 'store']);
+
+        // Device Token Routes
+        Route::post('/device-tokens', [DeviceTokenController::class, 'store']);
+        Route::delete('/device-tokens', [DeviceTokenController::class, 'destroy']);
     });
 });
 

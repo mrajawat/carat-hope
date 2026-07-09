@@ -28,6 +28,7 @@ class User extends Authenticatable
         'status',
         'shipping_address',
         'permanent_address',
+        'email_verified_at',
     ];
 
     /**
@@ -49,6 +50,7 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'email_verified_at' => 'datetime',
         ];
     }
 
@@ -67,4 +69,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(ProductReview::class);
     }
+
+    /**
+     * Get the device tokens for the user.
+     */
+    public function deviceTokens()
+    {
+        return $this->hasMany(DeviceToken::class);
+    }
 }
+
