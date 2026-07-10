@@ -45,6 +45,7 @@ Route::prefix('public')->middleware('throttle:60,1')->group(function () {
         // Customer Authentication (Guest)
         Route::post('/register', [CustomerAuthController::class, 'register']);
         Route::post('/register/verify-email', [CustomerAuthController::class, 'verifyRegisterEmail']);
+        Route::post('/register/resend-otp', [CustomerAuthController::class, 'resendRegisterOtp']);
         Route::post('/login/send-otp', [CustomerAuthController::class, 'login']);
         Route::post('/login/verify-otp', [CustomerAuthController::class, 'verifyOtp']);
 

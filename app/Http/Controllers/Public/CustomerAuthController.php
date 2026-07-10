@@ -72,7 +72,7 @@ class CustomerAuthController extends Controller
                 $response['test_otp'] = $otpCode;
             }
 
-            return response()->json($response, 201);
+            return response()->json($response, 200);
         }
 
         $token = $user->createToken('customer-token')->plainTextToken;
@@ -154,6 +154,65 @@ class CustomerAuthController extends Controller
                 ]
             ]
         ]);
+    }
+
+    public function resendRegisterOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No account found with this email address.',
+            ], 404);
+        }
+
+        if ($user->email_verified_at !== null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This email address is already verified.',
+            ], 400);
+        }
+
+        // Generate 6 digit OTP
+        $otpCode = rand(100000, 999999);
+
+        // Store OTP in database
+        Otp::updateOrCreate(
+            ['email' => $user->email],
+            [
+                'otp_code' => Hash::make((string) $otpCode),
+                'expires_at' => Carbon::now()->addMinutes(15),
+            ]
+        );
+
+        // Send OTP to email
+        try {
+            \Illuminate\Support\Facades\Mail::raw("Your email verification code is: {$otpCode}", function ($message) use ($user) {
+                $message->to($user->email)
+                    ->subject('Email Verification OTP');
+            });
+        } catch (\Exception $e) {
+            Log::error('Failed to send email verification OTP during resend-otp', [
+                'email' => $user->email,
+                'error' => $e->getMessage()
+            ]);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'OTP has been resent to your email.',
+        ];
+
+        if (config('app.env') !== 'production' || config('app.debug')) {
+            $response['test_otp'] = $otpCode;
+        }
+
+        return response()->json($response, 200);
     }
 
     public function login(Request $request)

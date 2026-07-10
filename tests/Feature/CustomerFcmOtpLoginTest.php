@@ -230,7 +230,7 @@ class CustomerFcmOtpLoginTest extends TestCase
 
         $response = $this->postJson('/api/public/register', $payload);
 
-        $response->assertStatus(201);
+        $response->assertStatus(200);
         $response->assertJson([
             'success' => true,
             'requires_email_verification' => true,
@@ -391,5 +391,82 @@ class CustomerFcmOtpLoginTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['email']);
+    }
+
+    /**
+     * Test resending OTP successfully for unverified user.
+     */
+    public function test_resend_otp_successfully(): void
+    {
+        $user = User::create([
+            'name' => 'Unverified Customer',
+            'phone' => '1234567890',
+            'email' => 'unverified@example.com',
+            'password' => Hash::make('password123'),
+            'status' => 'active',
+            'email_verified_at' => null,
+        ]);
+
+        $payload = [
+            'email' => 'unverified@example.com',
+        ];
+
+        $response = $this->postJson('/api/public/register/resend-otp', $payload);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'message' => 'OTP has been resent to your email.',
+        ]);
+        $response->assertJsonStructure(['test_otp']);
+
+        $this->assertDatabaseHas('otps', [
+            'email' => 'unverified@example.com',
+        ]);
+    }
+
+    /**
+     * Test resending OTP fails for non-existent email address.
+     */
+    public function test_resend_otp_fails_for_non_existent_email(): void
+    {
+        $payload = [
+            'email' => 'nonexistent@example.com',
+        ];
+
+        $response = $this->postJson('/api/public/register/resend-otp', $payload);
+
+        $response->assertStatus(404);
+        $response->assertJson([
+            'success' => false,
+            'message' => 'No account found with this email address.',
+        ]);
+    }
+
+    /**
+     * Test resending OTP fails for already verified email address.
+     */
+    public function test_resend_otp_fails_for_already_verified_email(): void
+    {
+        $user = User::create([
+            'name' => 'Verified Customer',
+            'phone' => '5555555555',
+            'email' => 'verified@example.com',
+            'password' => Hash::make('password123'),
+            'status' => 'active',
+            'email_verified_at' => Carbon::now(),
+        ]);
+
+        $payload = [
+            'email' => 'verified@example.com',
+        ];
+
+        $response = $this->postJson('/api/public/register/resend-otp', $payload);
+
+        $response->assertStatus(400);
+        $response->assertJson([
+            'success' => false,
+            'message' => 'This email address is already verified.',
+        ]);
     }
 }
