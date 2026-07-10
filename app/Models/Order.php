@@ -38,4 +38,15 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class);
+    }
+
+    public function shipment()
+    {
+        return $this->hasOne(Shipment::class)->latestOfMany();
+    }
 }
+

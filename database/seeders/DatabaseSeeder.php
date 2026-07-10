@@ -566,6 +566,7 @@ class DatabaseSeeder extends Seeder
             RegionSeeder::class,
             RegionTaxRuleSeeder::class,
             JewelryAttributeSeeder::class,
+            ShippingSeeder::class,
         ]);
     }
 }

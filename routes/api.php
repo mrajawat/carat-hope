@@ -22,6 +22,11 @@ use App\Http\Controllers\Admin\CategoryAttributeController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\RegionController;
 use App\Http\Controllers\Frontend\ProductPriceController;
+use App\Http\Controllers\Public\ShippingController;
+use App\Http\Controllers\Admin\ShipmentController;
+use App\Http\Controllers\Admin\ShippingZoneController;
+use App\Http\Controllers\Admin\ShippingMethodController;
+use App\Http\Controllers\Admin\DeliveryEstimateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +67,7 @@ Route::prefix('public')->middleware('throttle:60,1')->group(function () {
 
         Route::get('/orders', [CustomerOrderController::class, 'index']);
         Route::get('/orders/{id}', [CustomerOrderController::class, 'show']);
+        Route::get('/orders/{order}/shipment', [ShippingController::class, 'getOrderShipment']);
 
         Route::post('/products/{productId}/reviews', [ReviewController::class, 'store']);
 
@@ -69,6 +75,8 @@ Route::prefix('public')->middleware('throttle:60,1')->group(function () {
         Route::post('/device-tokens', [DeviceTokenController::class, 'store']);
         Route::delete('/device-tokens', [DeviceTokenController::class, 'destroy']);
     });
+
+    Route::post('/shipping/estimate', [ShippingController::class, 'getEstimate']);
 });
 
 // Admin Authentication (Public Route - rate limited)
@@ -143,6 +151,16 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::put('/variants/{variant}/prices', [ProductVariantController::class, 'bulkUpdatePricing']);
 
     Route::apiResource('/regions', RegionController::class);
+
+    // Admin Shipping & Delivery Management
+    Route::get('/shipments', [ShipmentController::class, 'index']);
+    Route::get('/shipments/{shipment}', [ShipmentController::class, 'show']);
+    Route::post('/orders/{order}/shipment', [ShipmentController::class, 'store']);
+    Route::post('/shipments/{shipment}/status', [ShipmentController::class, 'updateStatus']);
+    Route::post('/shipments/{shipment}/tracking-number', [ShipmentController::class, 'attachTrackingNumber']);
+    Route::apiResource('/shipping-zones', ShippingZoneController::class);
+    Route::apiResource('/shipping-methods', ShippingMethodController::class);
+    Route::apiResource('/delivery-estimates', DeliveryEstimateController::class);
 });
 
 // Public Routes
