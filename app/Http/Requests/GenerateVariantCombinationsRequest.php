@@ -21,8 +21,9 @@ class GenerateVariantCombinationsRequest extends FormRequest
     {
         return [
             'attributes' => 'required|array|min:1|max:2',
-            'attributes.*' => 'required|array|min:1',
-            'attributes.*.*' => 'required|integer|exists:attribute_values,id',
+            'attributes.*.attribute_id' => 'required|integer|exists:attributes,id',
+            'attributes.*.attribute_value_ids' => 'required|array|min:1',
+            'attributes.*.attribute_value_ids.*' => 'required|integer|exists:attribute_values,id',
         ];
     }
 
@@ -34,8 +35,9 @@ class GenerateVariantCombinationsRequest extends FormRequest
         return [
             'attributes.max' => 'Maximum of 2 variation axes (attributes) can be selected at once.',
             'attributes.min' => 'At least one variation axis (attribute) must be selected.',
-            'attributes.*.min' => 'Each selected attribute must have at least one value.',
-            'attributes.*.*.exists' => 'One or more of the selected attribute values is invalid.',
+            'attributes.*.attribute_id.exists' => 'The selected attribute is invalid.',
+            'attributes.*.attribute_value_ids.min' => 'Each selected attribute must have at least one value.',
+            'attributes.*.attribute_value_ids.*.exists' => 'One or more of the selected attribute values is invalid.',
         ];
     }
 }

@@ -47,8 +47,14 @@ class ProductVariantController extends Controller
         $product = Product::findOrFail($productId);
         $attributesInput = $request->input('attributes');
 
+        // Transform [{attribute_id: 1, attribute_value_ids: [3]}, ...] into {1: [3], 2: [5]}
+        $transformedAttributes = [];
+        foreach ($attributesInput as $attr) {
+            $transformedAttributes[$attr['attribute_id']] = $attr['attribute_value_ids'];
+        }
+
         try {
-            $combinations = $this->combinationService->generateCombinations($attributesInput);
+            $combinations = $this->combinationService->generateCombinations($transformedAttributes);
             $variants = $this->combinationService->createVariantsFromCombinations($product, $combinations);
 
             return response()->json([

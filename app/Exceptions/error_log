@@ -10,3 +10,7 @@ Stack trace:
 Stack trace:
 #0 {main}
   thrown in /home/threatex/api.threatcon.online/app/Exceptions/Handler.php on line 8
+[14-Jul-2026 03:13:14 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Exceptions\Handler" not found in /home/threatex/api.threatcon.online/app/Exceptions/Handler.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Exceptions/Handler.php on line 8

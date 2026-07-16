@@ -7,6 +7,7 @@ use App\Helpers\VideoHelper;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Support\Facades\DB;
+use App\Services\SkuGeneratorService;
 
 class ProductService
 {
@@ -35,7 +36,7 @@ class ProductService
 
             if (!$hasVariants) {
                 // Populate simple product pricing and stock fields
-                $productData['sku'] = $data['sku'];
+                $productData['sku'] = $data['sku'] ?? null;
                 $productData['price'] = $data['price'];
                 $productData['discount_price'] = $data['discount_price'] ?? null;
                 $productData['stock_qty'] = $data['stock_qty'];
@@ -50,7 +51,14 @@ class ProductService
             // 2. Create the product record
             $product = Product::create($productData);
 
-            // 3. Handle video upload
+            // 3. Auto-generate SKU for simple products if not provided
+            if (!$hasVariants && empty($data['sku'])) {
+                $skuGenerator = app(SkuGeneratorService::class);
+                $product->sku = $skuGenerator->generateForProduct($product);
+                $product->save();
+            }
+
+            // 4. Handle video upload
             if (!empty($data['video'])) {
                 try {
                     $videoUrl = VideoHelper::upload($data['video'], 'products/videos');
@@ -65,7 +73,7 @@ class ProductService
                 }
             }
 
-            // 4. Handle images upload
+            // 5. Handle images upload
             if (!empty($data['images']) && is_array($data['images'])) {
                 foreach ($data['images'] as $index => $imageData) {
                     try {

@@ -84,7 +84,7 @@ class ProductController extends Controller
 
         $request->validate([
             'name' => 'required|string',
-            'sku' => 'required|string|unique:products,sku,' . $id,
+            'sku' => 'nullable|string|unique:products,sku,' . $id,
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'discount_price' => 'nullable|numeric|min:0|lt:price',
@@ -93,13 +93,19 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'video' => 'nullable',
             'images' => 'nullable|array',
-            'images.*' => 'required|string',
+            'images.*' => 'required',
         ]);
 
         return DB::transaction(function () use ($request, $product) {
+            $sku = $request->sku;
+            if (empty($sku)) {
+                $skuGenerator = app(\App\Services\SkuGeneratorService::class);
+                $sku = $skuGenerator->generateForProduct($product);
+            }
+
             $product->update([
                 'name' => $request->name,
-                'sku' => $request->sku,
+                'sku' => $sku,
                 'category_id' => $request->category_id,
                 'price' => $request->price,
                 'discount_price' => $request->discount_price,

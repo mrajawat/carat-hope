@@ -14,3 +14,7 @@ Stack trace:
 Stack trace:
 #0 {main}
   thrown in /home/threatex/api.threatcon.online/bootstrap/app.php on line 7
+[13-Jul-2026 09:44:43 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Application" not found in /home/threatex/api.threatcon.online/bootstrap/app.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/bootstrap/app.php on line 7

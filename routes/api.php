@@ -35,7 +35,7 @@ use App\Http\Controllers\Admin\DeliveryEstimateController;
 */
 
 // Public Client/Frontend Routes
-Route::prefix('public')->middleware('throttle:60,1')->group(function () {
+Route::prefix('public')->middleware('throttle:public')->group(function () {
     Route::get('/banners', [PublicController::class, 'banners']);
     Route::get('/categories', [PublicController::class, 'categories']);
     Route::get('/products', [PublicController::class, 'products']);
@@ -43,7 +43,7 @@ Route::prefix('public')->middleware('throttle:60,1')->group(function () {
     Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
 
     // Sensitive Public Routes (Protected with stricter rate limiting)
-    Route::middleware('throttle:5,1')->group(function () {
+    Route::middleware('throttle:sensitive')->group(function () {
         Route::post('/coupons/validate', [PublicController::class, 'validateCoupon']);
         Route::post('/orders/checkout', [PublicController::class, 'checkout']);
 
@@ -80,7 +80,7 @@ Route::prefix('public')->middleware('throttle:60,1')->group(function () {
 });
 
 // Admin Authentication (Public Route - rate limited)
-Route::post('/admin/login', [AdminAuthController::class, 'login'])->middleware('throttle:5,1');
+Route::post('/admin/login', [AdminAuthController::class, 'login'])->middleware('throttle:sensitive');
 
 // Admin Protected Routes (Sanctum Protected)
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {

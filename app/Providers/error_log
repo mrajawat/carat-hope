@@ -22,3 +22,23 @@ Stack trace:
 Stack trace:
 #0 {main}
   thrown in /home/threatex/api.threatcon.online/app/Providers/BroadcastServiceProvider.php on line 8
+[13-Jul-2026 11:40:33 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Support\Providers\AuthServiceProvider" not found in /home/threatex/api.threatcon.online/app/Providers/AuthServiceProvider.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Providers/AuthServiceProvider.php on line 8
+[13-Jul-2026 11:42:24 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\ServiceProvider" not found in /home/threatex/api.threatcon.online/app/Providers/BroadcastServiceProvider.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Providers/BroadcastServiceProvider.php on line 8
+[13-Jul-2026 15:14:59 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Support\Providers\EventServiceProvider" not found in /home/threatex/api.threatcon.online/app/Providers/EventServiceProvider.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Providers/EventServiceProvider.php on line 10
+[13-Jul-2026 15:15:26 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Support\Providers\RouteServiceProvider" not found in /home/threatex/api.threatcon.online/app/Providers/RouteServiceProvider.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Providers/RouteServiceProvider.php on line 11
+[13-Jul-2026 18:41:47 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\ServiceProvider" not found in /home/threatex/api.threatcon.online/app/Providers/AppServiceProvider.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/app/Providers/AppServiceProvider.php on line 7

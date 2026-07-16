@@ -36,9 +36,9 @@ class StoreProductRequest extends FormRequest
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
             'images' => 'required|array|min:1',
-            'images.*' => 'required|string',
+            'images.*' => 'required',
             'has_variants' => 'boolean',
-            'sku' => 'required_if:has_variants,false,0|nullable|string|unique:products,sku',
+            'sku' => 'nullable|string|unique:products,sku',
             'price' => 'required_if:has_variants,false,0|nullable|numeric|min:0',
             'discount_price' => 'nullable|numeric|min:0',
             'stock_qty' => 'required_if:has_variants,false,0|nullable|integer|min:0',
@@ -53,7 +53,6 @@ class StoreProductRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'sku.required_if' => 'SKU is required for simple products.',
             'price.required_if' => 'Price is required for simple products.',
             'stock_qty.required_if' => 'Stock quantity is required for simple products.',
         ];

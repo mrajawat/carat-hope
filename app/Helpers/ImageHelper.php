@@ -9,6 +9,29 @@ class ImageHelper
 {
     public static function uploadBase64($base64String, $folder = 'uploads')
     {
+         if ($base64String instanceof \Illuminate\Http\UploadedFile) {
+            $data = file_get_contents($base64String->getRealPath());
+            $ext = strtolower($base64String->getClientOriginalExtension());
+            
+            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'])) {
+                throw new \Exception('Invalid image type.');
+            }
+            
+            $filename = Str::random(20) . '.webp';
+            $path = "$folder/$filename";
+
+            $optimizedData = self::optimizeAndSave($data, $folder);
+            if ($optimizedData) {
+                Storage::disk('public')->put($path, $optimizedData);
+            } else {
+                $originalFilename = Str::random(20) . '.' . $ext;
+                $path = "$folder/$originalFilename";
+                Storage::disk('public')->put($path, $data);
+            }
+            
+            return Storage::disk('public')->url($path);
+        }
+        
         if (preg_match('/^data:image\/(\w+);base64,/', $base64String, $type)) {
             // Grab base64 data and extension
             $data = substr($base64String, strpos($base64String, ',') + 1);

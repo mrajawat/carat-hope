@@ -10,3 +10,39 @@ Stack trace:
 Stack trace:
 #0 {main}
   thrown in /home/threatex/api.threatcon.online/database/seeders/DatabaseSeeder.php on line 19
+[13-Jul-2026 12:42:54 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Seeder" not found in /home/threatex/api.threatcon.online/database/seeders/DatabaseSeeder.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/seeders/DatabaseSeeder.php on line 19
+[13-Jul-2026 16:41:42 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Seeder" not found in /home/threatex/api.threatcon.online/database/seeders/JewelryAttributeSeeder.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/seeders/JewelryAttributeSeeder.php on line 8
+[13-Jul-2026 18:04:47 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Seeder" not found in /home/threatex/api.threatcon.online/database/seeders/RegionTaxRuleSeeder.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/seeders/RegionTaxRuleSeeder.php on line 9
+[13-Jul-2026 21:57:23 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Seeder" not found in /home/threatex/api.threatcon.online/database/seeders/ShippingSeeder.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/seeders/ShippingSeeder.php on line 13
+[14-Jul-2026 11:02:44 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Seeder" not found in /home/threatex/api.threatcon.online/database/seeders/DatabaseSeeder.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/seeders/DatabaseSeeder.php on line 19
+[14-Jul-2026 11:02:58 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Seeder" not found in /home/threatex/api.threatcon.online/database/seeders/JewelryAttributeSeeder.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/seeders/JewelryAttributeSeeder.php on line 8
+[14-Jul-2026 11:03:41 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Seeder" not found in /home/threatex/api.threatcon.online/database/seeders/RegionTaxRuleSeeder.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/seeders/RegionTaxRuleSeeder.php on line 9
+[14-Jul-2026 11:04:47 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Seeder" not found in /home/threatex/api.threatcon.online/database/seeders/ShippingSeeder.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/seeders/ShippingSeeder.php on line 13
+[14-Jul-2026 20:32:43 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Seeder" not found in /home/threatex/api.threatcon.online/database/seeders/RegionSeeder.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/seeders/RegionSeeder.php on line 8

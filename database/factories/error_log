@@ -6,3 +6,7 @@ Stack trace:
 Stack trace:
 #0 {main}
   thrown in /home/threatex/api.threatcon.online/database/factories/UserFactory.php on line 12
+[14-Jul-2026 18:42:41 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Database\Eloquent\Factories\Factory" not found in /home/threatex/api.threatcon.online/database/factories/UserFactory.php:12
+Stack trace:
+#0 {main}
+  thrown in /home/threatex/api.threatcon.online/database/factories/UserFactory.php on line 12

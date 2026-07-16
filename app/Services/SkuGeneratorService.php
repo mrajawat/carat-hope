@@ -66,4 +66,37 @@ class SkuGeneratorService
 
         return $sku;
     }
+
+    /**
+     * Generate a unique SKU for a simple (non-variant) product.
+     * Pattern: {BRAND_PREFIX}-{CATEGORY_CODE}-{PRODUCT_ID}
+     *
+     * @param Product $product
+     * @return string
+     */
+    public function generateForProduct(Product $product): string
+    {
+        $brandPrefix = config('jewelry.brand_prefix', 'CH');
+
+        $category = $product->category;
+        $categoryCode = $category ? strtoupper($category->slug) : 'GEN';
+        $categoryCode = preg_replace('/[^A-Z0-9]/', '', $categoryCode);
+        if (empty($categoryCode)) {
+            $categoryCode = 'GEN';
+        }
+
+        $baseSku = $brandPrefix . '-' . $categoryCode . '-' . $product->id;
+        $sku = $baseSku;
+        $counter = 1;
+
+        while (
+            Product::where('sku', $sku)->where('id', '!=', $product->id)->exists() ||
+            ProductVariant::where('sku', $sku)->exists()
+        ) {
+            $sku = $baseSku . '-' . $counter;
+            $counter++;
+        }
+
+        return $sku;
+    }
 }
