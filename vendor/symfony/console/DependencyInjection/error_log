@@ -1,8 +1,0 @@
-[04-Jun-2026 19:54:59 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/DependencyInjection/AddConsoleCommandPass.php:30
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/DependencyInjection/AddConsoleCommandPass.php on line 30
-[13-Jun-2026 07:50:47 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/console/DependencyInjection/AddConsoleCommandPass.php:31
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/symfony/console/DependencyInjection/AddConsoleCommandPass.php on line 31

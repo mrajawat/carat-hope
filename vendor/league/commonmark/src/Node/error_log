@@ -1,4 +1,0 @@
-[21-Jun-2026 02:07:53 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Node\StringContainerInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Node/RawMarkupContainerInterface.php:19
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Node/RawMarkupContainerInterface.php on line 19

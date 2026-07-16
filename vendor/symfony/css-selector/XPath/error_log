@@ -1,4 +1,0 @@
-[04-Jun-2026 17:48:40 UTC] PHP Fatal error:  Uncaught Error: Interface "Symfony\Component\CssSelector\XPath\TranslatorInterface" not found in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/XPath/Translator.php:31
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/symfony/css-selector/XPath/Translator.php on line 31

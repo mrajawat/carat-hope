@@ -1,4 +1,0 @@
-[13-Jun-2026 07:54:14 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Auth\Access\AuthorizationException" not found in /home/threatex/api.threatcon.online/vendor/laravel/sanctum/src/Exceptions/MissingAbilityException.php:8
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/laravel/sanctum/src/Exceptions/MissingAbilityException.php on line 8

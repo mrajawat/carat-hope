@@ -1,4 +1,0 @@
-[04-Jun-2026 16:02:29 UTC] PHP Fatal error:  Uncaught Error: Interface "Dflydev\DotAccessData\DataInterface" not found in /home/threatex/api.threatcon.online/vendor/dflydev/dot-access-data/src/Data.php:24
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/dflydev/dot-access-data/src/Data.php on line 24

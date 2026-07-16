@@ -1,8 +1,0 @@
-[21-Jun-2026 01:58:51 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Reference\ReferenceInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Reference/Reference.php:22
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Reference/Reference.php on line 22
-[21-Jun-2026 01:59:21 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Reference\ReferenceMapInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Reference/ReferenceMap.php:24
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Reference/ReferenceMap.php on line 24

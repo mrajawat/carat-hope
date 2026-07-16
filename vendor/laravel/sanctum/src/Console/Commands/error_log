@@ -1,8 +1,0 @@
-[04-Jun-2026 20:55:03 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Console\Command" not found in /home/threatex/api.threatcon.online/vendor/laravel/sanctum/src/Console/Commands/PruneExpired.php:8
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/laravel/sanctum/src/Console/Commands/PruneExpired.php on line 8
-[13-Jun-2026 08:13:21 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Console\Command" not found in /home/threatex/api.threatcon.online/vendor/laravel/sanctum/src/Console/Commands/PruneExpired.php:10
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/laravel/sanctum/src/Console/Commands/PruneExpired.php on line 10

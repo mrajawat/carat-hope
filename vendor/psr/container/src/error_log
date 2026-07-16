@@ -1,4 +1,0 @@
-[21-Jun-2026 06:05:39 UTC] PHP Fatal error:  Uncaught Error: Interface "Psr\Container\ContainerExceptionInterface" not found in /home/threatex/api.threatcon.online/vendor/psr/container/src/NotFoundExceptionInterface.php:8
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/psr/container/src/NotFoundExceptionInterface.php on line 8

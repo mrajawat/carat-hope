@@ -1,8 +1,0 @@
-[21-Jun-2026 05:47:37 UTC] PHP Fatal error:  Uncaught Error: Class "PhpParser\ParserAbstract" not found in /home/threatex/api.threatcon.online/vendor/nikic/php-parser/lib/PhpParser/Parser/Php7.php:19
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/nikic/php-parser/lib/PhpParser/Parser/Php7.php on line 19
-[21-Jun-2026 05:48:11 UTC] PHP Fatal error:  Uncaught Error: Class "PhpParser\ParserAbstract" not found in /home/threatex/api.threatcon.online/vendor/nikic/php-parser/lib/PhpParser/Parser/Php8.php:19
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/nikic/php-parser/lib/PhpParser/Parser/Php8.php on line 19

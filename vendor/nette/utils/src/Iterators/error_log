@@ -1,2 +1,0 @@
-[04-Jun-2026 19:44:22 UTC] PHP Fatal error:  Trait "Nette\SmartObject" not found in /home/threatex/api.threatcon.online/vendor/nette/utils/src/Iterators/CachingIterator.php on line 27
-[13-Jun-2026 07:47:31 UTC] PHP Fatal error:  Trait "Nette\SmartObject" not found in /home/threatex/api.threatcon.online/vendor/nette/utils/src/Iterators/CachingIterator.php on line 28

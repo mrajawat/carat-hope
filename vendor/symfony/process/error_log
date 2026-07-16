@@ -1,8 +1,0 @@
-[04-Jun-2026 15:01:22 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Process\Process" not found in /home/threatex/api.threatcon.online/vendor/symfony/process/PhpProcess.php:26
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/symfony/process/PhpProcess.php on line 26
-[13-Jun-2026 07:50:56 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Component\Process\Process" not found in /home/threatex/api.threatcon.online/vendor/symfony/process/PhpProcess.php:26
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/symfony/process/PhpProcess.php on line 26

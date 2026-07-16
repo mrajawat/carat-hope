@@ -1,8 +1,0 @@
-[04-Jun-2026 17:11:56 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/vendor/laravel/sanctum/config/sanctum.php:18
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/laravel/sanctum/config/sanctum.php on line 18
-[13-Jun-2026 07:57:52 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/threatex/api.threatcon.online/vendor/laravel/sanctum/config/sanctum.php:21
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/laravel/sanctum/config/sanctum.php on line 21

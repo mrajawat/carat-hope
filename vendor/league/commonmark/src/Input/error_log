@@ -1,4 +1,0 @@
-[21-Jun-2026 02:16:40 UTC] PHP Fatal error:  Uncaught Error: Interface "League\CommonMark\Input\MarkdownInputInterface" not found in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Input/MarkdownInput.php:18
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/league/commonmark/src/Input/MarkdownInput.php on line 18

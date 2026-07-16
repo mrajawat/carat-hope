@@ -1,4 +1,0 @@
-[04-Jun-2026 19:48:24 UTC] PHP Fatal error:  Uncaught Error: Class "PhpParser\NodeVisitorAbstract" not found in /home/threatex/api.threatcon.online/vendor/psy/psysh/src/Completion/DeepestNodeVisitor.php:26
-Stack trace:
-#0 {main}
-  thrown in /home/threatex/api.threatcon.online/vendor/psy/psysh/src/Completion/DeepestNodeVisitor.php on line 26
