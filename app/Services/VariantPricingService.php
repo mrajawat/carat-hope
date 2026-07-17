@@ -67,20 +67,23 @@ class VariantPricingService
                 $price = $variantPrice->price;
                 $compareAtPrice = $variantPrice->compare_at_price;
             } else {
-                // If no regional price is set at all, use variant base_price or product price
+                // If no regional price is set at all, use variant base_price or product's raw price columns
                 if ($variant->base_price !== null && $variant->base_price > 0) {
                     $price = $variant->base_price;
                     $compareAtPrice = null;
                 } else {
-                    $price = $product->discount_price ?? $product->price;
-                    $compareAtPrice = $product->discount_price ? $product->price : null;
+                    $rawPrice = $product->getRawOriginal('price');
+                    $rawDiscountPrice = $product->getRawOriginal('discount_price');
+
+                    $price = $rawDiscountPrice ?? $rawPrice;
+                    $compareAtPrice = $rawDiscountPrice ? $rawPrice : null;
                 }
             }
         }
 
         return [
-            'price' => (float)$price,
-            'compare_at_price' => $compareAtPrice !== null ? (float)$compareAtPrice : null,
+            'price' => (float) $price,
+            'compare_at_price' => $compareAtPrice !== null ? (float) $compareAtPrice : null,
             'currency_symbol' => $region->currency_symbol,
             'currency_code' => $region->currency_code,
         ];
@@ -109,8 +112,8 @@ class VariantPricingService
         }
 
         $taxName = $taxRule ? $taxRule->tax_name : 'Tax';
-        $taxPercentage = $taxRule ? (float)$taxRule->tax_percentage : 0.00;
-        $inclusive = $taxRule ? (bool)$taxRule->inclusive : false;
+        $taxPercentage = $taxRule ? (float) $taxRule->tax_percentage : 0.00;
+        $inclusive = $taxRule ? (bool) $taxRule->inclusive : false;
 
         if ($taxPercentage > 0) {
             if ($inclusive) {
@@ -168,7 +171,7 @@ class VariantPricingService
             }
         }
 
-        return $minOriginalPrice !== null ? (float)$minOriginalPrice : null;
+        return $minOriginalPrice !== null ? (float) $minOriginalPrice : null;
     }
 
     /**
@@ -203,6 +206,6 @@ class VariantPricingService
             }
         }
 
-        return $hasAnyDiscount && $minDiscountPrice !== null ? (float)$minDiscountPrice : null;
+        return $hasAnyDiscount && $minDiscountPrice !== null ? (float) $minDiscountPrice : null;
     }
 }

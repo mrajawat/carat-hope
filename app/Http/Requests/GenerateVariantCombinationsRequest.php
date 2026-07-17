@@ -40,4 +40,29 @@ class GenerateVariantCombinationsRequest extends FormRequest
             'attributes.*.attribute_value_ids.*.exists' => 'One or more of the selected attribute values is invalid.',
         ];
     }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $maxOptions = config('jewelry.max_options_per_attribute', 50);
+            $attributes = $this->input('attributes', []);
+
+            if (is_array($attributes)) {
+                foreach ($attributes as $index => $attr) {
+                    if (is_array($attr) && isset($attr['attribute_value_ids'])) {
+                        $valueIds = $attr['attribute_value_ids'];
+                        if (is_array($valueIds) && count($valueIds) > $maxOptions) {
+                            $validator->errors()->add(
+                                "attributes.{$index}.attribute_value_ids",
+                                "Maximum of {$maxOptions} option values can be selected per attribute type."
+                            );
+                        }
+                    }
+                }
+            }
+        });
+    }
 }

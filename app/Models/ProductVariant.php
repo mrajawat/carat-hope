@@ -16,6 +16,7 @@ class ProductVariant extends Model
         'making_charges',
         'base_price',
         'stock_quantity',
+        'processing_days',
         'variant_images',
         'is_active',
     ];
@@ -25,6 +26,7 @@ class ProductVariant extends Model
         'making_charges' => 'decimal:2',
         'base_price' => 'decimal:2',
         'stock_quantity' => 'integer',
+        'processing_days' => 'integer',
         'variant_images' => 'array',
         'is_active' => 'boolean',
     ];

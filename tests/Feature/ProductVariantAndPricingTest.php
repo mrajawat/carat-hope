@@ -279,8 +279,14 @@ class ProductVariantAndPricingTest extends TestCase
 
         $payload = [
             'attributes' => [
-                'metal-karat' => $this->metalKarat->values()->pluck('id')->toArray(),
-                'ring-size' => $this->ringSize->values()->pluck('id')->toArray(),
+                [
+                    'attribute_id' => $this->metalKarat->id,
+                    'attribute_value_ids' => $this->metalKarat->values()->pluck('id')->toArray(),
+                ],
+                [
+                    'attribute_id' => $this->ringSize->id,
+                    'attribute_value_ids' => $this->ringSize->values()->pluck('id')->toArray(),
+                ]
             ]
         ];
 
@@ -324,5 +330,168 @@ class ProductVariantAndPricingTest extends TestCase
                 'pricing' => ['subtotal', 'tax_amount', 'tax_name', 'total']
             ]
         ]);
+    }
+
+    /**
+     * Test combinatorial explosion limit validation (max 50 options per type).
+     */
+    public function test_combinatorial_explosion_limit(): void
+    {
+        Sanctum::actingAs($this->admin);
+
+        // Configure a small limit for testing, e.g. 2 options limit
+        config(['jewelry.max_options_per_attribute' => 2]);
+
+        // Create 3 option values
+        $this->metalKarat->values()->create(['value' => '24K', 'price_modifier' => 15000.00, 'sort_order' => 3]);
+
+        $payload = [
+            'attributes' => [
+                [
+                    'attribute_id' => $this->metalKarat->id,
+                    'attribute_value_ids' => $this->metalKarat->values()->pluck('id')->toArray(), // Has 3 options
+                ]
+            ]
+        ];
+
+        $response = $this->postJson("/api/admin/products/{$this->productVary->id}/variants/generate-combinations", $payload);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['attributes.0.attribute_value_ids']);
+    }
+
+    /**
+     * Test toggles and overrides for processing days.
+     */
+    public function test_processing_time_toggles_and_overrides(): void
+    {
+        Sanctum::actingAs($this->admin);
+
+        // Create product with processing_time_varies = true
+        $product = Product::create([
+            'name' => 'Custom Pendant',
+            'category_id' => $this->category->id,
+            'has_variants' => true,
+            'processing_time_varies' => true,
+        ]);
+
+        $variant = ProductVariant::create([
+            'product_id' => $product->id,
+            'sku' => 'CH-PEND-VAR1',
+            'weight_grams' => 1.5,
+            'stock_quantity' => 10,
+            'processing_days' => 5, // Override processing days
+        ]);
+
+        // Fetch detail
+        $response = $this->getJson("/api/admin/products/{$product->id}");
+        $response->assertStatus(200);
+        $response->assertJsonPath('data.processing_time_varies', true);
+        $response->assertJsonPath('data.variants.0.processing_days', 5);
+    }
+
+    /**
+     * Test photo-to-variant linking.
+     */
+    public function test_photo_to_variant_linking(): void
+    {
+        Sanctum::actingAs($this->admin);
+
+        $product = Product::create([
+            'name' => 'Rose Ring',
+            'category_id' => $this->category->id,
+            'has_variants' => true,
+        ]);
+
+        $val18k = $this->metalKarat->values()->first();
+
+        // Create product image associated with 18K option value
+        $img = $product->product_images()->create([
+            'image_path' => 'images/rose_18k.png',
+            'type' => 'image',
+            'is_primary' => false,
+            'variant_option_id' => $val18k->id,
+        ]);
+
+        $variant = ProductVariant::create([
+            'product_id' => $product->id,
+            'sku' => 'CH-ROSE-VAR1',
+            'weight_grams' => 2.0,
+            'stock_quantity' => 5,
+        ]);
+        $variant->attributeValues()->attach($val18k->id, ['attribute_id' => $this->metalKarat->id]);
+
+        // Fetch detail
+        $response = $this->getJson("/api/admin/products/{$product->id}");
+        $response->assertStatus(200);
+        $response->assertJsonPath('data.variants.0.linked_photos.0', 'images/rose_18k.png');
+    }
+
+    /**
+     * Test bulk variant update endpoint.
+     */
+    public function test_bulk_variant_update(): void
+    {
+        Sanctum::actingAs($this->admin);
+
+        $product = Product::create([
+            'name' => 'Bulk Product',
+            'category_id' => $this->category->id,
+            'has_variants' => true,
+        ]);
+
+        $var1 = ProductVariant::create([
+            'product_id' => $product->id,
+            'sku' => 'CH-BULK-01',
+            'weight_grams' => 1.0,
+            'stock_quantity' => 2,
+            'base_price' => 100.00,
+        ]);
+
+        $var2 = ProductVariant::create([
+            'product_id' => $product->id,
+            'sku' => 'CH-BULK-02',
+            'weight_grams' => 1.5,
+            'stock_quantity' => 4,
+            'base_price' => 150.00,
+        ]);
+
+        $payload = [
+            'variants' => [
+                [
+                    'id' => $var1->id,
+                    'price' => 110.00,
+                    'quantity' => 5,
+                    'sku' => 'CH-BULK-01-NEW',
+                    'processing_days' => 3,
+                ],
+                [
+                    'id' => $var2->id,
+                    'price' => 160.00,
+                    'quantity' => 8,
+                    'sku' => 'CH-BULK-02-NEW',
+                    'processing_days' => 4,
+                ]
+            ]
+        ];
+
+        $response = $this->putJson('/api/admin/variants/bulk-update', $payload);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('status', true);
+        $response->assertJsonCount(2, 'data');
+
+        // Verify updates in DB
+        $var1->refresh();
+        $this->assertEquals(110.00, (float)$var1->base_price);
+        $this->assertEquals(5, $var1->stock_quantity);
+        $this->assertEquals('CH-BULK-01-NEW', $var1->sku);
+        $this->assertEquals(3, $var1->processing_days);
+
+        $var2->refresh();
+        $this->assertEquals(160.00, (float)$var2->base_price);
+        $this->assertEquals(8, $var2->stock_quantity);
+        $this->assertEquals('CH-BULK-02-NEW', $var2->sku);
+        $this->assertEquals(4, $var2->processing_days);
     }
 }

@@ -45,59 +45,69 @@ class PublicController extends Controller
 
     public function products(Request $request)
     {
-        $region = app(RegionDetectionService::class)->detect($request);
-        ProductListResource::$regionId = $region->id;
+        try {
+            $region = app(RegionDetectionService::class)->detect($request);
+            ProductListResource::$regionId = $region->id;
 
-        $query = Product::with([
-            'category',
-            'product_images',
-            'variants' => fn ($q) => $q->where('is_active', true),
-            'variants.prices' => fn ($q) => $q->where('region_id', $region->id)
-        ])
-            ->withCount(['reviews' => function($q) {
-                $q->where('status', 'approved');
-            }])
-            ->withAvg(['reviews as avg_rating' => function($q) {
-                $q->where('status', 'approved');
-            }], 'rating')
-            ->where('status', 'active');
+            $query = Product::with([
+                'category',
+                'product_images',
+                'variants' => fn ($q) => $q->where('is_active', true),
+                'variants.prices' => fn ($q) => $q->where('region_id', $region->id)
+            ])
+                ->withCount(['reviews' => function($q) {
+                    $q->where('status', 'approved');
+                }])
+                ->withAvg(['reviews as avg_rating' => function($q) {
+                    $q->where('status', 'approved');
+                }], 'rating')
+                ->where('status', 'active');
 
-        // Filter by category
-        if ($request->has('category_id') && !empty($request->category_id)) {
-            $query->where('category_id', $request->category_id);
+            // Filter by category
+            if ($request->has('category_id') && !empty($request->category_id)) {
+                $query->where('category_id', $request->category_id);
+            }
+
+            // Search by name or SKU
+            if ($request->has('search') && !empty($request->search)) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('sku', 'like', "%{$search}%");
+                });
+            }
+
+            // Featured products
+            if ($request->has('featured') && $request->featured == 'true') {
+                $query->where('is_featured', true);
+            }
+
+            // Sorting
+            $sortBy = $request->get('sort_by', 'newest');
+            if ($sortBy === 'price_asc') {
+                $query->orderBy('price', 'asc');
+            } elseif ($sortBy === 'price_desc') {
+                $query->orderBy('price', 'desc');
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $products = $query->paginate($request->get('per_page', 12));
+
+            return ProductListResource::collection($products)->additional([
+                'success' => true,
+                'status' => true,
+                'message' => 'Products retrieved successfully',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product listing failed: ' . $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => collect($e->getTrace())->take(5)->map(fn ($t) => ($t['file'] ?? '') . ':' . ($t['line'] ?? ''))->toArray(),
+            ], 500);
         }
-
-        // Search by name or SKU
-        if ($request->has('search') && !empty($request->search)) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%");
-            });
-        }
-
-        // Featured products
-        if ($request->has('featured') && $request->featured == 'true') {
-            $query->where('is_featured', true);
-        }
-
-        // Sorting
-        $sortBy = $request->get('sort_by', 'newest');
-        if ($sortBy === 'price_asc') {
-            $query->orderBy('price', 'asc');
-        } elseif ($sortBy === 'price_desc') {
-            $query->orderBy('price', 'desc');
-        } else {
-            $query->orderBy('created_at', 'desc');
-        }
-
-        $products = $query->paginate($request->get('per_page', 12));
-
-        return ProductListResource::collection($products)->additional([
-            'success' => true,
-            'status' => true,
-            'message' => 'Products retrieved successfully',
-        ]);
     }
 
     public function productDetail($slug_or_id, Request $request)

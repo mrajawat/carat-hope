@@ -32,6 +32,7 @@ class ProductDetailResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'has_variants' => (bool)$this->has_variants,
+            'processing_time_varies' => (bool)$this->processing_time_varies,
             'category_id' => $this->category_id,
             'category' => $this->whenLoaded('category'),
             'description' => $this->description,
@@ -91,25 +92,49 @@ class ProductDetailResource extends JsonResource
                 ? $this->variants->where('is_active', true)
                 : $this->variants()->where('is_active', true)->get();
 
+            // Convert to Eloquent Collection if it is a Support Collection to allow loadMissing
+            if (!($activeVariants instanceof \Illuminate\Database\Eloquent\Collection)) {
+                $activeVariants = new \Illuminate\Database\Eloquent\Collection($activeVariants->all());
+            }
+            $activeVariants->loadMissing(['prices.region', 'attributeValues']);
+
             foreach ($activeVariants as $variant) {
                 $variant->setRelation('product', $this->resource);
                 $priceInfo = $pricingService->getPriceForRegion($variant, $regionId);
 
-                if ($variant->relationLoaded('attributeValues')) {
-                    $attributeValueIds = $variant->attributeValues->pluck('id')->toArray();
-                } else {
-                    $attributeValueIds = $variant->variantAttributeValues()->pluck('attribute_value_id')->toArray();
+                $attributeValueIds = $variant->attributeValues->pluck('id')->toArray();
+                $attributeValueIds = array_map('intval', $attributeValueIds);
+
+                $linkedPhotos = [];
+                foreach ($this->product_images as $image) {
+                    if ($image->type === 'image' && $image->variant_option_id && in_array((int)$image->variant_option_id, $attributeValueIds)) {
+                        $linkedPhotos[] = $image->image_path;
+                    }
+                }
+
+                $regionalPrices = [];
+                foreach ($variant->prices as $vPrice) {
+                    $regionalPrices[] = [
+                        'region_id' => $vPrice->region_id,
+                        'price' => (float)$vPrice->price,
+                        'compare_at_price' => $vPrice->compare_at_price ? (float)$vPrice->compare_at_price : null,
+                        'currency_code' => $vPrice->region->currency_code ?? null,
+                        'currency_symbol' => $vPrice->region->currency_symbol ?? null,
+                    ];
                 }
 
                 $variantsData[] = [
                     'id' => $variant->id,
                     'sku' => $variant->sku,
                     'stock_quantity' => $variant->stock_quantity,
-                    'attribute_value_ids' => array_map('intval', $attributeValueIds),
+                    'processing_days' => $variant->processing_days,
+                    'attribute_value_ids' => $attributeValueIds,
                     'price' => [
                         'amount' => $priceInfo['price'],
                         'currency_symbol' => $priceInfo['currency_symbol'],
                     ],
+                    'prices' => $regionalPrices,
+                    'linked_photos' => $linkedPhotos,
                     'variant_images' => $variant->variant_images ?? [],
                 ];
             }

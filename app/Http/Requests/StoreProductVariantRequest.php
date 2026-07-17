@@ -29,8 +29,13 @@ class StoreProductVariantRequest extends FormRequest
             'making_charges' => 'nullable|numeric|min:0',
             'base_price' => 'nullable|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
+            'processing_days' => 'nullable|integer|min:0',
             'variant_images' => 'nullable|array',
             'attributes' => 'required|array',
+            'prices' => 'nullable|array',
+            'prices.*.region_id' => 'required|exists:regions,id',
+            'prices.*.price' => 'required|numeric|min:0',
+            'prices.*.compare_at_price' => 'nullable|numeric|min:0',
         ];
     }
 

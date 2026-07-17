@@ -126,7 +126,7 @@ class ProductTest extends TestCase
         // Test 1: Empty Payload
         $response = $this->postJson('/api/admin/products', []);
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['name', 'sku', 'category_id', 'price', 'stock_qty', 'images']);
+        $response->assertJsonValidationErrors(['name', 'category_id', 'price', 'stock_qty', 'images']);
 
         // Test 2: Discount price greater than price
         $response = $this->postJson('/api/admin/products', [

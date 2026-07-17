@@ -14,6 +14,7 @@ class ProductImage extends Model
         'image_path',
         'type',
         'is_primary',
+        'variant_option_id',
     ];
 
     protected $casts = [
@@ -23,5 +24,10 @@ class ProductImage extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function variantOption()
+    {
+        return $this->belongsTo(AttributeValue::class, 'variant_option_id');
     }
 }

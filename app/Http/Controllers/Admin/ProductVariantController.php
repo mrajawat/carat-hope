@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GenerateVariantCombinationsRequest;
 use App\Http\Requests\StoreProductVariantRequest;
+use App\Http\Requests\BulkUpdateVariantsRequest;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\AttributeValue;
@@ -93,6 +94,7 @@ class ProductVariantController extends Controller
                 'making_charges' => $validated['making_charges'] ?? 0.00,
                 'base_price' => $validated['base_price'] ?? ($product->prices_vary ? null : $product->price),
                 'stock_quantity' => $validated['stock_quantity'] ?? 0,
+                'processing_days' => $validated['processing_days'] ?? null,
                 'variant_images' => $validated['variant_images'] ?? null,
                 'is_active' => true,
             ]);
@@ -105,6 +107,17 @@ class ProductVariantController extends Controller
                     'attribute_id' => $value->attribute_id,
                     'attribute_value_id' => $value->id,
                 ]);
+            }
+
+            if (!empty($validated['prices']) && is_array($validated['prices'])) {
+                foreach ($validated['prices'] as $priceData) {
+                    VariantPrice::create([
+                        'product_variant_id' => $variant->id,
+                        'region_id' => $priceData['region_id'],
+                        'price' => $priceData['price'],
+                        'compare_at_price' => $priceData['compare_at_price'] ?? null,
+                    ]);
+                }
             }
 
             return $variant;
@@ -130,16 +143,79 @@ class ProductVariantController extends Controller
             'making_charges' => 'sometimes|nullable|numeric|min:0',
             'base_price' => 'sometimes|nullable|numeric|min:0',
             'stock_quantity' => 'sometimes|required|integer|min:0',
+            'processing_days' => 'sometimes|nullable|integer|min:0',
             'variant_images' => 'sometimes|nullable|array',
             'is_active' => 'sometimes|boolean',
+            'prices' => 'sometimes|nullable|array',
+            'prices.*.region_id' => 'required|exists:regions,id',
+            'prices.*.price' => 'required|numeric|min:0',
+            'prices.*.compare_at_price' => 'nullable|numeric|min:0',
         ]);
 
-        $variant->update($validated);
+        DB::transaction(function () use ($variant, $validated) {
+            $variant->update(collect($validated)->except('prices')->toArray());
+
+            if (isset($validated['prices']) && is_array($validated['prices'])) {
+                foreach ($validated['prices'] as $priceData) {
+                    VariantPrice::updateOrCreate(
+                        [
+                            'product_variant_id' => $variant->id,
+                            'region_id' => $priceData['region_id'],
+                        ],
+                        [
+                            'price' => $priceData['price'],
+                            'compare_at_price' => $priceData['compare_at_price'] ?? null,
+                        ]
+                    );
+                }
+            }
+        });
 
         return response()->json([
             'status' => true,
             'message' => 'Product variant updated successfully',
             'data' => $variant->load(['attributeValues.attribute', 'prices'])
+        ]);
+    }
+
+    /**
+     * Bulk update multiple product variants.
+     */
+    public function bulkUpdate(BulkUpdateVariantsRequest $request)
+    {
+        $validated = $request->validated();
+        $updatedVariants = [];
+
+        DB::transaction(function () use ($validated, &$updatedVariants) {
+            foreach ($validated['variants'] as $item) {
+                $variant = ProductVariant::findOrFail($item['id']);
+
+                $updateData = [];
+                if (array_key_exists('sku', $item)) {
+                    $updateData['sku'] = $item['sku'];
+                }
+                if (array_key_exists('quantity', $item)) {
+                    $updateData['stock_quantity'] = $item['quantity'];
+                }
+                if (array_key_exists('price', $item)) {
+                    $updateData['base_price'] = $item['price'];
+                }
+                if (array_key_exists('processing_days', $item)) {
+                    $updateData['processing_days'] = $item['processing_days'];
+                }
+
+                if (!empty($updateData)) {
+                    $variant->update($updateData);
+                }
+
+                $updatedVariants[] = $variant->load(['attributeValues.attribute', 'prices']);
+            }
+        });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Product variants updated successfully in bulk',
+            'data' => $updatedVariants
         ]);
     }
 

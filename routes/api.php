@@ -146,6 +146,7 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::post('/products/{product}/variants/generate-combinations', [ProductVariantController::class, 'generateCombinations']);
     Route::get('/products/{product}/variants', [ProductVariantController::class, 'index']);
     Route::post('/products/{product}/variants', [ProductVariantController::class, 'store']);
+    Route::put('/variants/bulk-update', [ProductVariantController::class, 'bulkUpdate']);
     Route::put('/variants/{variant}', [ProductVariantController::class, 'update']);
     Route::delete('/variants/{variant}', [ProductVariantController::class, 'destroy']);
     Route::put('/variants/{variant}/prices', [ProductVariantController::class, 'bulkUpdatePricing']);
