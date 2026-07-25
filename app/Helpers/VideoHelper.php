@@ -71,4 +71,33 @@ class VideoHelper
         // If it is already a URL string, return it as-is
         return $base64String;
     }
+
+    /**
+     * Check if the input is a video (UploadedFile, base64 data:video, or video URL).
+     *
+     * @param mixed $input
+     * @return bool
+     */
+    public static function isVideoInput($input): bool
+    {
+        if ($input instanceof \Illuminate\Http\UploadedFile) {
+            $mime = $input->getMimeType();
+            return str_starts_with($mime, 'video/');
+        }
+
+        if (is_string($input)) {
+            if (preg_match('/^data:video\//i', $input)) {
+                return true;
+            }
+            $path = parse_url($input, PHP_URL_PATH);
+            if ($path) {
+                $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                if (in_array($ext, ['mp4', 'webm', 'ogg', 'mov'])) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

@@ -130,13 +130,73 @@ class ProductCreationAndPricingTest extends TestCase
         $response->assertStatus(201);
         $response->assertJsonPath('status', true);
         $response->assertJsonPath('data.has_variants', true);
-        $response->assertJsonStructure(['data' => ['next_step']]);
 
         $product = Product::where('name', 'Variant Diamond Ring')->first();
         $this->assertNotNull($product);
         $this->assertNull($product->getRawOriginal('sku'));
         $this->assertNull($product->getRawOriginal('price'));
         $this->assertNull($product->getRawOriginal('stock_qty'));
+    }
+
+    /**
+     * Creating a variant product with variants and amounts at once stores everything in one payload.
+     */
+    public function test_create_product_with_variants_and_amounts_at_once(): void
+    {
+        Sanctum::actingAs($this->admin);
+
+        $payload = [
+            'name' => 'Gemstone Ring All In One',
+            'category_id' => $this->category->id,
+            'description' => 'A ring with gemstone options.',
+            'has_variants' => true,
+            'prices_vary' => true,
+            'quantities_vary' => true,
+            'skus_vary' => true,
+            'images' => [
+                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+            ],
+            'variants' => [
+                [
+                    'sku' => 'CH-GEM-AMETRINE',
+                    'stock_quantity' => 10,
+                    'is_active' => true,
+                    'attributes' => [
+                        ['name' => 'Gemstone', 'value' => 'Ametrine']
+                    ],
+                    'prices' => [
+                        ['region_id' => $this->defaultRegion->id, 'price' => 35000.00]
+                    ]
+                ],
+                [
+                    'sku' => 'CH-GEM-AQUAMARINE',
+                    'stock_quantity' => 15,
+                    'is_active' => true,
+                    'attributes' => [
+                        ['name' => 'Gemstone', 'value' => 'Aquamarine']
+                    ],
+                    'prices' => [
+                        ['region_id' => $this->defaultRegion->id, 'price' => 42000.00]
+                    ]
+                ]
+            ]
+        ];
+
+        $response = $this->postJson('/api/admin/products', $payload);
+
+        $response->assertStatus(201);
+        $response->assertJsonPath('status', true);
+        $response->assertJsonPath('data.has_variants', true);
+
+        $product = Product::where('name', 'Gemstone Ring All In One')->first();
+        $this->assertNotNull($product);
+
+        $variants = $product->variants()->with(['attributeValues.attribute', 'prices'])->get();
+        $this->assertCount(2, $variants);
+        $this->assertEquals(10, $variants[0]->stock_quantity);
+        $this->assertEquals(15, $variants[1]->stock_quantity);
+        $this->assertEquals(35000.00, (float)$variants[0]->prices->first()->price);
+        $this->assertEquals(42000.00, (float)$variants[1]->prices->first()->price);
     }
 
     /**

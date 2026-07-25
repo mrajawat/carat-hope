@@ -182,7 +182,7 @@ class ProductTest extends TestCase
 
         $response->assertStatus(201);
         $response->assertJsonPath('success', true);
-        
+
         $product = Product::where('sku', 'GLD-CHN-001')->first();
         $videoRecord = $product->product_images()->where('type', 'video')->first();
         $this->assertNotNull($videoRecord);
@@ -244,7 +244,7 @@ class ProductTest extends TestCase
 
         $response->assertStatus(201);
         $response->assertJsonPath('success', true);
-        
+
         $product = Product::where('sku', 'SLV-BRC-001')->first();
         $videoRecord = $product->product_images()->where('type', 'video')->first();
         $this->assertNotNull($videoRecord);
@@ -300,8 +300,8 @@ class ProductTest extends TestCase
         $response->assertJsonPath('success', true);
         $response->assertJsonPath('message', 'Products featured status toggled successfully.');
 
-        $this->assertTrue((bool)$p1->refresh()->is_featured);
-        $this->assertFalse((bool)$p2->refresh()->is_featured);
+        $this->assertTrue((bool) $p1->refresh()->is_featured);
+        $this->assertFalse((bool) $p2->refresh()->is_featured);
 
         // 2. Toggle again
         $response = $this->postJson('/api/admin/products/bulk-toggle-featured', [
@@ -311,8 +311,240 @@ class ProductTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonPath('success', true);
 
-        $this->assertFalse((bool)$p1->refresh()->is_featured);
-        $this->assertTrue((bool)$p2->refresh()->is_featured);
+        $this->assertFalse((bool) $p1->refresh()->is_featured);
+        $this->assertTrue((bool) $p2->refresh()->is_featured);
+    }
+
+    /**
+     * Test adding product with multiple images in one array where first image becomes main image (is_primary = true).
+     */
+    public function test_add_product_images_first_in_row_is_main_image(): void
+    {
+        $admin = Admin::create([
+            'name' => 'Test Admin',
+            'email' => 'admin_img@example.com',
+            'password' => 'password123',
+            'role' => 'admin'
+        ]);
+
+        $category = Category::create([
+            'name' => 'Pendants',
+            'slug' => 'pendants',
+            'status' => 'active'
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        $img1 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+        $img2 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9AFwADhgGAWjR9awAAAABJRU5ErkJggg==';
+        $img3 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAM4A08AAAAABJRU5ErkJggg==';
+
+        $payload = [
+            'name' => 'Diamond Pendant',
+            'sku' => 'PND-001',
+            'category_id' => $category->id,
+            'price' => 30000.00,
+            'stock_qty' => 5,
+            'images' => [$img1, $img2, $img3]
+        ];
+
+        $response = $this->postJson('/api/admin/products', $payload);
+
+        $response->assertStatus(201);
+        $product = Product::where('sku', 'PND-001')->first();
+        $this->assertNotNull($product);
+
+        $images = $product->product_images()->where('type', 'image')->get();
+        $this->assertCount(3, $images);
+
+        // First image in row must be primary
+        $this->assertTrue((bool) $images[0]->is_primary);
+        $this->assertFalse((bool) $images[1]->is_primary);
+        $this->assertFalse((bool) $images[2]->is_primary);
+    }
+
+    /**
+     * Test uploading both photo and video from the same images array.
+     */
+    public function test_add_product_mixed_photos_and_video_upload(): void
+    {
+        $admin = Admin::create([
+            'name' => 'Test Admin',
+            'email' => 'admin_mixed@example.com',
+            'password' => 'password123',
+            'role' => 'admin'
+        ]);
+
+        $category = Category::create([
+            'name' => 'Bangles',
+            'slug' => 'bangles',
+            'status' => 'active'
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        $img1 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+        $video1 = 'data:video/mp4;base64,AAAAIGZ0eXBtcDQyAAAAAG1wNDJpc29tYXZjMQAAAAhtZGF0';
+        $img2 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9AFwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+        $payload = [
+            'name' => 'Gold Bangle Set',
+            'sku' => 'BNG-001',
+            'category_id' => $category->id,
+            'price' => 45000.00,
+            'stock_qty' => 4,
+            'images' => [$img1, $video1, $img2]
+        ];
+
+        $response = $this->postJson('/api/admin/products', $payload);
+
+        $response->assertStatus(201);
+        $product = Product::where('sku', 'BNG-001')->first();
+        $this->assertNotNull($product);
+
+        $photos = $product->product_images()->where('type', 'image')->get();
+        $videos = $product->product_images()->where('type', 'video')->get();
+
+        $this->assertCount(2, $photos);
+        $this->assertCount(1, $videos);
+        $this->assertTrue((bool) $photos[0]->is_primary);
+        $this->assertFalse((bool) $photos[1]->is_primary);
+    }
+
+    /**
+     * Test upload validation fails if photos exceed limit of 20.
+     */
+    public function test_add_product_exceeding_photo_limit_fails(): void
+    {
+        $admin = Admin::create([
+            'name' => 'Test Admin',
+            'email' => 'admin_limit@example.com',
+            'password' => 'password123',
+            'role' => 'admin'
+        ]);
+
+        $category = Category::create([
+            'name' => 'Anklets',
+            'slug' => 'anklets',
+            'status' => 'active'
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        $img = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+        $images = array_fill(0, 21, $img); // 21 photos
+
+        $payload = [
+            'name' => 'Silver Anklet',
+            'sku' => 'ANK-001',
+            'category_id' => $category->id,
+            'price' => 5000.00,
+            'stock_qty' => 10,
+            'images' => $images
+        ];
+
+        $response = $this->postJson('/api/admin/products', $payload);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['images']);
+    }
+
+    /**
+     * Test adding product with Step 3 attributes and specifications (tags, materials, gold_purity, pendant_width with unit).
+     */
+    public function test_add_product_step3_attributes_and_specifications(): void
+    {
+        $admin = Admin::create([
+            'name' => 'Test Admin',
+            'email' => 'admin_step3@example.com',
+            'password' => 'password123',
+            'role' => 'admin'
+        ]);
+
+        $category = Category::create([
+            'name' => 'Gold Necklaces',
+            'slug' => 'gold-necklaces',
+            'status' => 'active'
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        $img = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
+        $payload = [
+            'name' => 'Luxury Gold Pendant',
+            'sku' => 'LXR-PND-001',
+            'category_id' => $category->id,
+            'price' => 50000.00,
+            'stock_qty' => 5,
+            'images' => [$img],
+            'tags' => ['Pendant', 'Gold', 'Handmade'],
+            'materials' => ['Gold', 'Diamond'],
+            'gold_solidity' => ['Solid Gold'],
+            'gold_purity' => ['18k'],
+            'primary_colour' => 'Yellow Gold',
+            'pendant_width' => ['value' => 18, 'unit' => 'Millimetres'],
+            'pendant_height' => ['value' => 25, 'unit' => 'Millimetres'],
+            'recycled' => true
+        ];
+
+        $response = $this->postJson('/api/admin/products', $payload);
+
+        $response->assertStatus(201);
+        $product = Product::where('sku', 'LXR-PND-001')->first();
+        $this->assertNotNull($product);
+
+        $this->assertEquals(['Pendant', 'Gold', 'Handmade'], $product->tags);
+        $this->assertEquals(['Gold', 'Diamond'], $product->materials);
+        $this->assertEquals(['18k'], $product->gold_purity);
+        $this->assertEquals('Yellow Gold', $product->listing_attributes['primary_colour']);
+        $this->assertEquals(18, $product->listing_attributes['pendant_width']['value']);
+        $this->assertEquals('Millimetres', $product->listing_attributes['pendant_width']['unit']);
+        $this->assertTrue($product->listing_attributes['recycled']);
+    }
+
+    /**
+     * Test preview product API generates preview data without saving to the database.
+     */
+    public function test_preview_product_api_does_not_save_to_database(): void
+    {
+        $admin = Admin::create([
+            'name' => 'Test Admin',
+            'email' => 'admin_preview@example.com',
+            'password' => 'password123',
+            'role' => 'admin'
+        ]);
+
+        $category = Category::create([
+            'name' => 'Preview Category',
+            'slug' => 'preview-category',
+            'status' => 'active'
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        $img = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
+        $payload = [
+            'name' => 'Preview Diamond Ring',
+            'sku' => 'PRV-RNG-999',
+            'category_id' => $category->id,
+            'price' => 25000.00,
+            'stock_qty' => 10,
+            'images' => [$img],
+            'tags' => ['Preview', 'Diamond'],
+            'materials' => ['Platinum']
+        ];
+
+        $response = $this->postJson('/api/admin/products/preview', $payload);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('status', true);
+        $response->assertJsonPath('data.product.name', 'Preview Diamond Ring');
+        $response->assertJsonPath('data.is_preview', true);
+
+        // Verify product was NOT saved in database
+        $this->assertNull(Product::where('sku', 'PRV-RNG-999')->first());
     }
 }
 

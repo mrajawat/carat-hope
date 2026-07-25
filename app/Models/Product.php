@@ -27,6 +27,15 @@ class Product extends Model
         'max_variation_axes',
         'total_stock',
         'has_variants',
+        'tags',
+        'materials',
+        'gold_solidity',
+        'gold_purity',
+        'listing_attributes',
+        'is_global_pricing_enabled',
+        'allow_offers',
+        'processing_profile',
+        'delivery_option',
     ];
 
     protected $casts = [
@@ -41,6 +50,15 @@ class Product extends Model
         'max_variation_axes' => 'integer',
         'total_stock' => 'integer',
         'has_variants' => 'boolean',
+        'tags' => 'array',
+        'materials' => 'array',
+        'gold_solidity' => 'array',
+        'gold_purity' => 'array',
+        'listing_attributes' => 'array',
+        'is_global_pricing_enabled' => 'boolean',
+        'allow_offers' => 'boolean',
+        'processing_profile' => 'array',
+        'delivery_option' => 'array',
     ];
 
     public function category()

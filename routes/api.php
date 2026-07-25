@@ -110,7 +110,8 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('/categories/{category}/subcategories', [SubcategoryController::class, 'subcategoriesByCategory']);
     Route::post('/categories/{category}/subcategories', [SubcategoryController::class, 'storeByCategory']);
 
-    // Products CRUD + Toggle Status + Toggle Featured
+    // Products CRUD + Toggle Status + Toggle Featured + Preview
+    Route::post('/products/preview', [ProductController::class, 'preview']);
     Route::post('/products/bulk-toggle-featured', [ProductController::class, 'bulkToggleFeatured']);
     Route::apiResource('/products', ProductController::class);
     Route::patch('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus']);

@@ -65,53 +65,134 @@ class ProductController extends Controller
     {
         $product = $productService->store($request->validated());
 
-        $data = $product->load('product_images')->toArray();
-        if ($product->has_variants) {
-            $data['next_step'] = "Add variants via POST /api/admin/products/{$product->id}/variants/generate-combinations";
-        }
-
         return response()->json([
             'status' => true,
             'success' => true,
             'message' => 'Product created successfully',
-            'data' => $data
+            'data' => $product
         ], 201);
     }
 
-    public function update(Request $request, $id)
+    public function preview(StoreProductRequest $request, ProductService $productService)
+    {
+        $previewData = $productService->preview($request->validated());
+
+        return response()->json([
+            'status' => true,
+            'success' => true,
+            'message' => 'Product preview generated successfully',
+            'data' => $previewData
+        ]);
+    }
+
+    public function update(Request $request, $id, ProductService $productService)
     {
         $product = Product::findOrFail($id);
 
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string',
             'sku' => 'nullable|string|unique:products,sku,' . $id,
             'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'discount_price' => 'nullable|numeric|min:0|lt:price',
+            'price' => 'nullable|numeric|min:0',
+            'discount_price' => 'nullable|numeric|min:0',
             'local_prices' => 'nullable|array',
-            'stock_qty' => 'required|integer|min:0',
+            'stock_qty' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
             'video' => 'nullable',
-            'images' => 'nullable|array',
+            'images' => 'nullable|array|max:22',
             'images.*' => 'required',
+            'has_variants' => 'nullable|boolean',
+            'prices_vary' => 'nullable|boolean',
+            'quantities_vary' => 'nullable|boolean',
+            'skus_vary' => 'nullable|boolean',
+            'processing_time_varies' => 'nullable|boolean',
+            'processing_profiles_vary' => 'nullable|boolean',
+            'attributes' => 'nullable|array',
+            'variants' => 'nullable|array',
+            'variations' => 'nullable|array',
         ]);
 
-        return DB::transaction(function () use ($request, $product) {
+        return DB::transaction(function () use ($request, $validated, $product, $productService) {
+            $hasVariants = filter_var(
+                $validated['has_variants'] ?? ($product->has_variants || !empty($validated['variants']) || !empty($validated['variations']) || !empty($validated['attributes'])),
+                FILTER_VALIDATE_BOOLEAN
+            );
+
             $sku = $request->sku;
-            if (empty($sku)) {
+            if (!$hasVariants && empty($sku)) {
                 $skuGenerator = app(\App\Services\SkuGeneratorService::class);
                 $sku = $skuGenerator->generateForProduct($product);
             }
 
+            $tags = $request->has('tags') ? $request->tags : $product->tags;
+            if (is_string($tags)) {
+                $tags = array_map('trim', explode(',', $tags));
+            }
+
+            $materials = $request->has('materials') ? $request->materials : $product->materials;
+            if (is_string($materials)) {
+                $materials = array_map('trim', explode(',', $materials));
+            }
+
+            $goldSolidity = $request->has('gold_solidity') ? $request->gold_solidity : $product->gold_solidity;
+            if (is_string($goldSolidity)) {
+                $goldSolidity = array_map('trim', explode(',', $goldSolidity));
+            }
+
+            $goldPurity = $request->has('gold_purity') ? $request->gold_purity : $product->gold_purity;
+            if (is_string($goldPurity)) {
+                $goldPurity = array_map('trim', explode(',', $goldPurity));
+            }
+
+            $listingAttributes = $product->listing_attributes ?? [];
+            if ($request->has('listing_attributes') || $request->has('item_attributes')) {
+                $inputAttrs = $request->listing_attributes ?? $request->item_attributes;
+                if (is_array($inputAttrs)) {
+                    $listingAttributes = array_merge($listingAttributes, $inputAttrs);
+                }
+            }
+
+            $specKeys = [
+                'primary_colour', 'primary_color', 'secondary_colour', 'secondary_color',
+                'pendant_width', 'pendant_height', 'necklace_length',
+                'recycled', 'is_recycled', 'spinner', 'is_spinner',
+                'gem_colour', 'gem_color', 'stone_source', 'shape', 'cut_type',
+                'sustainability', 'style', 'occasion', 'celebration', 'recipient', 'theme'
+            ];
+
+            foreach ($specKeys as $key) {
+                if ($request->has($key)) {
+                    $listingAttributes[$key] = $request->input($key);
+                }
+            }
+
             $product->update([
                 'name' => $request->name,
-                'sku' => $sku,
+                'sku' => $hasVariants ? null : $sku,
                 'category_id' => $request->category_id,
-                'price' => $request->price,
-                'discount_price' => $request->discount_price,
+                'price' => $hasVariants ? null : $request->price,
+                'discount_price' => $hasVariants ? null : $request->discount_price,
                 'local_prices' => $request->local_prices,
-                'stock_qty' => $request->stock_qty,
+                'stock_qty' => $hasVariants ? null : $request->stock_qty,
                 'description' => $request->description,
+                'has_variants' => $hasVariants,
+                'prices_vary' => filter_var($request->prices_vary ?? true, FILTER_VALIDATE_BOOLEAN),
+                'quantities_vary' => filter_var($request->quantities_vary ?? true, FILTER_VALIDATE_BOOLEAN),
+                'skus_vary' => filter_var($request->skus_vary ?? true, FILTER_VALIDATE_BOOLEAN),
+                'processing_time_varies' => filter_var($request->processing_time_varies ?? $request->processing_profiles_vary ?? false, FILTER_VALIDATE_BOOLEAN),
+                'tags' => $tags,
+                'materials' => $materials,
+                'gold_solidity' => $goldSolidity,
+                'gold_purity' => $goldPurity,
+                'listing_attributes' => !empty($listingAttributes) ? $listingAttributes : null,
+                'is_global_pricing_enabled' => $request->has('is_global_pricing_enabled') || $request->has('domestic_and_global_pricing')
+                    ? filter_var($request->is_global_pricing_enabled ?? $request->domestic_and_global_pricing, FILTER_VALIDATE_BOOLEAN)
+                    : ($product->is_global_pricing_enabled ?? true),
+                'allow_offers' => $request->has('allow_offers') || $request->has('allow_buyer_offers')
+                    ? filter_var($request->allow_offers ?? $request->allow_buyer_offers, FILTER_VALIDATE_BOOLEAN)
+                    : ($product->allow_offers ?? false),
+                'processing_profile' => $request->has('processing_profile') ? $request->processing_profile : $product->processing_profile,
+                'delivery_option' => $request->has('delivery_option') ? $request->delivery_option : $product->delivery_option,
             ]);
 
             if ($request->has('video')) {
@@ -135,29 +216,48 @@ class ProductController extends Controller
             }
 
             if ($request->has('images') && is_array($request->images)) {
-                // Remove old product images records (only of type 'image')
-                $product->product_images()->where('type', 'image')->delete();
+                // Remove old product images and videos uploaded via images array
+                $product->product_images()->delete();
 
-                foreach ($request->images as $index => $imageData) {
-                    try {
-                        $imageUrl = ImageHelper::uploadBase64($imageData, 'products');
-                    } catch (\Exception $e) {
-                        throw new \Exception('Image upload failed: ' . $e->getMessage());
+                $photoIndex = 0;
+                foreach ($request->images as $index => $itemData) {
+                    if (\App\Helpers\VideoHelper::isVideoInput($itemData)) {
+                        try {
+                            $videoUrl = \App\Helpers\VideoHelper::upload($itemData, 'products/videos');
+                            ProductImage::create([
+                                'product_id' => $product->id,
+                                'image_path' => $videoUrl,
+                                'type' => 'video',
+                                'is_primary' => false,
+                            ]);
+                        } catch (\Exception $e) {
+                            throw new \Exception('Video upload failed: ' . $e->getMessage());
+                        }
+                    } else {
+                        try {
+                            $imageUrl = ImageHelper::uploadBase64($itemData, 'products');
+                            ProductImage::create([
+                                'product_id' => $product->id,
+                                'image_path' => $imageUrl,
+                                'type' => 'image',
+                                'is_primary' => $photoIndex === 0 // First photo in array is main product image
+                            ]);
+                            $photoIndex++;
+                        } catch (\Exception $e) {
+                            throw new \Exception('Image upload failed: ' . $e->getMessage());
+                        }
                     }
-
-                    ProductImage::create([
-                        'product_id' => $product->id,
-                        'image_path' => $imageUrl,
-                        'type' => 'image',
-                        'is_primary' => $index === 0
-                    ]);
                 }
+            }
+
+            if ($hasVariants || $request->has('variants') || $request->has('variations') || $request->has('attributes')) {
+                $productService->storeOrUpdateVariants($product, $request->all());
             }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Product updated successfully',
-                'data' => $product->load('product_images')
+                'data' => $product->load(['product_images', 'variants.attributeValues.attribute', 'variants.prices.region'])
             ]);
         });
     }
