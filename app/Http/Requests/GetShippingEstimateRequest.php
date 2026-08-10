@@ -18,6 +18,10 @@ class GetShippingEstimateRequest extends FormRequest
             'pincode' => 'nullable|string',
             'order_value' => 'required|numeric|min:0',
             'currency' => 'required|string|size:3',
+            // Products in the cart, so their delivery profile can be resolved.
+            // Omitted for a profile-agnostic estimate.
+            'product_ids' => 'nullable|array',
+            'product_ids.*' => 'required|integer|exists:products,id',
         ];
     }
 }

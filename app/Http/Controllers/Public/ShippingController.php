@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GetShippingEstimateRequest;
 use App\Models\Order;
+use App\Models\Product;
 use App\Services\ShippingZoneService;
 use App\Services\ShippingRateService;
 use App\Services\DeliveryEstimateService;
@@ -52,16 +53,32 @@ class ShippingController extends Controller
         $orderValue = (float) $validated['order_value'];
         $currency = $validated['currency'];
 
-        $methods = $this->rateService->getEligibleMethods($zone, $orderValue, $currency);
+        // Resolve the cart's delivery profile and preparation time from its products.
+        $products = collect();
+        if (!empty($validated['product_ids'])) {
+            $products = Product::with('processingProfile')
+                ->whereIn('id', $validated['product_ids'])
+                ->get();
+        }
 
-        $data = $methods->map(function ($method) use ($orderValue, $currency, $validated, $zone) {
+        $shippingProfileId = $products->pluck('shipping_profile_id')->filter()->unique()->first();
+
+        // A mixed cart takes the slowest preparation time across its items.
+        $processingDays = $products
+            ->pluck('processingProfile')
+            ->filter()
+            ->max('max_days');
+
+        $methods = $this->rateService->getEligibleMethods($zone, $orderValue, $currency, $shippingProfileId);
+
+        $data = $methods->map(function ($method) use ($orderValue, $currency, $validated, $zone, $processingDays) {
             $cost = $this->rateService->calculateCost($method, $orderValue, $currency);
-            
+
             $estimate = $this->estimateService->estimate(
                 $zone,
                 $validated['pincode'] ?? null,
                 now(),
-                $method->processing_days
+                $processingDays ?? $method->processing_days
             );
 
             return [

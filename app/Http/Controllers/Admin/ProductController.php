@@ -13,9 +13,13 @@ use App\Http\Resources\ProductListResource;
 use App\Http\Resources\ProductDetailResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
+    private const VARIANT_PRICE_REQUIRED_MESSAGE = 'Each variant requires at least one regional price.';
+
+
     public function index(Request $request, RegionDetectionService $regionDetectionService)
     {
         $region = $regionDetectionService->detect($request);
@@ -25,7 +29,8 @@ class ProductController extends Controller
             'category',
             'product_images',
             'variants' => fn ($q) => $q->where('is_active', true),
-            'variants.prices' => fn ($q) => $q->where('region_id', $region->id)
+            'variants.prices' => fn ($q) => $q->where('region_id', $region->id),
+            'prices' => fn ($q) => $q->where('region_id', $region->id),
         ])->orderBy('created_at', 'desc');
 
         if ($request->get('paginate') === 'true') {
@@ -52,6 +57,10 @@ class ProductController extends Controller
             'variants' => fn ($q) => $q->where('is_active', true),
             'variants.attributeValues',
             'variants.prices' => fn ($q) => $q->where('region_id', $region->id),
+            'prices.region',
+            'processingProfile',
+            'shippingProfile',
+            'customOptions',
         ])->findOrFail($id);
 
         return (new ProductDetailResource($product))->additional([
@@ -93,8 +102,6 @@ class ProductController extends Controller
             'name' => 'required|string',
             'sku' => 'nullable|string|unique:products,sku,' . $id,
             'category_id' => 'required|exists:categories,id',
-            'price' => 'nullable|numeric|min:0',
-            'discount_price' => 'nullable|numeric|min:0',
             'local_prices' => 'nullable|array',
             'stock_qty' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
@@ -107,19 +114,45 @@ class ProductController extends Controller
             'skus_vary' => 'nullable|boolean',
             'processing_time_varies' => 'nullable|boolean',
             'processing_profiles_vary' => 'nullable|boolean',
+            'max_variation_axes' => 'nullable|integer|min:1|max:' . (int) config('jewelry.max_variation_axes', 2),
+            'processing_profile_id' => 'nullable|exists:processing_profiles,id',
+            'shipping_profile_id' => 'nullable|exists:shipping_profiles,id',
+            'max_offer_discount_percent' => 'nullable|integer|min:1|max:100',
             'attributes' => 'nullable|array',
             'variants' => 'nullable|array',
             'variations' => 'nullable|array',
+            'prices' => 'nullable|array|min:1',
+            'prices.*.region_id' => 'required_with:prices|exists:regions,id',
+            'prices.*.price' => 'required_with:prices|numeric|min:0',
+            'prices.*.compare_at_price' => 'nullable|numeric|min:0',
+            'variants.*.prices' => 'nullable|array|min:1',
+            'variants.*.prices.*.region_id' => 'required_with:variants.*.prices|exists:regions,id',
+            'variants.*.prices.*.price' => 'required_with:variants.*.prices|numeric|min:0',
+            'variations.*.prices' => 'nullable|array|min:1',
+            'variations.*.prices.*.region_id' => 'required_with:variations.*.prices|exists:regions,id',
+            'variations.*.prices.*.price' => 'required_with:variations.*.prices|numeric|min:0',
+        ], [
+            'prices.min' => 'At least one regional price is required.',
+            'variants.*.prices.min' => 'Each variant requires at least one regional price.',
+            'variations.*.prices.min' => 'Each variant requires at least one regional price.',
         ]);
 
-        return DB::transaction(function () use ($request, $validated, $product, $productService) {
-            $hasVariants = filter_var(
-                $validated['has_variants'] ?? ($product->has_variants || !empty($validated['variants']) || !empty($validated['variations']) || !empty($validated['attributes'])),
-                FILTER_VALIDATE_BOOLEAN
-            );
+        $hasVariants = filter_var(
+            $validated['has_variants'] ?? ($product->has_variants || !empty($validated['variants']) || !empty($validated['variations']) || !empty($validated['attributes'])),
+            FILTER_VALIDATE_BOOLEAN
+        );
 
+        $this->validateRegionalPricingRequirement($request, $product, $hasVariants);
+
+        return DB::transaction(function () use ($request, $validated, $product, $productService, $hasVariants) {
+
+            $skusVary = filter_var($request->skus_vary ?? true, FILTER_VALIDATE_BOOLEAN);
+
+            // Simple products, and variant products where every variant shares one SKU,
+            // need a resolved SKU here; variant products with skus_vary=true generate
+            // per-variant SKUs later in storeOrUpdateVariants().
             $sku = $request->sku;
-            if (!$hasVariants && empty($sku)) {
+            if ((!$hasVariants || !$skusVary) && empty($sku)) {
                 $skuGenerator = app(\App\Services\SkuGeneratorService::class);
                 $sku = $skuGenerator->generateForProduct($product);
             }
@@ -166,19 +199,28 @@ class ProductController extends Controller
                 }
             }
 
+            // Derive the legacy flat price/discount_price columns from the mandatory
+            // regional prices (raw columns act only as a legacy fallback)
+            $derivedPricing = $hasVariants
+                ? ['price' => null, 'discount_price' => null]
+                : $productService->getDefaultRegionPricing($validated['prices'] ?? []);
+
             $product->update([
                 'name' => $request->name,
-                'sku' => $hasVariants ? null : $sku,
+                'sku' => ($hasVariants && $skusVary) ? null : $sku,
                 'category_id' => $request->category_id,
-                'price' => $hasVariants ? null : $request->price,
-                'discount_price' => $hasVariants ? null : $request->discount_price,
+                'price' => $derivedPricing['price'],
+                'discount_price' => $derivedPricing['discount_price'],
                 'local_prices' => $request->local_prices,
                 'stock_qty' => $hasVariants ? null : $request->stock_qty,
                 'description' => $request->description,
                 'has_variants' => $hasVariants,
                 'prices_vary' => filter_var($request->prices_vary ?? true, FILTER_VALIDATE_BOOLEAN),
                 'quantities_vary' => filter_var($request->quantities_vary ?? true, FILTER_VALIDATE_BOOLEAN),
-                'skus_vary' => filter_var($request->skus_vary ?? true, FILTER_VALIDATE_BOOLEAN),
+                'max_variation_axes' => $request->has('max_variation_axes')
+                    ? (int) $request->max_variation_axes
+                    : $product->max_variation_axes,
+                'skus_vary' => $skusVary,
                 'processing_time_varies' => filter_var($request->processing_time_varies ?? $request->processing_profiles_vary ?? false, FILTER_VALIDATE_BOOLEAN),
                 'tags' => $tags,
                 'materials' => $materials,
@@ -188,11 +230,18 @@ class ProductController extends Controller
                 'is_global_pricing_enabled' => $request->has('is_global_pricing_enabled') || $request->has('domestic_and_global_pricing')
                     ? filter_var($request->is_global_pricing_enabled ?? $request->domestic_and_global_pricing, FILTER_VALIDATE_BOOLEAN)
                     : ($product->is_global_pricing_enabled ?? true),
+                'max_offer_discount_percent' => $request->has('max_offer_discount_percent')
+                    ? $request->max_offer_discount_percent
+                    : $product->max_offer_discount_percent,
                 'allow_offers' => $request->has('allow_offers') || $request->has('allow_buyer_offers')
                     ? filter_var($request->allow_offers ?? $request->allow_buyer_offers, FILTER_VALIDATE_BOOLEAN)
                     : ($product->allow_offers ?? false),
-                'processing_profile' => $request->has('processing_profile') ? $request->processing_profile : $product->processing_profile,
-                'delivery_option' => $request->has('delivery_option') ? $request->delivery_option : $product->delivery_option,
+                'processing_profile_id' => $request->has('processing_profile_id')
+                    ? $request->processing_profile_id
+                    : $product->processing_profile_id,
+                'shipping_profile_id' => $request->has('shipping_profile_id')
+                    ? $request->shipping_profile_id
+                    : $product->shipping_profile_id,
             ]);
 
             if ($request->has('video')) {
@@ -254,12 +303,69 @@ class ProductController extends Controller
                 $productService->storeOrUpdateVariants($product, $request->all());
             }
 
+            // Switching processing time back to a single profile clears the
+            // per-variant values, so they cannot resurface if it is re-enabled.
+            if (!$product->processing_time_varies) {
+                $product->variants()->whereNotNull('processing_days')->update(['processing_days' => null]);
+            }
+
+            if ((!$hasVariants || !$product->prices_vary) && $request->has('prices')) {
+                $productService->saveProductPrices($product, $request->prices);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Product updated successfully',
-                'data' => $product->load(['product_images', 'variants.attributeValues.attribute', 'variants.prices.region'])
+                'data' => $product->load([
+                    'product_images',
+                    'variants.attributeValues.attribute',
+                    'variants.prices.region',
+                    'prices.region',
+                    'processingProfile',
+                    'shippingProfile',
+                ])
             ]);
         });
+    }
+
+    /**
+     * Regional pricing is always mandatory, but *where* it must be provided depends
+     * on prices_vary: a simple product, or a variant product where prices don't vary,
+     * needs exactly one shared 'prices' array; a variant product where prices do vary
+     * needs a 'prices' array on every individual variant.
+     */
+    private function validateRegionalPricingRequirement(Request $request, Product $product, bool $hasVariants): void
+    {
+        $pricesVary = $request->has('prices_vary')
+            ? filter_var($request->prices_vary, FILTER_VALIDATE_BOOLEAN)
+            : ($product->prices_vary ?? true);
+
+        if (!$hasVariants || !$pricesVary) {
+            if (empty($request->prices) || !is_array($request->prices)) {
+                throw ValidationException::withMessages([
+                    'prices' => 'At least one regional price is required.',
+                ]);
+            }
+            return;
+        }
+
+        $variantsKey = 'variants';
+        if (!$request->has('variants') && $request->has('variations')) {
+            $variantsKey = 'variations';
+        } elseif (!$request->has('variants') && !$request->has('variations')) {
+            return;
+        }
+
+        $errors = [];
+        foreach ((array) $request->input($variantsKey, []) as $idx => $variant) {
+            if (empty($variant['prices']) || !is_array($variant['prices'])) {
+                $errors["{$variantsKey}.{$idx}.prices"] = self::VARIANT_PRICE_REQUIRED_MESSAGE;
+            }
+        }
+
+        if (!empty($errors)) {
+            throw ValidationException::withMessages($errors);
+        }
     }
 
     public function destroy($id)

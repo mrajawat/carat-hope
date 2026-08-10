@@ -12,6 +12,7 @@ class ShippingThreshold extends Model
 
     protected $fillable = [
         'shipping_zone_id',
+        'shipping_profile_id',
         'min_order_value',
         'currency',
     ];
@@ -23,5 +24,10 @@ class ShippingThreshold extends Model
     public function shippingZone(): BelongsTo
     {
         return $this->belongsTo(ShippingZone::class);
+    }
+
+    public function shippingProfile(): BelongsTo
+    {
+        return $this->belongsTo(ShippingProfile::class);
     }
 }

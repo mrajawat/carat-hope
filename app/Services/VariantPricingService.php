@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Product;
+use App\Models\ProductPrice;
 use App\Models\ProductVariant;
 use App\Models\Region;
 use App\Models\RegionTaxRule;
@@ -11,6 +13,64 @@ class VariantPricingService
 {
     private static array $regionsCache = [];
     private static ?Region $defaultRegionCache = null;
+
+    /**
+     * Get price for a simple (non-variant) product in a specific region,
+     * falling back to the default region's price, then to the product's raw price columns.
+     *
+     * @param Product $product
+     * @param int $regionId
+     * @return array
+     */
+    public function getProductPriceForRegion(Product $product, int $regionId): array
+    {
+        if (!isset(self::$regionsCache[$regionId])) {
+            $region = Region::find($regionId);
+            if (!$region) {
+                $region = self::$defaultRegionCache ??= Region::where('is_default', true)->first();
+            }
+            self::$regionsCache[$regionId] = $region;
+        }
+        $region = self::$regionsCache[$regionId] ?? self::$defaultRegionCache ??= Region::where('is_default', true)->first();
+
+        $productPrice = $product->relationLoaded('prices')
+            ? $product->prices->firstWhere('region_id', $region->id)
+            : ProductPrice::where('product_id', $product->id)
+                ->where('region_id', $region->id)
+                ->first();
+
+        if (!$productPrice) {
+            $defaultRegion = self::$defaultRegionCache ??= Region::where('is_default', true)->first();
+            if ($defaultRegion) {
+                $productPrice = $product->relationLoaded('prices')
+                    ? $product->prices->firstWhere('region_id', $defaultRegion->id)
+                    : ProductPrice::where('product_id', $product->id)
+                        ->where('region_id', $defaultRegion->id)
+                        ->first();
+            }
+        }
+
+        if ($productPrice) {
+            $price = $productPrice->price;
+            $compareAtPrice = $productPrice->compare_at_price;
+        } else {
+            // Use the live attribute values (not getRawOriginal, which is empty for
+            // in-memory/unsaved products such as the preview() flow) as a last resort.
+            $attributes = $product->getAttributes();
+            $rawPrice = $attributes['price'] ?? null;
+            $rawDiscountPrice = $attributes['discount_price'] ?? null;
+
+            $price = $rawDiscountPrice ?? $rawPrice;
+            $compareAtPrice = $rawDiscountPrice ? $rawPrice : null;
+        }
+
+        return [
+            'price' => (float) $price,
+            'compare_at_price' => $compareAtPrice !== null ? (float) $compareAtPrice : null,
+            'currency_symbol' => $region->currency_symbol ?? null,
+            'currency_code' => $region->currency_code ?? null,
+        ];
+    }
 
     /**
      * Get price for a variant in a specific region, applying fallbacks if prices_vary is enabled.
@@ -31,53 +91,48 @@ class VariantPricingService
         $region = self::$regionsCache[$regionId] ?? self::$defaultRegionCache ??= Region::where('is_default', true)->first();
 
         $product = $variant->product;
+
+        if (!$product->prices_vary) {
+            // Prices don't vary by variant: all variants share the product's regional price
+            return $this->getProductPriceForRegion($product, $region->id);
+        }
+
         $price = 0.00;
         $compareAtPrice = null;
 
-        if (!$product->prices_vary) {
-            // pricing resolves from variant's base_price, falling back to parent product price
+        // Find regional price for this variant
+        $variantPrice = $variant->relationLoaded('prices')
+            ? $variant->prices->firstWhere('region_id', $region->id)
+            : VariantPrice::where('product_variant_id', $variant->id)
+                ->where('region_id', $region->id)
+                ->first();
+
+        if (!$variantPrice) {
+            // Fallback to the default region's price
+            $defaultRegion = self::$defaultRegionCache ??= Region::where('is_default', true)->first();
+            if ($defaultRegion) {
+                $variantPrice = $variant->relationLoaded('prices')
+                    ? $variant->prices->firstWhere('region_id', $defaultRegion->id)
+                    : VariantPrice::where('product_variant_id', $variant->id)
+                        ->where('region_id', $defaultRegion->id)
+                        ->first();
+            }
+        }
+
+        if ($variantPrice) {
+            $price = $variantPrice->price;
+            $compareAtPrice = $variantPrice->compare_at_price;
+        } else {
+            // If no regional price is set at all, use variant base_price or product's raw price columns
             if ($variant->base_price !== null && $variant->base_price > 0) {
                 $price = $variant->base_price;
                 $compareAtPrice = null;
             } else {
-                $price = $product->discount_price ?? $product->price;
-                $compareAtPrice = $product->discount_price ? $product->price : null;
-            }
-        } else {
-            // Find regional price for this variant
-            $variantPrice = $variant->relationLoaded('prices')
-                ? $variant->prices->firstWhere('region_id', $region->id)
-                : VariantPrice::where('product_variant_id', $variant->id)
-                    ->where('region_id', $region->id)
-                    ->first();
+                $rawPrice = $product->getRawOriginal('price');
+                $rawDiscountPrice = $product->getRawOriginal('discount_price');
 
-            if (!$variantPrice) {
-                // Fallback to the default region's price
-                $defaultRegion = self::$defaultRegionCache ??= Region::where('is_default', true)->first();
-                if ($defaultRegion) {
-                    $variantPrice = $variant->relationLoaded('prices')
-                        ? $variant->prices->firstWhere('region_id', $defaultRegion->id)
-                        : VariantPrice::where('product_variant_id', $variant->id)
-                            ->where('region_id', $defaultRegion->id)
-                            ->first();
-                }
-            }
-
-            if ($variantPrice) {
-                $price = $variantPrice->price;
-                $compareAtPrice = $variantPrice->compare_at_price;
-            } else {
-                // If no regional price is set at all, use variant base_price or product's raw price columns
-                if ($variant->base_price !== null && $variant->base_price > 0) {
-                    $price = $variant->base_price;
-                    $compareAtPrice = null;
-                } else {
-                    $rawPrice = $product->getRawOriginal('price');
-                    $rawDiscountPrice = $product->getRawOriginal('discount_price');
-
-                    $price = $rawDiscountPrice ?? $rawPrice;
-                    $compareAtPrice = $rawDiscountPrice ? $rawPrice : null;
-                }
+                $price = $rawDiscountPrice ?? $rawPrice;
+                $compareAtPrice = $rawDiscountPrice ? $rawPrice : null;
             }
         }
 

@@ -13,6 +13,7 @@ class ShippingMethod extends Model
 
     protected $fillable = [
         'shipping_zone_id',
+        'shipping_profile_id',
         'name',
         'carrier_type',
         'carrier_name',
@@ -41,5 +42,10 @@ class ShippingMethod extends Model
     public function shippingZone(): BelongsTo
     {
         return $this->belongsTo(ShippingZone::class);
+    }
+
+    public function shippingProfile(): BelongsTo
+    {
+        return $this->belongsTo(ShippingProfile::class);
     }
 }

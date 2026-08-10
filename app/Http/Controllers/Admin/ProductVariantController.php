@@ -55,7 +55,10 @@ class ProductVariantController extends Controller
         }
 
         try {
-            $combinations = $this->combinationService->generateCombinations($transformedAttributes);
+            $combinations = $this->combinationService->generateCombinations(
+                $transformedAttributes,
+                $product->max_variation_axes
+            );
             $variants = $this->combinationService->createVariantsFromCombinations($product, $combinations);
 
             return response()->json([
@@ -80,7 +83,15 @@ class ProductVariantController extends Controller
         $validated = $request->validated();
         $product = Product::findOrFail($validated['product_id']);
 
-        if (empty($validated['sku'])) {
+        if (!$product->skus_vary) {
+            // All variants of this product share one SKU; ignore any per-variant value submitted
+            if (empty($product->sku)) {
+                $skuGenerator = app(SkuGeneratorService::class);
+                $product->sku = $skuGenerator->generateForProduct($product);
+                $product->save();
+            }
+            $validated['sku'] = $product->sku;
+        } elseif (empty($validated['sku'])) {
             $skuGenerator = app(SkuGeneratorService::class);
             $attributeValueIds = array_values($validated['attributes']);
             $validated['sku'] = $skuGenerator->generate($product, $attributeValueIds);
@@ -94,7 +105,10 @@ class ProductVariantController extends Controller
                 'making_charges' => $validated['making_charges'] ?? 0.00,
                 'base_price' => $validated['base_price'] ?? ($product->prices_vary ? null : $product->price),
                 'stock_quantity' => $validated['stock_quantity'] ?? 0,
-                'processing_days' => $validated['processing_days'] ?? null,
+                // Only stored when the listing says processing time varies
+                'processing_days' => $product->processing_time_varies
+                    ? ($validated['processing_days'] ?? null)
+                    : null,
                 'variant_images' => $validated['variant_images'] ?? null,
                 'is_active' => true,
             ]);
@@ -137,6 +151,13 @@ class ProductVariantController extends Controller
     {
         $variant = ProductVariant::findOrFail($id);
 
+        if ($request->has('sku') && !$variant->product->skus_vary) {
+            return response()->json([
+                'status' => false,
+                'message' => 'This product\'s variants share a single SKU. Update the SKU on the product itself instead of an individual variant.',
+            ], 422);
+        }
+
         $validated = $request->validate([
             'sku' => 'sometimes|required|string|unique:product_variants,sku,' . $variant->id,
             'weight_grams' => 'sometimes|required|numeric|min:0',
@@ -151,6 +172,15 @@ class ProductVariantController extends Controller
             'prices.*.price' => 'required|numeric|min:0',
             'prices.*.compare_at_price' => 'nullable|numeric|min:0',
         ]);
+
+        // Mirrors the shared-SKU guard: processing time is owned by the product's
+        // processing profile unless the listing says it varies per variant.
+        if (array_key_exists('processing_days', $validated) && !$variant->product->processing_time_varies) {
+            return response()->json([
+                'status' => false,
+                'message' => 'This product uses a single processing profile. Change it on the product instead of an individual variant.',
+            ], 422);
+        }
 
         DB::transaction(function () use ($variant, $validated) {
             $variant->update(collect($validated)->except('prices')->toArray());
@@ -191,7 +221,7 @@ class ProductVariantController extends Controller
                 $variant = ProductVariant::findOrFail($item['id']);
 
                 $updateData = [];
-                if (array_key_exists('sku', $item)) {
+                if (array_key_exists('sku', $item) && $variant->product->skus_vary) {
                     $updateData['sku'] = $item['sku'];
                 }
                 if (array_key_exists('quantity', $item)) {
@@ -200,7 +230,7 @@ class ProductVariantController extends Controller
                 if (array_key_exists('price', $item)) {
                     $updateData['base_price'] = $item['price'];
                 }
-                if (array_key_exists('processing_days', $item)) {
+                if (array_key_exists('processing_days', $item) && $variant->product->processing_time_varies) {
                     $updateData['processing_days'] = $item['processing_days'];
                 }
 

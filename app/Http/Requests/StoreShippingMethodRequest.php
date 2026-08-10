@@ -17,6 +17,7 @@ class StoreShippingMethodRequest extends FormRequest
     {
         return [
             'shipping_zone_id' => 'required|exists:shipping_zones,id',
+            'shipping_profile_id' => 'nullable|exists:shipping_profiles,id',
             'name' => 'required|string|max:255',
             'carrier_type' => ['required', Rule::enum(CarrierType::class)],
             'carrier_name' => 'nullable|string|max:255',

@@ -48,9 +48,11 @@ class ProductListResource extends JsonResource
         }
 
         if (!$this->has_variants) {
+            $priceData = $pricingService->getProductPriceForRegion($this->resource, $regionId);
+
             $data['sku'] = $this->sku;
-            $data['price'] = $this->price;
-            $data['discount_price'] = $this->discount_price;
+            $data['price'] = $priceData['compare_at_price'] ?? $priceData['price'];
+            $data['discount_price'] = $priceData['compare_at_price'] !== null ? $priceData['price'] : null;
             $data['stock_qty'] = $this->stock_qty;
             $data['price_label'] = null;
         } else {

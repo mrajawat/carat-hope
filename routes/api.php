@@ -20,6 +20,8 @@ use App\Http\Controllers\Public\DeviceTokenController;
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\CategoryAttributeController;
 use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\ProductOptionController;
+use App\Http\Controllers\Admin\ProductCustomOptionController;
 use App\Http\Controllers\Admin\RegionController;
 use App\Http\Controllers\Frontend\ProductPriceController;
 use App\Http\Controllers\Public\ShippingController;
@@ -27,6 +29,9 @@ use App\Http\Controllers\Admin\ShipmentController;
 use App\Http\Controllers\Admin\ShippingZoneController;
 use App\Http\Controllers\Admin\ShippingMethodController;
 use App\Http\Controllers\Admin\DeliveryEstimateController;
+use App\Http\Controllers\Admin\ShippingThresholdController;
+use App\Http\Controllers\Admin\ProcessingProfileController;
+use App\Http\Controllers\Admin\ShippingProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,6 +119,10 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::post('/products/preview', [ProductController::class, 'preview']);
     Route::post('/products/bulk-toggle-featured', [ProductController::class, 'bulkToggleFeatured']);
     Route::apiResource('/products', ProductController::class);
+    Route::get('/products/{product}/custom-options', [ProductCustomOptionController::class, 'index']);
+    Route::post('/products/{product}/custom-options', [ProductCustomOptionController::class, 'store']);
+    Route::put('/custom-options/{customOption}', [ProductCustomOptionController::class, 'update']);
+    Route::delete('/custom-options/{customOption}', [ProductCustomOptionController::class, 'destroy']);
     Route::patch('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus']);
     Route::patch('/products/{id}/toggle-featured', [ProductController::class, 'toggleFeatured']);
 
@@ -137,12 +146,16 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy']);
 
     // Admin Product Variations & Global Region Pricing Routes
+    Route::get('/attributes/{attribute}/values', [AttributeController::class, 'values']);
     Route::post('/attributes/{attribute}/values', [AttributeController::class, 'storeValue']);
     Route::delete('/attributes/values/{value}', [AttributeController::class, 'destroyValue']);
     Route::apiResource('/attributes', AttributeController::class);
 
+    Route::get('/category-attributes', [CategoryAttributeController::class, 'index']);
     Route::post('/category-attributes', [CategoryAttributeController::class, 'store']);
     Route::delete('/category-attributes/{id}', [CategoryAttributeController::class, 'destroy']);
+
+    Route::get('/product-options', [ProductOptionController::class, 'index']);
 
     Route::post('/products/{product}/variants/generate-combinations', [ProductVariantController::class, 'generateCombinations']);
     Route::get('/products/{product}/variants', [ProductVariantController::class, 'index']);
@@ -163,6 +176,9 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::apiResource('/shipping-zones', ShippingZoneController::class);
     Route::apiResource('/shipping-methods', ShippingMethodController::class);
     Route::apiResource('/delivery-estimates', DeliveryEstimateController::class);
+    Route::apiResource('/shipping-thresholds', ShippingThresholdController::class);
+    Route::apiResource('/processing-profiles', ProcessingProfileController::class);
+    Route::apiResource('/shipping-profiles', ShippingProfileController::class);
 });
 
 // Public Routes

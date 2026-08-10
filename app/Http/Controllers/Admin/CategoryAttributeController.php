@@ -86,9 +86,14 @@ class CategoryAttributeController extends Controller
     /**
      * Get attributes applicable to a category (public route).
      */
-    public function getAttributesForCategory($categoryId, \App\Services\AttributeService $attributeService)
+    public function getAttributesForCategory($categoryId, Request $request, \App\Services\AttributeService $attributeService)
     {
-        $attributes = $attributeService->getAttributesForCategory($categoryId);
+        $attributes = $attributeService->getAttributesForCategory(
+            $categoryId,
+            $request->has('can_be_variation')
+                ? filter_var($request->can_be_variation, FILTER_VALIDATE_BOOLEAN)
+                : null
+        );
 
         return response()->json([
             'status' => true,

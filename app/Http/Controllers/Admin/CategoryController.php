@@ -10,13 +10,45 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::with('parent')->orderBy('created_at', 'desc')->get();
+        $query = Category::with('parent');
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Only categories with no children — products are assigned to leaf categories
+        if (filter_var($request->get('leaf_only'), FILTER_VALIDATE_BOOLEAN)) {
+            $query->whereDoesntHave('children');
+        }
+
+        $categories = $query->orderBy('name')->get();
+
+        // Build the full breadcrumb path ("Jewellery > Necklaces > Pendant Necklaces")
+        // from an id-keyed map so ancestors resolve without extra queries.
+        $allCategories = Category::select('id', 'name', 'parent_id')->get()->keyBy('id');
+
+        $categories->each(function ($category) use ($allCategories) {
+            $segments = [];
+            $current = $allCategories->get($category->id);
+            $guard = 0;
+
+            while ($current && $guard++ < 10) {
+                array_unshift($segments, $current->name);
+                $current = $current->parent_id ? $allCategories->get($current->parent_id) : null;
+            }
+
+            $category->path = implode(' > ', $segments);
+        });
 
         return response()->json([
             'success' => true,
-            'data' => $categories
+            'data' => $categories->values()
         ]);
     }
 

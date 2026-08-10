@@ -16,10 +16,17 @@ class ShippingRateService
      * @param ShippingZone $zone
      * @param float $orderValue
      * @param string $currency
+     * @param int|null $shippingProfileId Restrict to the delivery profile the cart's
+     *                                    products use; null returns every method in
+     *                                    the zone (profile-agnostic behaviour).
      * @return Collection
      */
-    public function getEligibleMethods(ShippingZone $zone, float $orderValue, string $currency): Collection
-    {
+    public function getEligibleMethods(
+        ShippingZone $zone,
+        float $orderValue,
+        string $currency,
+        ?int $shippingProfileId = null
+    ): Collection {
         $currencyUpper = strtoupper($currency);
         $threshold = config("shipping.high_value_thresholds.{$currencyUpper}");
 
@@ -31,6 +38,14 @@ class ShippingRateService
 
         $methods = $zone->shippingMethods()
             ->where('is_active', true)
+            ->when(
+                $shippingProfileId !== null,
+                // Methods with no profile are shared defaults available to every profile
+                fn ($q) => $q->where(function ($sub) use ($shippingProfileId) {
+                    $sub->where('shipping_profile_id', $shippingProfileId)
+                        ->orWhereNull('shipping_profile_id');
+                })
+            )
             ->orderBy('sort_order')
             ->get();
 
@@ -67,19 +82,34 @@ class ShippingRateService
             $insuranceCost = $orderValue * ($method->insurance_percentage / 100);
         }
 
-        // Check for free shipping threshold
+        // Check for free shipping threshold. A threshold tied to this method's
+        // delivery profile wins over the zone-wide rule, so a "free shipping"
+        // profile can differ from a paid one serving the same zone.
         $shippingCost = $baseCost;
-        $threshold = $zone->shippingThresholds()->where('currency', $currency)->first();
 
-        if ($threshold) {
+        $thresholds = $zone->shippingThresholds()
+            ->where(function ($q) use ($method) {
+                $q->whereNull('shipping_profile_id');
+
+                if ($method->shipping_profile_id) {
+                    $q->orWhere('shipping_profile_id', $method->shipping_profile_id);
+                }
+            })
+            ->get();
+
+        // If the profile defines its own rules they replace the zone's entirely,
+        // rather than the two competing on currency match.
+        $profileSpecific = $thresholds->whereNotNull('shipping_profile_id');
+        $candidates = $profileSpecific->isNotEmpty() ? $profileSpecific : $thresholds;
+
+        $threshold = $candidates->firstWhere('currency', $currency) ?? $candidates->first();
+
+        if (!$threshold) {
+            $minOrderVal = null;
+        } elseif ($threshold->currency === $currency) {
             $minOrderVal = (float) $threshold->min_order_value;
         } else {
-            $anyThreshold = $zone->shippingThresholds()->first();
-            if ($anyThreshold) {
-                $minOrderVal = $this->convertAmount((float) $anyThreshold->min_order_value, $anyThreshold->currency, $currency);
-            } else {
-                $minOrderVal = null;
-            }
+            $minOrderVal = $this->convertAmount((float) $threshold->min_order_value, $threshold->currency, $currency);
         }
 
         if ($minOrderVal !== null && $orderValue >= $minOrderVal) {

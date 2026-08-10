@@ -34,8 +34,9 @@ class Product extends Model
         'listing_attributes',
         'is_global_pricing_enabled',
         'allow_offers',
-        'processing_profile',
-        'delivery_option',
+        'max_offer_discount_percent',
+        'processing_profile_id',
+        'shipping_profile_id',
     ];
 
     protected $casts = [
@@ -57,13 +58,21 @@ class Product extends Model
         'listing_attributes' => 'array',
         'is_global_pricing_enabled' => 'boolean',
         'allow_offers' => 'boolean',
-        'processing_profile' => 'array',
-        'delivery_option' => 'array',
     ];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function processingProfile()
+    {
+        return $this->belongsTo(ProcessingProfile::class);
+    }
+
+    public function shippingProfile()
+    {
+        return $this->belongsTo(ShippingProfile::class);
     }
 
     public function variants()
@@ -84,6 +93,16 @@ class Product extends Model
     public function reviews()
     {
         return $this->hasMany(ProductReview::class);
+    }
+
+    public function prices()
+    {
+        return $this->hasMany(ProductPrice::class);
+    }
+
+    public function customOptions()
+    {
+        return $this->hasMany(ProductCustomOption::class)->orderBy('sort_order');
     }
 
     public function hasLocalPrice($countryCode)
@@ -159,7 +178,9 @@ class Product extends Model
             $regionId = $this->getCurrentRegionId();
             return app(\App\Services\VariantPricingService::class)->getStartingPrice($this, $regionId);
         }
-        return $value;
+        $regionId = $this->getCurrentRegionId();
+        $priceData = app(\App\Services\VariantPricingService::class)->getProductPriceForRegion($this, $regionId);
+        return $priceData['compare_at_price'] ?? $priceData['price'];
     }
 
     public function getDiscountPriceAttribute($value)
@@ -168,7 +189,9 @@ class Product extends Model
             $regionId = $this->getCurrentRegionId();
             return app(\App\Services\VariantPricingService::class)->getStartingDiscountPrice($this, $regionId);
         }
-        return $value;
+        $regionId = $this->getCurrentRegionId();
+        $priceData = app(\App\Services\VariantPricingService::class)->getProductPriceForRegion($this, $regionId);
+        return $priceData['compare_at_price'] !== null ? $priceData['price'] : null;
     }
 
     public function getStockQtyAttribute($value)
@@ -184,7 +207,7 @@ class Product extends Model
 
     public function getSkuAttribute($value)
     {
-        if ($this->has_variants) {
+        if ($this->has_variants && $this->skus_vary) {
             return null;
         }
         return $value;

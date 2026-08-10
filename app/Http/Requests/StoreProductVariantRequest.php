@@ -53,7 +53,8 @@ class StoreProductVariantRequest extends FormRequest
             }
 
             $attributeService = app(AttributeService::class);
-            $requiredAttributes = $attributeService->getAttributesForCategory($product->category_id)
+            $requiredAttributes = $attributeService
+                ->getAttributesForCategory($product->category_id, true)
                 ->where('pivot.is_required', true);
 
             $attributesInput = $this->input('attributes', []);

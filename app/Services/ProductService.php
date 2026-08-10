@@ -4,9 +4,12 @@ namespace App\Services;
 
 use App\Helpers\ImageHelper;
 use App\Helpers\VideoHelper;
+use App\Models\ProcessingProfile;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductPrice;
 use App\Models\ProductVariant;
+use App\Models\ShippingProfile;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\VariantAttributeValue;
@@ -39,11 +42,13 @@ class ProductService
                 $tags = array_map('trim', explode(',', $tags));
             }
             if (is_array($tags)) {
-                $tags = array_slice($tags, 0, 13);
+                $tags = array_slice($tags, 0, \App\Http\Requests\StoreProductRequest::MAX_TAGS);
             }
 
             // Extract Step 3 attributes & specifications
             $parsedAttrs = $this->parseProductAttributes($data);
+
+            $skusVary = filter_var($data['skus_vary'] ?? true, FILTER_VALIDATE_BOOLEAN);
 
             // 1. Prepare product attributes based on variant flag
             $productData = [
@@ -56,7 +61,7 @@ class ProductService
                 'local_prices' => $data['local_prices'] ?? null,
                 'prices_vary' => filter_var($data['prices_vary'] ?? true, FILTER_VALIDATE_BOOLEAN),
                 'quantities_vary' => filter_var($data['quantities_vary'] ?? true, FILTER_VALIDATE_BOOLEAN),
-                'skus_vary' => filter_var($data['skus_vary'] ?? true, FILTER_VALIDATE_BOOLEAN),
+                'skus_vary' => $skusVary,
                 'processing_time_varies' => filter_var($data['processing_time_varies'] ?? $data['processing_profiles_vary'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'max_variation_axes' => isset($data['max_variation_axes']) ? (int)$data['max_variation_axes'] : 2,
                 'total_stock' => isset($data['total_stock']) ? (int)$data['total_stock'] : 0,
@@ -67,19 +72,28 @@ class ProductService
                 'listing_attributes' => $parsedAttrs['listing_attributes'],
                 'is_global_pricing_enabled' => filter_var($data['is_global_pricing_enabled'] ?? $data['domestic_and_global_pricing'] ?? true, FILTER_VALIDATE_BOOLEAN),
                 'allow_offers' => filter_var($data['allow_offers'] ?? $data['allow_buyer_offers'] ?? false, FILTER_VALIDATE_BOOLEAN),
-                'processing_profile' => $data['processing_profile'] ?? null,
-                'delivery_option' => $data['delivery_option'] ?? null,
+                'max_offer_discount_percent' => $data['max_offer_discount_percent'] ?? null,
+                // Fall back to whichever profile is flagged default, so the common
+                // case needs no explicit id in the payload
+                'processing_profile_id' => $data['processing_profile_id']
+                    ?? ProcessingProfile::where('is_default', true)->value('id'),
+                'shipping_profile_id' => $data['shipping_profile_id']
+                    ?? ShippingProfile::where('is_default', true)->value('id'),
             ];
 
             if (!$hasVariants) {
-                // Populate simple product pricing and stock fields
+                // Populate simple product pricing and stock fields, derived from the
+                // mandatory regional prices (raw columns act only as a legacy fallback)
+                $derivedPricing = $this->getDefaultRegionPricing($data['prices'] ?? []);
                 $productData['sku'] = $data['sku'] ?? null;
-                $productData['price'] = $data['price'] ?? null;
-                $productData['discount_price'] = $data['discount_price'] ?? null;
+                $productData['price'] = $derivedPricing['price'];
+                $productData['discount_price'] = $derivedPricing['discount_price'];
                 $productData['stock_qty'] = $data['stock_qty'] ?? 0;
             } else {
-                // Variant product: leave simple product fields null
-                $productData['sku'] = null;
+                // Variant product: leave price/stock fields null. SKU is only set here
+                // when it's shared across all variants (skus_vary=false); otherwise each
+                // variant gets its own SKU further down.
+                $productData['sku'] = $skusVary ? null : ($data['sku'] ?? null);
                 $productData['price'] = null;
                 $productData['discount_price'] = null;
                 $productData['stock_qty'] = null;
@@ -88,8 +102,9 @@ class ProductService
             // 2. Create the product record
             $product = Product::create($productData);
 
-            // 3. Auto-generate SKU for simple products if not provided
-            if (!$hasVariants && empty($data['sku'])) {
+            // 3. Auto-generate SKU for simple products, or for variant products with a
+            // single shared SKU, if not provided
+            if ((!$hasVariants || !$skusVary) && empty($product->getAttributes()['sku'])) {
                 $skuGenerator = app(SkuGeneratorService::class);
                 $product->sku = $skuGenerator->generateForProduct($product);
                 $product->save();
@@ -148,8 +163,112 @@ class ProductService
                 $this->storeOrUpdateVariants($product, $data);
             }
 
-            return $product->load(['product_images', 'variants.attributeValues.attribute', 'variants.prices.region']);
+            // 7. Save the mandatory regional prices: a simple product, or a variant
+            // product where prices don't vary, has one shared price per region
+            if ((!$hasVariants || !$product->prices_vary) && !empty($data['prices'])) {
+                $this->saveProductPrices($product, $data['prices']);
+            }
+
+            return $product->load(['product_images', 'variants.attributeValues.attribute', 'variants.prices.region', 'prices.region']);
         });
+    }
+
+    /**
+     * Save regional prices for a simple (non-variant) product.
+     *
+     * @param Product $product
+     * @param array $pricesInput List of ['region_id' => int, 'price' => float, 'compare_at_price' => ?float]
+     * @return void
+     */
+    public function saveProductPrices(Product $product, array $pricesInput): void
+    {
+        foreach ($pricesInput as $priceData) {
+            if (!is_array($priceData) || empty($priceData['region_id']) || !isset($priceData['price'])) {
+                continue;
+            }
+
+            ProductPrice::updateOrCreate(
+                [
+                    'product_id' => $product->id,
+                    'region_id' => $priceData['region_id'],
+                ],
+                [
+                    'price' => $priceData['price'],
+                    'compare_at_price' => $priceData['compare_at_price'] ?? null,
+                ]
+            );
+        }
+    }
+
+    /**
+     * Resolve the single SKU shared by every variant of a product when skus_vary is
+     * false: reuse the product's existing sku (already persisted on this instance or
+     * previously generated), or generate and persist one if it's still empty.
+     *
+     * @param Product $product
+     * @param array $data
+     * @param SkuGeneratorService $skuGenerator
+     * @return string
+     */
+    protected function resolveSharedSku(Product $product, array $data, SkuGeneratorService $skuGenerator): string
+    {
+        $sku = $product->getAttributes()['sku'] ?? $data['sku'] ?? null;
+
+        if (empty($sku)) {
+            $sku = $skuGenerator->generateForProduct($product);
+        }
+
+        if ($product->getAttributes()['sku'] !== $sku) {
+            $product->sku = $sku;
+            $product->save();
+        }
+
+        return $sku;
+    }
+
+    /**
+     * Derive the legacy flat price/discount_price columns from the regional prices
+     * input, preferring the default region's entry (falling back to the first entry
+     * provided). Mirrors the price/compare_at_price -> price/discount_price mapping
+     * used when reading prices back via VariantPricingService::getProductPriceForRegion().
+     *
+     * @param array $pricesInput List of ['region_id' => int, 'price' => float, 'compare_at_price' => ?float]
+     * @return array{price: ?float, discount_price: ?float}
+     */
+    public function getDefaultRegionPricing(array $pricesInput): array
+    {
+        $validEntries = array_filter(
+            $pricesInput,
+            fn ($entry) => is_array($entry) && isset($entry['region_id'], $entry['price'])
+        );
+
+        if (empty($validEntries)) {
+            return ['price' => null, 'discount_price' => null];
+        }
+
+        $defaultRegion = Region::where('is_default', true)->first();
+        $entry = null;
+
+        if ($defaultRegion) {
+            foreach ($validEntries as $candidate) {
+                if ((int) $candidate['region_id'] === $defaultRegion->id) {
+                    $entry = $candidate;
+                    break;
+                }
+            }
+        }
+
+        $entry ??= reset($validEntries);
+
+        $price = (float) $entry['price'];
+        $compareAtPrice = isset($entry['compare_at_price']) && $entry['compare_at_price'] !== null
+            ? (float) $entry['compare_at_price']
+            : null;
+
+        return [
+            'price' => $compareAtPrice ?? $price,
+            'discount_price' => $compareAtPrice !== null ? $price : null,
+        ];
     }
 
     /**
@@ -164,7 +283,10 @@ class ProductService
         $variantsInput = $data['variants'] ?? $data['variations'] ?? null;
 
         if (!empty($variantsInput) && is_array($variantsInput)) {
+            $this->assertVariationAxesWithinLimit($product, $variantsInput);
+
             $skuGenerator = app(SkuGeneratorService::class);
+            $sharedSku = $product->skus_vary ? null : $this->resolveSharedSku($product, $data, $skuGenerator);
 
             foreach ($variantsInput as $variantData) {
                 if (!is_array($variantData)) {
@@ -174,30 +296,46 @@ class ProductService
                 $variantId = $variantData['id'] ?? null;
 
                 // 1. Create or update variant record
+                $variantAttributes = [
+                        'product_id' => $product->id,
+                        'weight_grams' => $variantData['weight_grams'] ?? 0.000,
+                        'making_charges' => $variantData['making_charges'] ?? 0.00,
+                        'base_price' => $variantData['base_price'] ?? $variantData['price'] ?? null,
+                        'stock_quantity' => $variantData['stock_quantity'] ?? $variantData['stock_qty'] ?? $variantData['quantity'] ?? 0,
+                        // Per-variant processing time is only meaningful when the
+                        // listing says it varies; otherwise the product's processing
+                        // profile is the single source of truth and storing a value
+                        // here would leave a stale number the read path ignores.
+                        'processing_days' => $product->processing_time_varies
+                            ? ($variantData['processing_days'] ?? null)
+                            : null,
+                        'variant_images' => $variantData['variant_images'] ?? null,
+                        'is_active' => filter_var($variantData['is_active'] ?? $variantData['visible'] ?? true, FILTER_VALIDATE_BOOLEAN),
+                ];
+
+                // Only touch the SKU when there is a value to write. Always
+                // including the key would blank an existing SKU whenever the
+                // client updates a variant without resending it.
+                if (!$product->skus_vary) {
+                    $variantAttributes['sku'] = $sharedSku;
+                } elseif (!empty($variantData['sku'])) {
+                    $variantAttributes['sku'] = $variantData['sku'];
+                }
+
                 $variant = ProductVariant::updateOrCreate(
                     [
                         'id' => $variantId,
                         'product_id' => $product->id,
                     ],
-                    [
-                        'product_id' => $product->id,
-                        'sku' => $variantData['sku'] ?? null,
-                        'weight_grams' => $variantData['weight_grams'] ?? 0.000,
-                        'making_charges' => $variantData['making_charges'] ?? 0.00,
-                        'base_price' => $variantData['base_price'] ?? $variantData['price'] ?? null,
-                        'stock_quantity' => $variantData['stock_quantity'] ?? $variantData['stock_qty'] ?? $variantData['quantity'] ?? 0,
-                        'processing_days' => $variantData['processing_days'] ?? null,
-                        'variant_images' => $variantData['variant_images'] ?? null,
-                        'is_active' => filter_var($variantData['is_active'] ?? $variantData['visible'] ?? true, FILTER_VALIDATE_BOOLEAN),
-                    ]
+                    $variantAttributes
                 );
 
                 // 2. Associate attributes & attribute values
                 $attributesInput = $variantData['attributes'] ?? $variantData['attribute_value_ids'] ?? $variantData['attribute_values'] ?? $variantData['options'] ?? null;
                 $associatedAttrValueIds = $this->parseAndAssociateVariantAttributes($variant, $attributesInput);
 
-                // Auto-generate SKU if empty
-                if (empty($variant->sku)) {
+                // Auto-generate SKU if empty (only when each variant has its own SKU)
+                if ($product->skus_vary && empty($variant->sku)) {
                     $variant->sku = $skuGenerator->generate($product, $associatedAttrValueIds);
                     $variant->save();
                 }
@@ -218,9 +356,71 @@ class ProductService
             }
 
             if (!empty($transformedAttributes)) {
-                $combinations = $combinationService->generateCombinations($transformedAttributes);
+                $combinations = $combinationService->generateCombinations(
+                    $transformedAttributes,
+                    $product->max_variation_axes
+                );
                 $combinationService->createVariantsFromCombinations($product, $combinations);
             }
+        }
+    }
+
+    /**
+     * Reject an explicit variants[] payload that varies by more attributes than the
+     * product allows. Resolves the submitted attribute value IDs back to their parent
+     * attributes and counts the distinct ones - that count is the number of axes.
+     *
+     * @param Product $product
+     * @param array $variantsInput
+     * @return void
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function assertVariationAxesWithinLimit(Product $product, array $variantsInput): void
+    {
+        $valueIds = [];
+
+        foreach ($variantsInput as $variantData) {
+            if (!is_array($variantData)) {
+                continue;
+            }
+
+            $attributesInput = $variantData['attributes']
+                ?? $variantData['attribute_value_ids']
+                ?? $variantData['attribute_values']
+                ?? $variantData['options']
+                ?? null;
+
+            if (!is_array($attributesInput)) {
+                continue;
+            }
+
+            foreach ($attributesInput as $val) {
+                if (is_numeric($val)) {
+                    $valueIds[] = (int) $val;
+                } elseif (is_array($val) && isset($val['attribute_value_id'])) {
+                    $valueIds[] = (int) $val['attribute_value_id'];
+                }
+            }
+        }
+
+        if (empty($valueIds)) {
+            return;
+        }
+
+        $axisCount = AttributeValue::whereIn('id', array_unique($valueIds))
+            ->distinct()
+            ->count('attribute_id');
+
+        $ceiling = (int) config('jewelry.max_variation_axes', 2);
+        $limit = $product->max_variation_axes
+            ? min((int) $product->max_variation_axes, $ceiling)
+            : $ceiling;
+
+        if ($axisCount > $limit) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'variants' => "This product may vary by at most {$limit} attribute"
+                    . ($limit === 1 ? '' : 's') . ", but {$axisCount} were submitted.",
+            ]);
         }
     }
 
@@ -442,7 +642,7 @@ class ProductService
             'variants', 'variations', 'attributes', 'listing_attributes', 'item_attributes',
             'tags', 'materials', 'gold_solidity', 'gold_purity',
             'is_global_pricing_enabled', 'domestic_and_global_pricing',
-            'allow_offers', 'allow_buyer_offers', 'processing_profile', 'delivery_option'
+            'allow_offers', 'allow_buyer_offers', 'processing_profile_id', 'shipping_profile_id'
         ];
 
         foreach ($data as $key => $value) {
@@ -519,13 +719,14 @@ class ProductService
         $product->listing_attributes = $parsedAttrs['listing_attributes'];
         $product->is_global_pricing_enabled = filter_var($data['is_global_pricing_enabled'] ?? $data['domestic_and_global_pricing'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $product->allow_offers = filter_var($data['allow_offers'] ?? $data['allow_buyer_offers'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $product->processing_profile = $data['processing_profile'] ?? null;
-        $product->delivery_option = $data['delivery_option'] ?? null;
+        $product->processing_profile_id = $data['processing_profile_id'] ?? null;
+        $product->shipping_profile_id = $data['shipping_profile_id'] ?? null;
 
         if (!$hasVariants) {
+            $derivedPricing = $this->getDefaultRegionPricing($data['prices'] ?? []);
             $product->sku = $data['sku'] ?? 'PREVIEW-SKU';
-            $product->price = isset($data['price']) ? (float)$data['price'] : 0.00;
-            $product->discount_price = isset($data['discount_price']) ? (float)$data['discount_price'] : null;
+            $product->price = $derivedPricing['price'] ?? 0.00;
+            $product->discount_price = $derivedPricing['discount_price'];
             $product->stock_qty = isset($data['stock_qty']) ? (int)$data['stock_qty'] : 0;
         }
 
@@ -573,6 +774,7 @@ class ProductService
             'images' => $images,
             'video' => $video,
             'variants' => $variantsPreview,
+            'prices' => $hasVariants ? [] : ($data['prices'] ?? []),
             'is_preview' => true,
         ];
     }

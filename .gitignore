@@ -1,30 +1,43 @@
+# Dependencies
+/vendor
 /node_modules
+composer.phar
+vendor.zip
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Laravel
 /public/build
 /public/hot
 /public/storage
 /storage/*.key
-/vendor
-.env
-.env.backup
-.env.production
-.phpactor.json
+/storage/pail
+.phpunit.cache
 .phpunit.result.cache
-Homestead.json
-Homestead.yaml
-auth.json
+
+# Logs
+error_log
+*.log
+add_error.log
 npm-debug.log
 yarn-error.log
+
+# IDE / OS
 /.fleet
 /.idea
 /.vscode
+.DS_Store
+Thumbs.db
 
-# Large/archive files
-*.zip
-*.tar.gz
-*.rar
+# Local git identity (personal, not project config)
+.gitconfig
+.gitconfig-personal
 
-# Error logs
-error_log
-
-# Project specific
-carat-hope/
+# Misc
+Homestead.json
+Homestead.yaml
+auth.json
+.user.ini

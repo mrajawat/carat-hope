@@ -17,6 +17,7 @@ class UpdateShippingMethodRequest extends FormRequest
     {
         return [
             'shipping_zone_id' => 'sometimes|required|exists:shipping_zones,id',
+            'shipping_profile_id' => 'sometimes|nullable|exists:shipping_profiles,id',
             'name' => 'sometimes|required|string|max:255',
             'carrier_type' => ['sometimes', 'required', Rule::enum(CarrierType::class)],
             'carrier_name' => 'nullable|string|max:255',

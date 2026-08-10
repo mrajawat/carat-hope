@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GenerateVariantCombinationsRequest extends FormRequest
@@ -15,12 +16,28 @@ class GenerateVariantCombinationsRequest extends FormRequest
     }
 
     /**
+     * How many variation axes this product may use: its own limit, capped by the
+     * global config ceiling.
+     */
+    protected function resolveMaxAxes(): int
+    {
+        $ceiling = (int) config('jewelry.max_variation_axes', 2);
+        $product = Product::find($this->route('product'));
+
+        if ($product && $product->max_variation_axes) {
+            return min((int) $product->max_variation_axes, $ceiling);
+        }
+
+        return $ceiling;
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      */
     public function rules(): array
     {
         return [
-            'attributes' => 'required|array|min:1|max:2',
+            'attributes' => 'required|array|min:1|max:' . $this->resolveMaxAxes(),
             'attributes.*.attribute_id' => 'required|integer|exists:attributes,id',
             'attributes.*.attribute_value_ids' => 'required|array|min:1',
             'attributes.*.attribute_value_ids.*' => 'required|integer|exists:attribute_values,id',
@@ -32,8 +49,11 @@ class GenerateVariantCombinationsRequest extends FormRequest
      */
     public function messages(): array
     {
+        $max = $this->resolveMaxAxes();
+
         return [
-            'attributes.max' => 'Maximum of 2 variation axes (attributes) can be selected at once.',
+            'attributes.max' => "Maximum of {$max} variation " . ($max === 1 ? 'axis' : 'axes')
+                . ' (attributes) can be selected at once.',
             'attributes.min' => 'At least one variation axis (attribute) must be selected.',
             'attributes.*.attribute_id.exists' => 'The selected attribute is invalid.',
             'attributes.*.attribute_value_ids.min' => 'Each selected attribute must have at least one value.',

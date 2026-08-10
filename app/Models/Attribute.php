@@ -12,13 +12,23 @@ class Attribute extends Model
     protected $fillable = [
         'name',
         'slug',
+        'can_be_variation',
         'input_type',
         'unit',
+        'allowed_units',
+        'max_selections',
         'affects_price',
+        'is_global',
+        'is_custom',
     ];
 
     protected $casts = [
+        'can_be_variation' => 'boolean',
+        'allowed_units' => 'array',
+        'max_selections' => 'integer',
         'affects_price' => 'boolean',
+        'is_global' => 'boolean',
+        'is_custom' => 'boolean',
     ];
 
     /**

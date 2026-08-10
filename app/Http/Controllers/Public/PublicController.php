@@ -53,7 +53,8 @@ class PublicController extends Controller
                 'category',
                 'product_images',
                 'variants' => fn ($q) => $q->where('is_active', true),
-                'variants.prices' => fn ($q) => $q->where('region_id', $region->id)
+                'variants.prices' => fn ($q) => $q->where('region_id', $region->id),
+                'prices' => fn ($q) => $q->where('region_id', $region->id),
             ])
                 ->withCount(['reviews' => function($q) {
                     $q->where('status', 'approved');
@@ -121,6 +122,10 @@ class PublicController extends Controller
             'variants' => fn ($q) => $q->where('is_active', true),
             'variants.attributeValues',
             'variants.prices' => fn ($q) => $q->where('region_id', $region->id),
+            'prices' => fn ($q) => $q->where('region_id', $region->id),
+            'processingProfile',
+            'shippingProfile',
+            'customOptions',
         ])
             ->where('status', 'active')
             ->where(function ($query) use ($slug_or_id) {

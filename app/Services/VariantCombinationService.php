@@ -16,13 +16,19 @@ class VariantCombinationService
      * Enforces the max 2 axes soft limit.
      *
      * @param array $selectedAttributeValueIds E.g., ['metal_karat' => [14, 18], 'ring_size' => [6, 7, 8]]
+     * @param int|null $maxAxes Per-product limit; falls back to the global config ceiling.
      * @return array
      * @throws \InvalidArgumentException
      */
-    public function generateCombinations(array $selectedAttributeValueIds): array
+    public function generateCombinations(array $selectedAttributeValueIds, ?int $maxAxes = null): array
     {
-        if (count($selectedAttributeValueIds) > 2) {
-            throw new \InvalidArgumentException("Maximum of 2 variation axes can be selected at once.");
+        $ceiling = (int) config('jewelry.max_variation_axes', 2);
+        $limit = $maxAxes !== null ? min($maxAxes, $ceiling) : $ceiling;
+
+        if (count($selectedAttributeValueIds) > $limit) {
+            throw new \InvalidArgumentException(
+                "Maximum of {$limit} variation " . ($limit === 1 ? 'axis' : 'axes') . " can be selected at once."
+            );
         }
 
         if (empty($selectedAttributeValueIds)) {
@@ -59,6 +65,16 @@ class VariantCombinationService
             $createdVariants = collect();
             $skuGenerator = app(SkuGeneratorService::class);
 
+            $sharedSku = null;
+            if (!$product->skus_vary) {
+                $sharedSku = $product->sku;
+                if (empty($sharedSku)) {
+                    $sharedSku = $skuGenerator->generateForProduct($product);
+                    $product->sku = $sharedSku;
+                    $product->save();
+                }
+            }
+
             foreach ($combinations as $combination) {
                 // Extract only the attribute value IDs (values of the associative array)
                 $attributeValueIds = array_values($combination);
@@ -72,8 +88,8 @@ class VariantCombinationService
                     continue;
                 }
 
-                // Generate SKU
-                $sku = $skuGenerator->generate($product, $attributeValueIds);
+                // Generate SKU, unless every variant shares the product's single SKU
+                $sku = $product->skus_vary ? $skuGenerator->generate($product, $attributeValueIds) : $sharedSku;
 
                 // Create Product Variant record
                 $variant = ProductVariant::create([
