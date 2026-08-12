@@ -153,6 +153,33 @@ class StoreProductRequest extends FormRequest
     }
 
     /**
+     * Every selection must be a real option from the attribute master - either its
+     * value id, or its exact label. Without this the API would accept any string,
+     * leaving products pointing at options that do not exist.
+     */
+    protected function validateAgainstMaster($validator, $attribute, string $field, array $selected): void
+    {
+        $master = $attribute->values()->get(['id', 'value']);
+
+        foreach ($selected as $idx => $entry) {
+            if (!is_scalar($entry)) {
+                continue;
+            }
+
+            $matched = is_numeric($entry)
+                ? $master->contains('id', (int) $entry)
+                : $master->contains(fn ($v) => strcasecmp((string) $v->value, trim((string) $entry)) === 0);
+
+            if (!$matched) {
+                $validator->errors()->add(
+                    "{$field}.{$idx}",
+                    "\"{$entry}\" is not a valid option for {$attribute->name}."
+                );
+            }
+        }
+    }
+
+    /**
      * Honour each attribute's max_selections ("Select up to 5", "Select up to 4").
      * Covers both the descriptive fields stored as named lists and the
      * attribute_id-keyed map form.
@@ -163,18 +190,28 @@ class StoreProductRequest extends FormRequest
         foreach (['materials', 'gold_solidity', 'gold_purity'] as $field) {
             $value = $this->input($field);
 
-            if (!is_array($value)) {
+            if (is_string($value)) {
+                $value = array_values(array_filter(array_map('trim', explode(',', $value))));
+            }
+
+            if (!is_array($value) || empty($value)) {
                 continue;
             }
 
             $attribute = \App\Models\Attribute::where('slug', str_replace('_', '-', $field))->first();
 
-            if ($attribute && $attribute->max_selections && count($value) > $attribute->max_selections) {
+            if (!$attribute) {
+                continue;
+            }
+
+            if ($attribute->max_selections && count($value) > $attribute->max_selections) {
                 $validator->errors()->add(
                     $field,
                     "Select up to {$attribute->max_selections} for {$attribute->name}."
                 );
             }
+
+            $this->validateAgainstMaster($validator, $attribute, $field, $value);
         }
 
         // Map form: {"6": [29, 30, 31]} - keys are attribute ids

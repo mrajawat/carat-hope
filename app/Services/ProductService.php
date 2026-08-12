@@ -17,6 +17,7 @@ use App\Models\VariantPrice;
 use App\Models\Region;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class ProductService
 {
@@ -139,7 +140,12 @@ class ProductService
                                 'is_primary' => false,
                             ]);
                         } catch (\Exception $e) {
-                            throw new \Exception('Video upload failed: ' . $e->getMessage());
+                            // A rejected upload is bad input, not a server fault - surface
+                            // it as a 422 against the offending index so the client can
+                            // point at the right file.
+                            throw ValidationException::withMessages([
+                                "images.{$index}" => 'Video upload failed: ' . $e->getMessage(),
+                            ]);
                         }
                     } else {
                         try {
@@ -152,7 +158,9 @@ class ProductService
                             ]);
                             $photoIndex++;
                         } catch (\Exception $e) {
-                            throw new \Exception('Image upload failed: ' . $e->getMessage());
+                            throw ValidationException::withMessages([
+                                "images.{$index}" => 'Image upload failed: ' . $e->getMessage(),
+                            ]);
                         }
                     }
                 }
@@ -659,25 +667,99 @@ class ProductService
             return $item;
         };
 
-        $materials = $extractVal('materials') ?? $extractVal('material');
-        $goldSolidity = $extractVal('gold_solidity');
-        $goldPurity = $extractVal('gold_purity');
+        // The named descriptive lists are backed by master attributes, so resolve
+        // whatever the client sent (value ids, or labels from an older client)
+        // into both forms: labels stay in the flat column for backwards
+        // compatibility, ids go into listing_attributes for querying.
+        $resolved = [];
+        foreach (['materials' => 'materials', 'gold_solidity' => 'gold-solidity', 'gold_purity' => 'gold-purity'] as $field => $slug) {
+            $raw = $extractVal($field) ?? ($field === 'materials' ? $extractVal('material') : null);
+            $resolution = $this->resolveMasterValues($slug, $raw);
 
-        if (is_string($materials)) {
-            $materials = array_map('trim', explode(',', $materials));
-        }
-        if (is_string($goldSolidity)) {
-            $goldSolidity = array_map('trim', explode(',', $goldSolidity));
-        }
-        if (is_string($goldPurity)) {
-            $goldPurity = array_map('trim', explode(',', $goldPurity));
+            $resolved[$field] = $resolution['values'];
+
+            if ($resolution['attribute_id'] !== null) {
+                $listingAttributes[$field] = [
+                    'attribute_id' => $resolution['attribute_id'],
+                    'attribute_value_ids' => $resolution['ids'],
+                    'value' => $resolution['values'],
+                ];
+            }
         }
 
         return [
-            'materials' => $materials,
-            'gold_solidity' => $goldSolidity,
-            'gold_purity' => $goldPurity,
+            'materials' => $resolved['materials'],
+            'gold_solidity' => $resolved['gold_solidity'],
+            'gold_purity' => $resolved['gold_purity'],
             'listing_attributes' => !empty($listingAttributes) ? $listingAttributes : null,
+        ];
+    }
+
+    /**
+     * Resolve a descriptive attribute's submitted selection against the master.
+     *
+     * Accepts attribute value ids (preferred), plain labels from an older client,
+     * or a comma separated string. Anything that matches a real value in the
+     * master is returned in both forms; unmatched labels are preserved as-is so a
+     * legacy payload never silently loses data.
+     *
+     * @param string $slug Attribute slug, e.g. 'materials'
+     * @param mixed $input
+     * @return array{attribute_id: ?int, ids: array, values: array}
+     */
+    public function resolveMasterValues(string $slug, $input): array
+    {
+        $empty = ['attribute_id' => null, 'ids' => [], 'values' => null];
+
+        if ($input === null || $input === '' || $input === []) {
+            return $empty;
+        }
+
+        if (is_string($input)) {
+            $input = array_values(array_filter(array_map('trim', explode(',', $input))));
+        }
+
+        if (!is_array($input)) {
+            $input = [$input];
+        }
+
+        $attribute = Attribute::where('slug', $slug)->first();
+
+        if (!$attribute) {
+            // No master for this field - keep whatever was sent
+            return ['attribute_id' => null, 'ids' => [], 'values' => array_values($input)];
+        }
+
+        $masterValues = $attribute->values()->get(['id', 'value']);
+        $ids = [];
+        $labels = [];
+
+        foreach ($input as $entry) {
+            $match = null;
+
+            if (is_numeric($entry)) {
+                $match = $masterValues->firstWhere('id', (int) $entry);
+            }
+
+            if (!$match) {
+                $match = $masterValues->first(
+                    fn ($v) => strcasecmp((string) $v->value, trim((string) $entry)) === 0
+                );
+            }
+
+            if ($match) {
+                $ids[] = $match->id;
+                $labels[] = $match->value;
+            } else {
+                // Unrecognised - retain the raw label rather than dropping it
+                $labels[] = is_scalar($entry) ? (string) $entry : null;
+            }
+        }
+
+        return [
+            'attribute_id' => $attribute->id,
+            'ids' => array_values(array_unique($ids)),
+            'values' => array_values(array_filter($labels, fn ($l) => $l !== null)),
         ];
     }
 

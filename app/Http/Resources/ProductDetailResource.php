@@ -40,9 +40,13 @@ class ProductDetailResource extends JsonResource
             'images' => $images,
             'video' => $video,
             'tags' => $this->tags,
+            // Labels for display, plus the master value ids the labels resolve to
             'materials' => $this->materials,
+            'materials_ids' => data_get($this->listing_attributes, 'materials.attribute_value_ids', []),
             'gold_solidity' => $this->gold_solidity,
+            'gold_solidity_ids' => data_get($this->listing_attributes, 'gold_solidity.attribute_value_ids', []),
             'gold_purity' => $this->gold_purity,
+            'gold_purity_ids' => data_get($this->listing_attributes, 'gold_purity.attribute_value_ids', []),
             'listing_attributes' => $this->listing_attributes,
             'is_global_pricing_enabled' => (bool)($this->is_global_pricing_enabled ?? true),
             'allow_offers' => (bool)($this->allow_offers ?? false),

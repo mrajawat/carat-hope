@@ -143,6 +143,7 @@ class ProductController extends Controller
         );
 
         $this->validateRegionalPricingRequirement($request, $product, $hasVariants);
+        $this->validateDescriptiveAttributes($request);
 
         return DB::transaction(function () use ($request, $validated, $product, $productService, $hasVariants) {
 
@@ -162,21 +163,6 @@ class ProductController extends Controller
                 $tags = array_map('trim', explode(',', $tags));
             }
 
-            $materials = $request->has('materials') ? $request->materials : $product->materials;
-            if (is_string($materials)) {
-                $materials = array_map('trim', explode(',', $materials));
-            }
-
-            $goldSolidity = $request->has('gold_solidity') ? $request->gold_solidity : $product->gold_solidity;
-            if (is_string($goldSolidity)) {
-                $goldSolidity = array_map('trim', explode(',', $goldSolidity));
-            }
-
-            $goldPurity = $request->has('gold_purity') ? $request->gold_purity : $product->gold_purity;
-            if (is_string($goldPurity)) {
-                $goldPurity = array_map('trim', explode(',', $goldPurity));
-            }
-
             $listingAttributes = $product->listing_attributes ?? [];
             if ($request->has('listing_attributes') || $request->has('item_attributes')) {
                 $inputAttrs = $request->listing_attributes ?? $request->item_attributes;
@@ -184,6 +170,34 @@ class ProductController extends Controller
                     $listingAttributes = array_merge($listingAttributes, $inputAttrs);
                 }
             }
+
+            // Descriptive lists resolve against the attribute master, so a client may
+            // send value ids or labels. Fields left out of the request keep their
+            // current value rather than being cleared.
+            $descriptive = ['materials' => 'materials', 'gold_solidity' => 'gold-solidity', 'gold_purity' => 'gold-purity'];
+            $resolvedDescriptive = [];
+
+            foreach ($descriptive as $field => $slug) {
+                if (!$request->has($field)) {
+                    $resolvedDescriptive[$field] = $product->{$field};
+                    continue;
+                }
+
+                $resolution = $productService->resolveMasterValues($slug, $request->input($field));
+                $resolvedDescriptive[$field] = $resolution['values'];
+
+                if ($resolution['attribute_id'] !== null) {
+                    $listingAttributes[$field] = [
+                        'attribute_id' => $resolution['attribute_id'],
+                        'attribute_value_ids' => $resolution['ids'],
+                        'value' => $resolution['values'],
+                    ];
+                }
+            }
+
+            $materials = $resolvedDescriptive['materials'];
+            $goldSolidity = $resolvedDescriptive['gold_solidity'];
+            $goldPurity = $resolvedDescriptive['gold_purity'];
 
             $specKeys = [
                 'primary_colour', 'primary_color', 'secondary_colour', 'secondary_color',
@@ -252,7 +266,9 @@ class ProductController extends Controller
                     try {
                         $videoUrl = \App\Helpers\VideoHelper::upload($request->video, 'products/videos');
                     } catch (\Exception $e) {
-                        throw new \Exception('Video upload failed: ' . $e->getMessage());
+                        throw ValidationException::withMessages([
+                            'video' => 'Video upload failed: ' . $e->getMessage(),
+                        ]);
                     }
 
                     ProductImage::create([
@@ -326,6 +342,62 @@ class ProductController extends Controller
                 ])
             ]);
         });
+    }
+
+    /**
+     * Descriptive selections must be real options from the attribute master, and
+     * within that attribute's max_selections. Mirrors the checks StoreProductRequest
+     * runs on create.
+     */
+    private function validateDescriptiveAttributes(Request $request): void
+    {
+        $errors = [];
+
+        foreach (['materials' => 'materials', 'gold_solidity' => 'gold-solidity', 'gold_purity' => 'gold-purity'] as $field => $slug) {
+            if (!$request->has($field)) {
+                continue;
+            }
+
+            $selected = $request->input($field);
+
+            if (is_string($selected)) {
+                $selected = array_values(array_filter(array_map('trim', explode(',', $selected))));
+            }
+
+            if (!is_array($selected) || empty($selected)) {
+                continue;
+            }
+
+            $attribute = \App\Models\Attribute::where('slug', $slug)->first();
+
+            if (!$attribute) {
+                continue;
+            }
+
+            if ($attribute->max_selections && count($selected) > $attribute->max_selections) {
+                $errors[$field] = "Select up to {$attribute->max_selections} for {$attribute->name}.";
+            }
+
+            $master = $attribute->values()->get(['id', 'value']);
+
+            foreach ($selected as $idx => $entry) {
+                if (!is_scalar($entry)) {
+                    continue;
+                }
+
+                $matched = is_numeric($entry)
+                    ? $master->contains('id', (int) $entry)
+                    : $master->contains(fn ($v) => strcasecmp((string) $v->value, trim((string) $entry)) === 0);
+
+                if (!$matched) {
+                    $errors["{$field}.{$idx}"] = "\"{$entry}\" is not a valid option for {$attribute->name}.";
+                }
+            }
+        }
+
+        if (!empty($errors)) {
+            throw ValidationException::withMessages($errors);
+        }
     }
 
     /**

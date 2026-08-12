@@ -7,14 +7,26 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageHelper
 {
+    /**
+     * Formats accepted on upload. Anything GD can decode is converted to WebP;
+     * anything it cannot is stored as-is, so every type here must also be one
+     * browsers can display natively.
+     *
+     * HEIC/HEIF are deliberately absent - Safari aside, browsers cannot render
+     * them, so storing one would produce a broken image on the storefront.
+     */
+    public const ALLOWED_TYPES = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'avif', 'bmp'];
+
     public static function uploadBase64($base64String, $folder = 'uploads')
     {
          if ($base64String instanceof \Illuminate\Http\UploadedFile) {
             $data = file_get_contents($base64String->getRealPath());
             $ext = strtolower($base64String->getClientOriginalExtension());
             
-            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'])) {
-                throw new \Exception('Invalid image type.');
+            if (!in_array($ext, self::ALLOWED_TYPES)) {
+                throw new \Exception(
+                    "Unsupported image type \"{$ext}\". Allowed types: " . implode(', ', self::ALLOWED_TYPES) . '.'
+                );
             }
             
             $filename = Str::random(20) . '.webp';
@@ -37,8 +49,10 @@ class ImageHelper
             $data = substr($base64String, strpos($base64String, ',') + 1);
             $ext = strtolower($type[1]); // png, jpg, jpeg, gif
             
-            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'])) {
-                throw new \Exception('Invalid image type.');
+            if (!in_array($ext, self::ALLOWED_TYPES)) {
+                throw new \Exception(
+                    "Unsupported image type \"{$ext}\". Allowed types: " . implode(', ', self::ALLOWED_TYPES) . '.'
+                );
             }
             
             $data = base64_decode($data);
