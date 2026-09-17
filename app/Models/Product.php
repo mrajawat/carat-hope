@@ -105,6 +105,26 @@ class Product extends Model
         return $this->hasMany(ProductCustomOption::class)->orderBy('sort_order');
     }
 
+    /**
+     * Only products that have been priced for the given region.
+     * Simple products (or variant products where prices don't vary) are priced in
+     * product_prices; variant products where prices vary are priced per variant.
+     */
+    public function scopeAvailableInRegion($query, int $regionId)
+    {
+        return $query->where(function ($q) use ($regionId) {
+            $q->where(function ($q) use ($regionId) {
+                $q->where(fn ($q) => $q->where('has_variants', false)->orWhere('prices_vary', false))
+                  ->whereHas('prices', fn ($q) => $q->where('region_id', $regionId));
+            })->orWhere(function ($q) use ($regionId) {
+                $q->where('has_variants', true)
+                  ->where('prices_vary', true)
+                  ->whereHas('variants', fn ($q) => $q->where('is_active', true)
+                      ->whereHas('prices', fn ($q) => $q->where('region_id', $regionId)));
+            });
+        });
+    }
+
     public function hasLocalPrice($countryCode)
     {
         if ($this->has_variants) {

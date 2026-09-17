@@ -48,6 +48,18 @@ class ProductVariant extends Model
     }
 
     /**
+     * Variants sellable in a region: priced for that region, or belonging to a
+     * product whose prices don't vary (those share the product's regional price).
+     */
+    public function scopePricedInRegion($query, int $regionId)
+    {
+        return $query->where(function ($q) use ($regionId) {
+            $q->whereHas('prices', fn ($q) => $q->where('region_id', $regionId))
+              ->orWhereHas('product', fn ($q) => $q->where('prices_vary', false));
+        });
+    }
+
+    /**
      * Get the direct pivot records.
      */
     public function variantAttributeValues()

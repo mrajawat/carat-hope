@@ -52,10 +52,11 @@ class PublicController extends Controller
             $query = Product::with([
                 'category',
                 'product_images',
-                'variants' => fn ($q) => $q->where('is_active', true),
+                'variants' => fn ($q) => $q->where('is_active', true)->pricedInRegion($region->id),
                 'variants.prices' => fn ($q) => $q->where('region_id', $region->id),
                 'prices' => fn ($q) => $q->where('region_id', $region->id),
             ])
+                ->availableInRegion($region->id)
                 ->withCount(['reviews' => function($q) {
                     $q->where('status', 'approved');
                 }])
@@ -119,7 +120,7 @@ class PublicController extends Controller
         $product = Product::with([
             'category',
             'product_images',
-            'variants' => fn ($q) => $q->where('is_active', true),
+            'variants' => fn ($q) => $q->where('is_active', true)->pricedInRegion($region->id),
             'variants.attributeValues',
             'variants.prices' => fn ($q) => $q->where('region_id', $region->id),
             'prices' => fn ($q) => $q->where('region_id', $region->id),
@@ -127,6 +128,7 @@ class PublicController extends Controller
             'shippingProfile',
             'customOptions',
         ])
+            ->availableInRegion($region->id)
             ->where('status', 'active')
             ->where(function ($query) use ($slug_or_id) {
                 $query->where('id', $slug_or_id)
