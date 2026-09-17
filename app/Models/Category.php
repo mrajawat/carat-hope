@@ -26,10 +26,12 @@ class Category extends Model
     {
         static::saved(function () {
             cache()->forget('public_categories');
+            cache()->forget('public_category_tree');
         });
 
         static::deleted(function () {
             cache()->forget('public_categories');
+            cache()->forget('public_category_tree');
         });
     }
 

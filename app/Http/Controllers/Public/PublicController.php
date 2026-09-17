@@ -43,6 +43,25 @@ class PublicController extends Controller
         ]);
     }
 
+    /**
+     * Active top-level categories with their active subcategories, for the navbar menu.
+     */
+    public function categoryTree()
+    {
+        $categories = cache()->remember('public_category_tree', now()->addHours(24), function () {
+            return Category::whereNull('parent_id')
+                ->where('status', 'active')
+                ->with(['children' => fn ($q) => $q->where('status', 'active')->orderBy('name', 'asc')])
+                ->orderBy('name', 'asc')
+                ->get();
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $categories
+        ]);
+    }
+
     public function products(Request $request)
     {
         try {
@@ -65,9 +84,12 @@ class PublicController extends Controller
                 }], 'rating')
                 ->where('status', 'active');
 
-            // Filter by category
+            // Filter by category, including products saved under its subcategories
             if ($request->has('category_id') && !empty($request->category_id)) {
-                $query->where('category_id', $request->category_id);
+                $categoryIds = Category::where('parent_id', $request->category_id)
+                    ->pluck('id')
+                    ->push($request->category_id);
+                $query->whereIn('category_id', $categoryIds);
             }
 
             // Search by name or SKU

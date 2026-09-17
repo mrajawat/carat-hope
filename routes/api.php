@@ -43,6 +43,7 @@ use App\Http\Controllers\Admin\ShippingProfileController;
 Route::prefix('public')->middleware('throttle:public')->group(function () {
     Route::get('/banners', [PublicController::class, 'banners']);
     Route::get('/categories', [PublicController::class, 'categories']);
+    Route::get('/categories/tree', [PublicController::class, 'categoryTree']);
     Route::get('/products', [PublicController::class, 'products']);
     Route::get('/products/{slug_or_id}', [PublicController::class, 'productDetail']);
     Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
