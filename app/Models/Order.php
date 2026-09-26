@@ -15,18 +15,23 @@ class Order extends Model
         'customer_email',
         'customer_phone',
         'total_amount',
+        'currency',
         'payment_status',
         'order_status',
         'billing_address',
         'shipping_address',
         'notes',
         'payment_method',
+        'razorpay_order_id',
+        'razorpay_payment_id',
+        'paid_at',
     ];
 
     protected $casts = [
         'total_amount' => 'decimal:2',
         'billing_address' => 'array',
         'shipping_address' => 'array',
+        'paid_at' => 'datetime',
     ];
 
     public function user()

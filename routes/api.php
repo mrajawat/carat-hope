@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\AdminReviewController;
 use App\Http\Controllers\Public\PublicController;
 use App\Http\Controllers\Public\CustomerAuthController;
 use App\Http\Controllers\Public\CustomerOrderController;
+use App\Http\Controllers\Public\RazorpayController;
 use App\Http\Controllers\Public\ReviewController;
 use App\Http\Controllers\Public\GuestAuthController;
 use App\Http\Controllers\Public\DeviceTokenController;
@@ -52,6 +53,7 @@ Route::prefix('public')->middleware('throttle:public')->group(function () {
     Route::middleware('throttle:sensitive')->group(function () {
         Route::post('/coupons/validate', [PublicController::class, 'validateCoupon']);
         Route::post('/orders/checkout', [PublicController::class, 'checkout']);
+        Route::post('/payments/razorpay/verify', [RazorpayController::class, 'verify']);
 
         // Customer Authentication (Guest)
         Route::post('/register', [CustomerAuthController::class, 'register']);
@@ -84,6 +86,9 @@ Route::prefix('public')->middleware('throttle:public')->group(function () {
 
     Route::post('/shipping/estimate', [ShippingController::class, 'getEstimate']);
 });
+
+// Razorpay webhook (server-to-server, signature verified, no throttle)
+Route::post('/webhooks/razorpay', [RazorpayController::class, 'webhook']);
 
 // Admin Authentication (Public Route - rate limited)
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->middleware('throttle:sensitive');

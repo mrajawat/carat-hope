@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'razorpay' => [
+        'key' => env('RAZORPAY_KEY'),
+        'secret' => env('RAZORPAY_SECRET'),
+        'webhook_secret' => env('RAZORPAY_WEBHOOK_SECRET'),
+        // Unpaid online orders are cancelled (stock restored) after this many minutes.
+        'order_expiry_minutes' => env('RAZORPAY_ORDER_EXPIRY_MINUTES', 30),
+    ],
+
 ];

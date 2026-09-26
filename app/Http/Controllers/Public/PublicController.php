@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\RegionDetectionService;
+use App\Services\RazorpayService;
 use App\Http\Resources\ProductListResource;
 use App\Http\Resources\ProductDetailResource;
 use Carbon\Carbon;
@@ -338,6 +339,7 @@ class PublicController extends Controller
                 'customer_email' => $request->customer_email,
                 'customer_phone' => $request->customer_phone,
                 'total_amount' => $totalAmount,
+                'currency' => $countryCode === 'IN' ? 'INR' : 'USD',
                 'payment_status' => 'unpaid',
                 'order_status' => 'pending',
                 'billing_address' => $request->billing_address,
@@ -358,11 +360,20 @@ class PublicController extends Controller
                 ]);
             }
 
+            // Online payment: create Razorpay order inside the transaction so a gateway
+            // failure rolls back the local order and stock.
+            $payment = null;
+            if ($request->payment_method === 'razorpay') {
+                $payment = app(RazorpayService::class)->createOrder($order);
+            }
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'order_id' => $order->id,
                     'total_amount' => (float)$totalAmount,
+                    'currency' => $order->currency,
+                    'payment' => $payment,
                     'message' => 'Order placed successfully.'
                 ]
             ], 201);
