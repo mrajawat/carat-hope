@@ -22,9 +22,17 @@ class CategoryController extends Controller
             $query->where('status', $request->status);
         }
 
-        // Only categories with no children — products are assigned to leaf categories
-        if (filter_var($request->get('leaf_only'), FILTER_VALIDATE_BOOLEAN)) {
+        if (filter_var($request->get('roots_only'), FILTER_VALIDATE_BOOLEAN)) {
+            // Only seeded parent categories — use to populate the "parent" dropdown
+            $query->whereNull('parent_id');
+        } elseif (filter_var($request->get('leaf_only'), FILTER_VALIDATE_BOOLEAN)) {
+            // Only categories with no children — products are assigned to leaf categories.
+            // Includes parents without subcategories so existing product assignments still resolve.
             $query->whereDoesntHave('children');
+        } elseif (!filter_var($request->get('include_parents'), FILTER_VALIDATE_BOOLEAN)) {
+            // Default master list: only admin-created subcategories. Parents come from the
+            // seeder and are listed separately (roots_only / menu), so they'd show up twice.
+            $query->whereNotNull('parent_id');
         }
 
         $categories = $query->orderBy('name')->get();
@@ -68,8 +76,14 @@ class CategoryController extends Controller
             'name' => 'required|string',
             'image' => 'nullable|string',
             'description' => 'nullable|string',
-            'parent_id' => 'nullable|exists:categories,id',
+            'parent_id' => 'required|integer|exists:categories,id',
+        ], [
+            'parent_id.required' => 'Parent category is required. Top-level categories are managed via seeder.',
         ]);
+
+        if ($error = $this->invalidParentResponse((int) $request->parent_id)) {
+            return $error;
+        }
 
         $imageUrl = null;
         if ($request->has('image') && !empty($request->image)) {
@@ -111,18 +125,32 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
 
+        $isRoot = $category->parent_id === null;
+
         $request->validate([
             'name' => 'required|string',
             'image' => 'nullable|string',
             'description' => 'nullable|string',
-            'parent_id' => 'nullable|exists:categories,id|different:id',
+            // Seeded parents stay top-level; subcategories must keep a parent
+            'parent_id' => $isRoot
+                ? 'prohibited'
+                : 'required|integer|exists:categories,id|not_in:' . $category->id,
+        ], [
+            'parent_id.prohibited' => 'A top-level category cannot be moved under another category.',
+            'parent_id.required' => 'A subcategory must have a parent category.',
         ]);
 
         $data = [
             'name' => $request->name,
             'description' => $request->description,
-            'parent_id' => $request->parent_id,
         ];
+
+        if (!$isRoot) {
+            if ($error = $this->invalidParentResponse((int) $request->parent_id)) {
+                return $error;
+            }
+            $data['parent_id'] = $request->parent_id;
+        }
 
         if ($category->name !== $request->name) {
             $slug = Str::slug($request->name);
@@ -157,6 +185,14 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         $category = Category::findOrFail($id);
+
+        if ($category->parent_id === null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Top-level categories are managed via seeder and cannot be deleted. Deactivate it instead.'
+            ], 422);
+        }
+
         $category->delete();
 
         return response()->json([
@@ -176,5 +212,22 @@ class CategoryController extends Controller
             'message' => 'Category status updated successfully',
             'data' => $category
         ]);
+    }
+
+    /**
+     * Subcategories may only be attached to a top-level (seeded) category.
+     */
+    private function invalidParentResponse(int $parentId)
+    {
+        $parent = Category::find($parentId);
+
+        if (!$parent || $parent->parent_id !== null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Subcategories can only be added under a top-level category.'
+            ], 422);
+        }
+
+        return null;
     }
 }

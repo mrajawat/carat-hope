@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubcategoryController;
+use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\UserController;
@@ -45,6 +46,7 @@ Route::prefix('public')->middleware('throttle:public')->group(function () {
     Route::get('/banners', [PublicController::class, 'banners']);
     Route::get('/categories', [PublicController::class, 'categories']);
     Route::get('/categories/tree', [PublicController::class, 'categoryTree']);
+    Route::get('/menu', [PublicController::class, 'menu']);
     Route::get('/products', [PublicController::class, 'products']);
     Route::get('/products/{slug_or_id}', [PublicController::class, 'productDetail']);
     Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
@@ -116,6 +118,18 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::put('/subcategories/{id}', [SubcategoryController::class, 'update']);
     Route::delete('/subcategories/{id}', [SubcategoryController::class, 'destroy']);
     Route::patch('/subcategories/{id}/toggle-status', [SubcategoryController::class, 'toggleStatus']);
+
+    // Mega Menu (sections & links under top-level categories)
+    Route::get('/menu', [MenuController::class, 'index']);
+    Route::patch('/menu/reorder', [MenuController::class, 'reorder']);
+    Route::get('/categories/{category}/menu-sections', [MenuController::class, 'sections']);
+    Route::post('/categories/{category}/menu-sections', [MenuController::class, 'storeSection']);
+    Route::post('/categories/{category}/menu-banner', [MenuController::class, 'updateBanner']);
+    Route::put('/menu-sections/{id}', [MenuController::class, 'updateSection']);
+    Route::delete('/menu-sections/{id}', [MenuController::class, 'destroySection']);
+    Route::post('/menu-sections/{id}/links', [MenuController::class, 'storeLink']);
+    Route::put('/menu-links/{id}', [MenuController::class, 'updateLink']);
+    Route::delete('/menu-links/{id}', [MenuController::class, 'destroyLink']);
 
     // Nested Subcategories API under category
     Route::get('/categories/{category}/subcategories', [SubcategoryController::class, 'subcategoriesByCategory']);

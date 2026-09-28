@@ -57,38 +57,12 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
         ]);
 
-        // 3. Seed Categories
-        $rings = Category::create([
-            'name' => 'Rings',
-            'slug' => 'rings',
-            'image' => 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=500',
-            'description' => 'Exquisite diamond, gold, and platinum rings for engagement and everyday elegance.',
-            'status' => 'active',
-        ]);
-
-        $necklaces = Category::create([
-            'name' => 'Necklaces',
-            'slug' => 'necklaces',
-            'image' => 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=500',
-            'description' => 'Stunning necklaces, chokers, and chains featuring fine gemstones and pearls.',
-            'status' => 'active',
-        ]);
-
-        $earrings = Category::create([
-            'name' => 'Earrings',
-            'slug' => 'earrings',
-            'image' => 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=500',
-            'description' => 'Studs, hoops, and drop earrings crafted to make you shine.',
-            'status' => 'active',
-        ]);
-
-        $bracelets = Category::create([
-            'name' => 'Bracelets',
-            'slug' => 'bracelets',
-            'image' => 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=500',
-            'description' => 'Elegant bangles, charm bracelets, and tennis cuffs.',
-            'status' => 'active',
-        ]);
+        // 3. Seed Parent Categories (subcategories are created via the admin API)
+        $this->call(CategorySeeder::class);
+        $rings = Category::where('slug', 'rings')->firstOrFail();
+        $necklaces = Category::where('slug', 'necklaces')->firstOrFail();
+        $earrings = Category::where('slug', 'earrings')->firstOrFail();
+        $bracelets = Category::where('slug', 'bracelets')->firstOrFail();
 
         // 4. Seed Products
         $p1 = Product::create([

@@ -125,6 +125,57 @@ class Product extends Model
         });
     }
 
+    /**
+     * Filter by attribute values, keyed by attribute slug:
+     *   ['gemstone' => [14, 15], 'metal-type' => [3]]
+     * Values of one attribute are OR'ed; different attributes are AND'ed.
+     *
+     * A product matches when an active variant carries the value, or when its
+     * product-level listing_attributes JSON does — stored either as
+     * {"<slug>": {"attribute_value_ids": [..]}} or as the plain value(s).
+     */
+    public function scopeFilterByAttributes($query, array $filters)
+    {
+        foreach ($filters as $slug => $valueIds) {
+            $valueIds = array_values(array_filter(array_map('intval', (array) $valueIds)));
+            if (empty($valueIds)) {
+                continue;
+            }
+
+            // The slug is interpolated into a JSON path below, so only allow slug characters
+            $values = preg_match('/^[a-z0-9_-]+$/i', (string) $slug)
+                ? AttributeValue::whereIn('id', $valueIds)
+                    ->whereHas('attribute', fn ($q) => $q->where('slug', $slug))
+                    ->get(['id', 'value'])
+                : collect();
+
+            if ($values->isEmpty()) {
+                // Unknown attribute or values that don't belong to it: nothing can match
+                $query->whereRaw('1 = 0');
+                continue;
+            }
+
+            $ids = $values->pluck('id')->all();
+            $keys = array_unique([$slug, str_replace('-', '_', $slug)]);
+
+            $query->where(function ($q) use ($ids, $values, $keys) {
+                $q->whereHas('variants', fn ($v) => $v->where('is_active', true)
+                    ->whereHas('attributeValues', fn ($av) => $av->whereIn('attribute_values.id', $ids)));
+
+                foreach ($keys as $key) {
+                    foreach ($ids as $id) {
+                        $q->orWhereJsonContains("listing_attributes->{$key}->attribute_value_ids", $id);
+                    }
+                    foreach ($values as $value) {
+                        $q->orWhereJsonContains("listing_attributes->{$key}", $value->value);
+                    }
+                }
+            });
+        }
+
+        return $query;
+    }
+
     public function hasLocalPrice($countryCode)
     {
         if ($this->has_variants) {

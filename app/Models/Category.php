@@ -16,10 +16,14 @@ class Category extends Model
         'description',
         'parent_id',
         'status',
+        'sort_order',
+        'menu_banner_image',
+        'menu_banner_link',
     ];
 
     protected $casts = [
         'parent_id' => 'integer',
+        'sort_order' => 'integer',
     ];
 
     protected static function booted()
@@ -27,11 +31,13 @@ class Category extends Model
         static::saved(function () {
             cache()->forget('public_categories');
             cache()->forget('public_category_tree');
+            cache()->forget(MenuSection::PUBLIC_MENU_CACHE_KEY);
         });
 
         static::deleted(function () {
             cache()->forget('public_categories');
             cache()->forget('public_category_tree');
+            cache()->forget(MenuSection::PUBLIC_MENU_CACHE_KEY);
         });
     }
 
@@ -43,6 +49,11 @@ class Category extends Model
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    public function menuSections()
+    {
+        return $this->hasMany(MenuSection::class)->orderBy('sort_order')->orderBy('id');
     }
 
     public function products()

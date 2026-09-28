@@ -12,6 +12,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\RegionDetectionService;
 use App\Services\RazorpayService;
+use App\Services\MenuService;
 use App\Http\Resources\ProductListResource;
 use App\Http\Resources\ProductDetailResource;
 use Carbon\Carbon;
@@ -52,7 +53,8 @@ class PublicController extends Controller
         $categories = cache()->remember('public_category_tree', now()->addHours(24), function () {
             return Category::whereNull('parent_id')
                 ->where('status', 'active')
-                ->with(['children' => fn ($q) => $q->where('status', 'active')->orderBy('name', 'asc')])
+                ->with(['children' => fn ($q) => $q->where('status', 'active')->orderBy('sort_order')->orderBy('name', 'asc')])
+                ->orderBy('sort_order')
                 ->orderBy('name', 'asc')
                 ->get();
         });
@@ -60,6 +62,17 @@ class PublicController extends Controller
         return response()->json([
             'success' => true,
             'data' => $categories
+        ]);
+    }
+
+    /**
+     * Navbar mega menu: parent categories → sections (columns) → links, plus banner.
+     */
+    public function menu(MenuService $menuService)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $menuService->publicMenu()
         ]);
     }
 
@@ -91,6 +104,11 @@ class PublicController extends Controller
                     ->pluck('id')
                     ->push($request->category_id);
                 $query->whereIn('category_id', $categoryIds);
+            }
+
+            // Attribute filters: ?filters[gemstone][]=14&filters[metal-type][]=3
+            if ($request->filled('filters') && is_array($request->filters)) {
+                $query->filterByAttributes($request->filters);
             }
 
             // Search by name or SKU
