@@ -11,6 +11,9 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'subtotal_amount',
+        'discount_amount',
+        'gst_amount',
         'customer_name',
         'customer_email',
         'customer_phone',
@@ -29,6 +32,9 @@ class Order extends Model
 
     protected $casts = [
         'total_amount' => 'decimal:2',
+        'subtotal_amount' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'gst_amount' => 'decimal:2',
         'billing_address' => 'array',
         'shipping_address' => 'array',
         'paid_at' => 'datetime',

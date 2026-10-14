@@ -16,11 +16,15 @@ class OrderItem extends Model
         'product_image',
         'quantity',
         'price',
+        'gst_percentage',
+        'gst_amount',
     ];
 
     protected $casts = [
         'quantity' => 'integer',
         'price' => 'decimal:2',
+        'gst_percentage' => 'decimal:2',
+        'gst_amount' => 'decimal:2',
     ];
 
     public function order()

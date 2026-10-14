@@ -58,6 +58,11 @@ class ProductDetailResource extends JsonResource
             'processing_profile' => $this->whenLoaded('processingProfile'),
             'shipping_profile_id' => $this->shipping_profile_id,
             'shipping_profile' => $this->whenLoaded('shippingProfile'),
+            'gst_rates' => $this->whenLoaded('gstRates', fn () => $this->gstRates->map(fn ($rate) => [
+                'region_id' => $rate->region_id,
+                'region_name' => $rate->region->name ?? null,
+                'gst_percentage' => (float) $rate->gst_percentage,
+            ])->values()),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

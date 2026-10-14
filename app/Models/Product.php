@@ -100,6 +100,11 @@ class Product extends Model
         return $this->hasMany(ProductPrice::class);
     }
 
+    public function gstRates()
+    {
+        return $this->hasMany(ProductGstRate::class);
+    }
+
     public function customOptions()
     {
         return $this->hasMany(ProductCustomOption::class)->orderBy('sort_order');

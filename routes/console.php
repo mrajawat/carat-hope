@@ -39,4 +39,32 @@ Artisan::command('orders:expire-unpaid', function () {
     $this->info("Cancelled {$orders->count()} unpaid order(s).");
 })->purpose('Cancel unpaid Razorpay orders and restore stock');
 
+Artisan::command('payments:reconcile {--limit=100 : Maximum orders to check per run}', function () {
+    $service = app(\App\Services\RazorpayService::class);
+
+    // Give the frontend verify call and the webhook a few minutes to report first.
+    // After a day nobody is coming back to the order, so it is no longer checked.
+    $orders = \App\Models\Order::where('payment_method', 'razorpay')
+        ->where('payment_status', 'unpaid')
+        ->whereNotNull('razorpay_order_id')
+        ->whereBetween('created_at', [now()->subDay(), now()->subMinutes(10)])
+        ->orderByDesc('id')
+        ->limit((int) $this->option('limit'))
+        ->get();
+
+    foreach ($orders as $order) {
+        try {
+            $outcome = $service->reconcile($order);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Payment reconcile failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+            $this->error("Order {$order->id}: {$e->getMessage()}");
+            continue;
+        }
+
+        $this->line("Order {$order->id}: {$outcome}");
+    }
+})->purpose('Settle Razorpay orders whose result never reached the app (missed verify call and webhook)');
+
+// Reconcile runs first so a paid-but-unreported order is settled before it can be expired.
+Schedule::command('payments:reconcile')->everyTenMinutes()->withoutOverlapping();
 Schedule::command('orders:expire-unpaid')->everyTenMinutes()->withoutOverlapping();

@@ -12,6 +12,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\RegionDetectionService;
 use App\Services\RazorpayService;
+use App\Services\GstService;
 use App\Http\Resources\ProductListResource;
 use App\Http\Resources\ProductDetailResource;
 use Carbon\Carbon;
@@ -256,11 +257,13 @@ class PublicController extends Controller
                 }
             }
 
-            $totalAmount = 0.00;
+            $subtotal = 0.00;
             $itemsToProcess = [];
 
             // Calculate initial amount and check stock
             $countryCode = $this->getDetectedCountry();
+            $gstService = app(GstService::class);
+            $gstRegion = $gstService->regionForCountry($countryCode);
             foreach ($request->items as $item) {
                 $product = Product::with('product_images')->lockForUpdate()->findOrFail($item['product_id']);
 
@@ -277,8 +280,7 @@ class PublicController extends Controller
                 $product->save();
 
                 $price = $product->getLocalPrice($countryCode);
-                $subtotal = $price * $item['quantity'];
-                $totalAmount += $subtotal;
+                $subtotal += $price * $item['quantity'];
 
                 // Find primary image or fallback
                 $primaryImg = $product->product_images->firstWhere('is_primary', true) 
@@ -291,11 +293,13 @@ class PublicController extends Controller
                     'product_image' => $primaryImg->image_path,
                     'quantity' => $item['quantity'],
                     'price' => (float)$price,
+                    'gst_percentage' => $gstService->rateFor($product, $gstRegion),
                 ];
             }
 
             // Apply coupon if provided
             $coupon = null;
+            $discount = 0.00;
             if ($request->has('coupon_code') && !empty($request->coupon_code)) {
                 $code = strtoupper($request->coupon_code);
                 $coupon = Coupon::where('code', $code)
@@ -316,25 +320,37 @@ class PublicController extends Controller
 
                 // Apply discount
                 if ($coupon->discount_type === 'percentage') {
-                    $discount = ($totalAmount * $coupon->discount_value) / 100;
+                    $discount = ($subtotal * $coupon->discount_value) / 100;
                 } else {
                     $discount = $coupon->discount_value;
                 }
 
-                $totalAmount = max(0.00, $totalAmount - $discount);
-                
-                // Add 8% tax matching the frontend
-                $tax = $totalAmount * 0.08;
-                $totalAmount = $totalAmount + $tax;
+                $discount = round(min((float) $discount, $subtotal), 2);
 
                 // Increment usage
                 $coupon->usage_count += 1;
                 $coupon->save();
             }
 
+            // GST is charged on the discounted amount: the coupon discount is spread over
+            // the items by their value, then each item's own GST rate is applied.
+            $gstTotal = 0.00;
+            foreach ($itemsToProcess as &$processedItem) {
+                $lineAmount = $processedItem['price'] * $processedItem['quantity'];
+                $lineDiscount = $subtotal > 0 ? $discount * $lineAmount / $subtotal : 0.00;
+                $processedItem['gst_amount'] = round(($lineAmount - $lineDiscount) * $processedItem['gst_percentage'] / 100, 2);
+                $gstTotal += $processedItem['gst_amount'];
+            }
+            unset($processedItem);
+
+            $totalAmount = round($subtotal - $discount + $gstTotal, 2);
+
             // Create Order
             $order = Order::create([
                 'user_id' => $user->id,
+                'subtotal_amount' => $subtotal,
+                'discount_amount' => $discount,
+                'gst_amount' => $gstTotal,
                 'customer_name' => $request->customer_name,
                 'customer_email' => $request->customer_email,
                 'customer_phone' => $request->customer_phone,
@@ -357,6 +373,8 @@ class PublicController extends Controller
                     'product_image' => $processedItem['product_image'],
                     'quantity' => $processedItem['quantity'],
                     'price' => $processedItem['price'],
+                    'gst_percentage' => $processedItem['gst_percentage'],
+                    'gst_amount' => $processedItem['gst_amount'],
                 ]);
             }
 
@@ -371,6 +389,9 @@ class PublicController extends Controller
                 'success' => true,
                 'data' => [
                     'order_id' => $order->id,
+                    'subtotal' => (float)$subtotal,
+                    'discount_amount' => (float)$discount,
+                    'gst_amount' => (float)$gstTotal,
                     'total_amount' => (float)$totalAmount,
                     'currency' => $order->currency,
                     'payment' => $payment,

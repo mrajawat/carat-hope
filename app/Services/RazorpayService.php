@@ -72,6 +72,27 @@ class RazorpayService
     }
 
     /**
+     * Ask Razorpay whether the order was paid and settle it locally if so.
+     * Covers payments where both the verify call and the webhook were missed.
+     * Returns 'paid', 'authorized' (not captured yet) or 'unpaid'.
+     */
+    public function reconcile(Order $order): string
+    {
+        $payments = $this->api->order->fetch($order->razorpay_order_id)->payments()->toArray();
+        $statuses = [];
+
+        foreach ($payments['items'] ?? [] as $payment) {
+            if ($payment['status'] === 'captured') {
+                $this->markPaid($order->razorpay_order_id, $payment['id']);
+                return 'paid';
+            }
+            $statuses[] = $payment['status'];
+        }
+
+        return in_array('authorized', $statuses, true) ? 'authorized' : 'unpaid';
+    }
+
+    /**
      * Mark the order paid. Idempotent: safe to call from both verify endpoint and webhook.
      */
     public function markPaid(string $razorpayOrderId, string $paymentId): ?Order

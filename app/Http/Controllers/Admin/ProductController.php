@@ -58,6 +58,7 @@ class ProductController extends Controller
             'variants.attributeValues',
             'variants.prices' => fn ($q) => $q->where('region_id', $region->id),
             'prices.region',
+            'gstRates.region',
             'processingProfile',
             'shippingProfile',
             'customOptions',
@@ -131,6 +132,9 @@ class ProductController extends Controller
             'variations.*.prices' => 'nullable|array|min:1',
             'variations.*.prices.*.region_id' => 'required_with:variations.*.prices|exists:regions,id',
             'variations.*.prices.*.price' => 'required_with:variations.*.prices|numeric|min:0',
+            'gst_rates' => 'nullable|array',
+            'gst_rates.*.region_id' => 'required_with:gst_rates|distinct|exists:regions,id',
+            'gst_rates.*.gst_percentage' => 'required_with:gst_rates|numeric|min:0|max:100',
         ], [
             'prices.min' => 'At least one regional price is required.',
             'variants.*.prices.min' => 'Each variant requires at least one regional price.',
@@ -329,6 +333,11 @@ class ProductController extends Controller
                 $productService->saveProductPrices($product, $request->prices);
             }
 
+            // Sent list replaces the product's GST rates; left out, they stay as they are.
+            if ($request->has('gst_rates')) {
+                app(\App\Services\GstService::class)->syncProductRates($product, $validated['gst_rates'] ?? []);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Product updated successfully',
@@ -337,6 +346,7 @@ class ProductController extends Controller
                     'variants.attributeValues.attribute',
                     'variants.prices.region',
                     'prices.region',
+                    'gstRates.region',
                     'processingProfile',
                     'shippingProfile',
                 ])

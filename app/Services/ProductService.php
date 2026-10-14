@@ -177,7 +177,12 @@ class ProductService
                 $this->saveProductPrices($product, $data['prices']);
             }
 
-            return $product->load(['product_images', 'variants.attributeValues.attribute', 'variants.prices.region', 'prices.region']);
+            // 8. GST % per region, added on top of the price at checkout
+            if (!empty($data['gst_rates'])) {
+                app(GstService::class)->syncProductRates($product, $data['gst_rates']);
+            }
+
+            return $product->load(['product_images', 'variants.attributeValues.attribute', 'variants.prices.region', 'prices.region', 'gstRates.region']);
         });
     }
 
