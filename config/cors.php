@@ -21,7 +21,8 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => ['http://localhost:3000', 'https://threatcon.online', 
-       'https://www.threatcon.online', 'http://127.0.0.1:3000', 'https://d91gh403-3000.inc1.devtunnels.ms'],
+       'https://www.threatcon.online', 'http://127.0.0.1:3000', 'https://d91gh403-3000.inc1.devtunnels.ms',
+       'https://carathope.com', 'https://www.carathope.com'],
 
     'allowed_origins_patterns' => [],
 

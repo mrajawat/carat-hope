@@ -33,6 +33,10 @@ use App\Http\Controllers\Admin\DeliveryEstimateController;
 use App\Http\Controllers\Admin\ShippingThresholdController;
 use App\Http\Controllers\Admin\ProcessingProfileController;
 use App\Http\Controllers\Admin\ShippingProfileController;
+use App\Http\Controllers\Public\CustomOrderController;
+use App\Http\Controllers\Public\CartController;
+use App\Http\Controllers\Admin\CustomOrderController as AdminCustomOrderController;
+use App\Http\Controllers\Admin\CustomOrderOptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,11 +53,17 @@ Route::prefix('public')->middleware('throttle:public')->group(function () {
     Route::get('/products/{slug_or_id}', [PublicController::class, 'productDetail']);
     Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
 
+    // Custom Order (Personalised Jewellery) Dropdowns
+    Route::get('/custom-orders/options', [CustomOrderController::class, 'options']);
+    Route::get('/custom-orders/options/{type}', [CustomOrderController::class, 'optionsByType']);
+    Route::get('/custom-orders/metal-types/{id}/sub-types', [CustomOrderController::class, 'metalSubTypes'])->whereNumber('id');
+
     // Sensitive Public Routes (Protected with stricter rate limiting)
     Route::middleware('throttle:sensitive')->group(function () {
         Route::post('/coupons/validate', [PublicController::class, 'validateCoupon']);
         Route::post('/orders/checkout', [PublicController::class, 'checkout']);
         Route::post('/payments/razorpay/verify', [RazorpayController::class, 'verify']);
+        Route::post('/custom-orders', [CustomOrderController::class, 'store']);
 
         // Customer Authentication (Guest)
         Route::post('/register', [CustomerAuthController::class, 'register']);
@@ -76,6 +86,15 @@ Route::prefix('public')->middleware('throttle:public')->group(function () {
         Route::get('/orders', [CustomerOrderController::class, 'index']);
         Route::get('/orders/{id}', [CustomerOrderController::class, 'show']);
         Route::get('/orders/{order}/shipment', [ShippingController::class, 'getOrderShipment']);
+
+        Route::get('/custom-orders', [CustomOrderController::class, 'index']);
+        Route::get('/custom-orders/{id}', [CustomOrderController::class, 'show'])->whereNumber('id');
+
+        Route::get('/cart', [CartController::class, 'show']);
+        Route::post('/cart/items', [CartController::class, 'addItem']);
+        Route::patch('/cart/items/{id}', [CartController::class, 'updateItem'])->whereNumber('id');
+        Route::delete('/cart/items/{id}', [CartController::class, 'removeItem'])->whereNumber('id');
+        Route::delete('/cart', [CartController::class, 'clear']);
 
         Route::post('/products/{productId}/reviews', [ReviewController::class, 'store']);
 
@@ -145,6 +164,16 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{id}', [OrderController::class, 'show']);
     Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus']);
+
+    // Custom Orders (Personalised Jewellery) Management
+    Route::get('/custom-orders', [AdminCustomOrderController::class, 'index']);
+    Route::get('/custom-orders/{id}', [AdminCustomOrderController::class, 'show'])->whereNumber('id');
+    Route::patch('/custom-orders/{id}/status', [AdminCustomOrderController::class, 'updateStatus'])->whereNumber('id');
+    Route::delete('/custom-orders/{id}', [AdminCustomOrderController::class, 'destroy'])->whereNumber('id');
+
+    // Custom Order Dropdown Options CRUD + Toggle Status
+    Route::apiResource('/custom-order-options', CustomOrderOptionController::class);
+    Route::patch('/custom-order-options/{id}/toggle-status', [CustomOrderOptionController::class, 'toggleStatus']);
 
     // Reviews Management
     Route::get('/reviews', [AdminReviewController::class, 'index']);

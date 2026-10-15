@@ -567,6 +567,7 @@ class DatabaseSeeder extends Seeder
             RegionTaxRuleSeeder::class,
             JewelryAttributeSeeder::class,
             ShippingSeeder::class,
+            CustomOrderOptionSeeder::class,
         ]);
     }
 }
