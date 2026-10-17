@@ -50,6 +50,36 @@ class GstService
     }
 
     /**
+     * Same as rateFor(), by region id. Uses the product's loaded gstRates when present.
+     */
+    public function rateForRegionId(Product $product, ?int $regionId): float
+    {
+        if (!$regionId) {
+            return 0.00;
+        }
+
+        $productRate = $product->relationLoaded('gstRates')
+            ? $product->gstRates->firstWhere('region_id', $regionId)?->gst_percentage
+            : ProductGstRate::where('product_id', $product->id)->where('region_id', $regionId)->value('gst_percentage');
+
+        if ($productRate !== null) {
+            return (float) $productRate;
+        }
+
+        $regionRule = RegionTaxRule::where('region_id', $regionId)->first();
+
+        return $regionRule && !$regionRule->inclusive ? (float) $regionRule->tax_percentage : 0.00;
+    }
+
+    /**
+     * GST amount on a price at the given rate, rounded to 2 decimals.
+     */
+    public function amountFor(?float $price, float $rate): ?float
+    {
+        return $price === null ? null : round($price * $rate / 100, 2);
+    }
+
+    /**
      * Replace a product's GST rates with the given list.
      *
      * @param array $ratesInput List of ['region_id' => int, 'gst_percentage' => float]

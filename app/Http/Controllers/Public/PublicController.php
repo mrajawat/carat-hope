@@ -76,6 +76,7 @@ class PublicController extends Controller
                 'variants' => fn ($q) => $q->where('is_active', true)->pricedInRegion($region->id),
                 'variants.prices' => fn ($q) => $q->where('region_id', $region->id),
                 'prices' => fn ($q) => $q->where('region_id', $region->id),
+                'gstRates' => fn ($q) => $q->where('region_id', $region->id),
             ])
                 ->availableInRegion($region->id)
                 ->withCount(['reviews' => function($q) {

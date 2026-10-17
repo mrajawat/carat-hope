@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Services\GstService;
 use App\Services\RegionDetectionService;
 use App\Services\VariantPricingService;
 use Illuminate\Http\Request;
@@ -213,15 +214,17 @@ class CartController extends Controller
 
         $items = $cart
             ? $cart->items()
-                ->with(['product.product_images', 'product.customOptions', 'variant.attributeValues.attribute'])
+                ->with(['product.product_images', 'product.customOptions', 'product.gstRates', 'variant.attributeValues.attribute'])
                 ->orderBy('id')
                 ->get()
             : collect();
 
+        $gstService = app(GstService::class);
         $subtotal = 0.00;
+        $gstTotal = 0.00;
         $count = 0;
 
-        $data = $items->map(function (CartItem $item) use ($region, $pricing, &$subtotal, &$count) {
+        $data = $items->map(function (CartItem $item) use ($region, $pricing, $gstService, &$subtotal, &$gstTotal, &$count) {
             $product = $item->product;
             $variant = $item->variant;
 
@@ -236,7 +239,11 @@ class CartController extends Controller
             $available = $this->availableStock($product, $variant);
             $isAvailable = $product->status === 'active' && (!$variant || $variant->is_active);
 
+            $gstPercentage = $gstService->rateForRegionId($product, $region->id);
+            $gstAmount = $gstService->amountFor($lineTotal, $gstPercentage);
+
             $subtotal += $lineTotal;
+            $gstTotal += $gstAmount;
             $count += $item->quantity;
 
             $variantImage = $variant?->variant_images[0] ?? null;
@@ -265,6 +272,9 @@ class CartController extends Controller
                 'unit_price' => (float) $priceData['price'],
                 'compare_at_price' => $priceData['compare_at_price'],
                 'line_total' => $lineTotal,
+                'gst_percentage' => $gstPercentage,
+                'gst_amount' => $gstAmount,
+                'line_total_with_gst' => round($lineTotal + $gstAmount, 2),
                 'available_stock' => $available,
                 'is_available' => $isAvailable && $available >= $item->quantity,
             ];
@@ -276,6 +286,8 @@ class CartController extends Controller
                 'items' => $data,
                 'items_count' => $count,
                 'subtotal' => round($subtotal, 2),
+                'gst_amount' => round($gstTotal, 2),
+                'total' => round($subtotal + $gstTotal, 2),
                 'currency_code' => $region->currency_code,
                 'currency_symbol' => $region->currency_symbol,
             ],

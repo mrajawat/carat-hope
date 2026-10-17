@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Services\GstService;
 use App\Services\RegionDetectionService;
 use App\Services\VariantPricingService;
 use Illuminate\Http\Request;
@@ -23,6 +24,8 @@ class ProductDetailResource extends JsonResource
             ?? app(RegionDetectionService::class)->detect($request)->id;
 
         $pricingService = app(VariantPricingService::class);
+        $gstService = app(GstService::class);
+        $gstPercentage = $gstService->rateForRegionId($this->resource, $regionId);
 
         $images = $this->product_images->where('type', 'image')->pluck('image_path')->values()->toArray();
         $video = $this->product_images->where('type', 'video')->first()?->image_path;
@@ -201,6 +204,8 @@ class ProductDetailResource extends JsonResource
                         'amount' => $priceInfo['price'],
                         'currency_symbol' => $priceInfo['currency_symbol'],
                     ],
+                    'gst_amount' => $gstService->amountFor($priceInfo['price'], $gstPercentage),
+                    'price_with_gst' => $priceInfo['price'] === null ? null : round($priceInfo['price'] + $gstService->amountFor($priceInfo['price'], $gstPercentage), 2),
                     'prices' => $regionalPrices,
                     'linked_photos' => $linkedPhotos,
                     'variant_images' => $variant->variant_images ?? [],
@@ -208,6 +213,12 @@ class ProductDetailResource extends JsonResource
             }
             $data['variants'] = $variantsData;
         }
+
+        // GST added on top of the selling price (discount price when there is one)
+        $sellingPrice = $data['discount_price'] ?? $data['price'];
+        $data['gst_percentage'] = $gstPercentage;
+        $data['gst_amount'] = $gstService->amountFor($sellingPrice, $gstPercentage);
+        $data['price_with_gst'] = $sellingPrice === null ? null : round($sellingPrice + $data['gst_amount'], 2);
 
         return $data;
     }

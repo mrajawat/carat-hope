@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Services\GstService;
 use App\Services\RegionDetectionService;
 use App\Services\VariantPricingService;
 use Illuminate\Http\Request;
@@ -71,6 +72,13 @@ class ProductListResource extends JsonResource
 
             $data['price_label'] = 'Starting from';
         }
+
+        // GST added on top of the selling price (discount price when there is one)
+        $gstService = app(GstService::class);
+        $sellingPrice = $data['discount_price'] ?? $data['price'];
+        $data['gst_percentage'] = $gstService->rateForRegionId($this->resource, $regionId);
+        $data['gst_amount'] = $gstService->amountFor($sellingPrice, $data['gst_percentage']);
+        $data['price_with_gst'] = $sellingPrice === null ? null : round($sellingPrice + $data['gst_amount'], 2);
 
         return $data;
     }
