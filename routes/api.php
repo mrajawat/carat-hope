@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\ProcessingProfileController;
 use App\Http\Controllers\Admin\ShippingProfileController;
 use App\Http\Controllers\Public\CustomOrderController;
 use App\Http\Controllers\Public\CartController;
+use App\Http\Controllers\Public\WishlistController;
 use App\Http\Controllers\Admin\CustomOrderController as AdminCustomOrderController;
 
 /*
@@ -104,6 +105,15 @@ Route::prefix('public')->middleware('throttle:public')->group(function () {
         Route::get('/custom-orders/{id}', [CustomOrderController::class, 'show'])->whereNumber('id');
 
         Route::post('/cart/merge', [CartController::class, 'merge']);
+
+        // Wishlist (guests keep one on the device and push it to /wishlist/sync after login)
+        Route::get('/wishlist', [WishlistController::class, 'index']);
+        Route::get('/wishlist/product-ids', [WishlistController::class, 'productIds']);
+        Route::post('/wishlist/items', [WishlistController::class, 'store']);
+        Route::post('/wishlist/sync', [WishlistController::class, 'sync']);
+        Route::delete('/wishlist/items/{id}', [WishlistController::class, 'destroy'])->whereNumber('id');
+        Route::delete('/wishlist/products/{productId}', [WishlistController::class, 'destroyProduct'])->whereNumber('productId');
+        Route::delete('/wishlist', [WishlistController::class, 'clear']);
 
         // Guest -> registered customer (after logging in with a guest OTP)
         Route::post('/guest/claim-account', [GuestAuthController::class, 'claimAccount']);

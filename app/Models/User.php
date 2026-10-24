@@ -72,6 +72,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the products the user saved to their wishlist.
+     */
+    public function wishlistItems()
+    {
+        return $this->hasMany(WishlistItem::class);
+    }
+
+    /**
      * Get the reviews by the user.
      */
     public function reviews()
