@@ -38,6 +38,8 @@ use App\Http\Controllers\Public\CustomOrderController;
 use App\Http\Controllers\Public\CartController;
 use App\Http\Controllers\Public\WishlistController;
 use App\Http\Controllers\Admin\CustomOrderController as AdminCustomOrderController;
+use App\Http\Controllers\Public\AppointmentController;
+use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +59,9 @@ Route::prefix('public')->middleware('throttle:public')->group(function () {
     // Custom Order (Personalised Jewellery) Dropdowns: categories, metal types + variants, gemstones
     Route::get('/custom-orders/options', [CustomOrderController::class, 'options']);
     Route::get('/custom-orders/metal-types/{id}/variants', [CustomOrderController::class, 'metalVariants'])->whereNumber('id');
+
+    // Book an Appointment: active service types (step 1 of the form)
+    Route::get('/appointments/service-types', [AppointmentController::class, 'serviceTypes']);
 
     // Customer Order Dropdowns (statuses, payment methods, sort options)
     Route::get('/orders/options', [CustomerOrderController::class, 'options']);
@@ -78,6 +83,7 @@ Route::prefix('public')->middleware('throttle:public')->group(function () {
         Route::post('/orders/checkout', [PublicController::class, 'checkout']);
         Route::post('/payments/razorpay/verify', [RazorpayController::class, 'verify']);
         Route::post('/custom-orders', [CustomOrderController::class, 'store']);
+        Route::post('/appointments', [AppointmentController::class, 'store']);
 
         // Customer Authentication (Guest)
         Route::post('/register', [CustomerAuthController::class, 'register']);
@@ -192,6 +198,11 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('/custom-orders/{id}', [AdminCustomOrderController::class, 'show'])->whereNumber('id');
     Route::patch('/custom-orders/{id}/status', [AdminCustomOrderController::class, 'updateStatus'])->whereNumber('id');
     Route::delete('/custom-orders/{id}', [AdminCustomOrderController::class, 'destroy'])->whereNumber('id');
+
+    // Appointments Management
+    Route::get('/appointments', [AdminAppointmentController::class, 'index']);
+    Route::get('/appointments/{id}', [AdminAppointmentController::class, 'show'])->whereNumber('id');
+    Route::patch('/appointments/{id}/status', [AdminAppointmentController::class, 'updateStatus'])->whereNumber('id');
 
     // Reviews Management
     Route::get('/reviews', [AdminReviewController::class, 'index']);

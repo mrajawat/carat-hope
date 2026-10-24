@@ -67,6 +67,9 @@ return [
 
     'timezone' => 'UTC',
 
+    // Local time of the physical store, used when showing appointment times to customers
+    'store_timezone' => env('STORE_TIMEZONE', 'Asia/Kolkata'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
