@@ -18,7 +18,6 @@ class CustomerAuthController extends Controller
     {
         $request->validate([
             'phone' => 'required|string|unique:users,phone',
-            'password' => 'required|string|min:6',
             'name' => 'required|string',
             'email' => 'nullable|email|unique:users,email',
             'shipping_address' => 'nullable|string',
@@ -27,7 +26,6 @@ class CustomerAuthController extends Controller
 
         $user = User::create([
             'phone' => $request->phone,
-            'password' => Hash::make($request->password),
             'name' => $request->name,
             'email' => $request->email,
             'shipping_address' => $request->shipping_address,
