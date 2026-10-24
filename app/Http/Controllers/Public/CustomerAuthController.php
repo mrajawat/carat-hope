@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Otp;
 use App\Services\FcmNotificationService;
+use App\Services\GuestCartService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,6 +17,26 @@ class CustomerAuthController extends Controller
 {
     public function register(Request $request)
     {
+        // Someone who checked out as a guest already has a (guest) account on this
+        // phone/email. Registering must not take it over without proof of ownership,
+        // so they log in with an OTP and claim it via /guest/claim-account instead.
+        $guestAccount = User::where('is_guest', true)
+            ->where(function ($q) use ($request) {
+                $q->where('phone', (string) $request->input('phone'));
+                if ($request->filled('email')) {
+                    $q->orWhere('email', $request->input('email'));
+                }
+            })
+            ->exists();
+
+        if ($guestAccount) {
+            return response()->json([
+                'success' => false,
+                'code' => 'guest_account_exists',
+                'message' => 'You have ordered with us before as a guest. Log in with the OTP sent to your phone or email to activate your account.',
+            ], 409);
+        }
+
         $request->validate([
             'phone' => 'required|string|unique:users,phone',
             'name' => 'required|string',
@@ -98,6 +119,7 @@ class CustomerAuthController extends Controller
         $request->validate([
             'email' => 'required|email',
             'otp' => 'required|string',
+            'guest_token' => 'nullable|string|max:128',
         ]);
 
         $otpRecord = Otp::where('email', $request->email)->first();
@@ -132,6 +154,8 @@ class CustomerAuthController extends Controller
 
         // Delete OTP record
         $otpRecord->delete();
+
+        app(GuestCartService::class)->mergeInto($user, $request->guest_token);
 
         $token = $user->createToken('customer-token')->plainTextToken;
 
@@ -344,6 +368,7 @@ class CustomerAuthController extends Controller
             'phone' => 'required_without:email|string',
             'email' => 'required_without:phone|email',
             'otp' => 'required|string',
+            'guest_token' => 'nullable|string|max:128',
         ]);
 
         $otpKey = $request->filled('phone') ? $request->phone : $request->email;
@@ -386,6 +411,9 @@ class CustomerAuthController extends Controller
 
         // Delete OTP record
         $otpRecord->delete();
+
+        // Bring along whatever the shopper put in their cart before logging in.
+        app(GuestCartService::class)->mergeInto($user, $request->guest_token);
 
         // Generate Sanctum token
         $token = $user->createToken('customer-token')->plainTextToken;

@@ -8,13 +8,24 @@ use App\Models\CartItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Services\GstService;
+use App\Services\GuestCartService;
 use App\Services\RegionDetectionService;
 use App\Services\VariantPricingService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * One cart API for everyone: a logged-in customer (Sanctum bearer token) gets
+ * their own cart, anyone else gets a guest cart identified by the X-Guest-Token
+ * header. The first item a guest adds creates the cart and returns its token as
+ * data.guest_token - the client must store it and send it on every cart call.
+ */
 class CartController extends Controller
 {
+    public function __construct(protected GuestCartService $guestCarts)
+    {
+    }
+
     public function show(Request $request)
     {
         return $this->cartResponse($request);
@@ -34,7 +45,7 @@ class CartController extends Controller
         $variant = $this->resolveVariant($product, $request->product_variant_id);
         $customOptions = $this->validateCustomOptions($product, $request->input('custom_options', []));
 
-        $cart = Cart::firstOrCreate(['user_id' => $request->user()->id]);
+        $cart = $this->currentCart($request, create: true);
 
         // The same product, variant and personalisation is one line: adding it again
         // bumps the quantity instead of creating a duplicate row.
@@ -84,17 +95,76 @@ class CartController extends Controller
 
     public function clear(Request $request)
     {
-        Cart::where('user_id', $request->user()->id)->first()?->items()->delete();
+        $this->currentCart($request)?->items()->delete();
 
         return $this->cartResponse($request, 'Cart cleared.');
     }
 
+    /**
+     * Logged-in customers move their guest cart into their account cart here
+     * (also done automatically when guest_token is sent to the verify-otp calls).
+     */
+    public function merge(Request $request)
+    {
+        $request->validate([
+            'guest_token' => 'required|string|max:128',
+        ]);
+
+        $merged = $this->guestCarts->mergeInto($request->user(), $request->guest_token);
+
+        return $this->cartResponse(
+            $request,
+            $merged > 0 ? 'Guest cart merged into your cart.' : 'Nothing to merge.'
+        );
+    }
+
+    /**
+     * The cart this request acts on: the customer's own cart when a valid Sanctum
+     * token is sent, otherwise the guest cart named by X-Guest-Token. With $create,
+     * a missing cart is created (a guest gets a fresh token, e.g. after the old
+     * one was pruned).
+     *
+     * The resolved cart and any newly issued guest token are kept on the request,
+     * not the controller, because the controller instance is reused across requests.
+     */
+    protected function currentCart(Request $request, bool $create = false): ?Cart
+    {
+        $cart = $request->attributes->get('cart');
+
+        if ($cart || !$create && $request->attributes->has('cart')) {
+            return $cart;
+        }
+
+        $user = $request->user('sanctum');
+
+        if ($user) {
+            $cart = $create
+                ? Cart::firstOrCreate(['user_id' => $user->id])
+                : Cart::where('user_id', $user->id)->first();
+        } else {
+            $cart = $this->guestCarts->find($this->guestCarts->tokenFrom($request));
+
+            if (!$cart && $create) {
+                [$cart, $token] = $this->guestCarts->create();
+                $request->attributes->set('issued_guest_token', $token);
+            }
+        }
+
+        $request->attributes->set('cart', $cart);
+
+        return $cart;
+    }
+
     protected function findOwnItem(Request $request, $id): CartItem
     {
-        $item = CartItem::with(['product', 'variant'])
-            ->where('id', $id)
-            ->whereHas('cart', fn ($q) => $q->where('user_id', $request->user()->id))
-            ->first();
+        $cart = $this->currentCart($request);
+
+        $item = $cart
+            ? CartItem::with(['product', 'variant'])
+                ->where('id', $id)
+                ->where('cart_id', $cart->id)
+                ->first()
+            : null;
 
         if (!$item) {
             abort(response()->json([
@@ -210,7 +280,10 @@ class CartController extends Controller
         $region = app(RegionDetectionService::class)->detect($request);
         $pricing = app(VariantPricingService::class);
 
-        $cart = Cart::where('user_id', $request->user()->id)->first();
+        $cart = $this->currentCart($request);
+
+        // Keep the cart's updated_at fresh so active guest carts are not pruned.
+        $cart?->touch();
 
         $items = $cart
             ? $cart->items()
@@ -290,8 +363,13 @@ class CartController extends Controller
                 'total' => round($subtotal + $gstTotal, 2),
                 'currency_code' => $region->currency_code,
                 'currency_symbol' => $region->currency_symbol,
+                'is_guest' => $cart ? $cart->isGuest() : !$request->user('sanctum'),
             ],
         ];
+
+        if ($request->attributes->has('issued_guest_token')) {
+            $payload['data']['guest_token'] = $request->attributes->get('issued_guest_token');
+        }
 
         if ($message) {
             $payload['message'] = $message;

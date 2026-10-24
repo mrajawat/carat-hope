@@ -65,6 +65,16 @@ Artisan::command('payments:reconcile {--limit=100 : Maximum orders to check per 
     }
 })->purpose('Settle Razorpay orders whose result never reached the app (missed verify call and webhook)');
 
+Artisan::command('carts:prune-guest {--days=30 : Delete guest carts untouched for this many days}', function () {
+    // Every cart read or change touches updated_at, so this only removes abandoned carts.
+    $deleted = \App\Models\Cart::whereNull('user_id')
+        ->where('updated_at', '<', now()->subDays((int) $this->option('days')))
+        ->delete();
+
+    $this->info("Deleted {$deleted} abandoned guest cart(s).");
+})->purpose('Delete guest carts that have not been used for a while');
+
 // Reconcile runs first so a paid-but-unreported order is settled before it can be expired.
 Schedule::command('payments:reconcile')->everyTenMinutes()->withoutOverlapping();
 Schedule::command('orders:expire-unpaid')->everyTenMinutes()->withoutOverlapping();
+Schedule::command('carts:prune-guest')->daily()->withoutOverlapping();

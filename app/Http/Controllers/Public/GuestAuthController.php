@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Otp;
 use App\Services\FcmNotificationService;
+use App\Services\GuestCartService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -61,7 +62,7 @@ class GuestAuthController extends Controller
         }
 
         // Generate 6 digit OTP
-        $otpCode = rand(100000, 999999);
+        $otpCode = random_int(100000, 999999);
 
         Otp::updateOrCreate(
             ['email' => $otpKey],
@@ -138,6 +139,7 @@ class GuestAuthController extends Controller
             'phone' => 'required_without:email|string',
             'email' => 'required_without:phone|email',
             'otp' => 'required|string',
+            'guest_token' => 'nullable|string|max:128',
         ]);
 
         $otpKey = $request->filled('phone') ? $request->phone : $request->email;
@@ -171,8 +173,18 @@ class GuestAuthController extends Controller
             ], 404);
         }
 
+        if ($user->status !== 'active') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your account is inactive. Please contact support.'
+            ], 403);
+        }
+
         // Delete OTP
         $otpRecord->delete();
+
+        // Bring along whatever the shopper put in their cart before logging in.
+        app(GuestCartService::class)->mergeInto($user, $request->guest_token);
 
         // Generate Sanctum token
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -189,6 +201,48 @@ class GuestAuthController extends Controller
                 ],
                 'token' => $token
             ]
+        ]);
+    }
+
+    /**
+     * Turn a guest account (created by guest checkout) into a full customer
+     * account. The guest has already proved they own the phone/email by logging
+     * in with an OTP, so their past guest orders stay with them.
+     */
+    public function claimAccount(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user->is_guest) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This account is already registered.',
+            ], 409);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|unique:users,email,' . $user->id,
+            'shipping_address' => 'nullable|string',
+            'permanent_address' => 'nullable|string',
+        ]);
+
+        $email = $request->filled('email') ? $request->email : $user->email;
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $email,
+            // A new email address has not been verified yet.
+            'email_verified_at' => $email === $user->email ? $user->email_verified_at : null,
+            'shipping_address' => $request->shipping_address ?? $user->shipping_address,
+            'permanent_address' => $request->permanent_address ?? $user->permanent_address,
+            'is_guest' => false,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your account has been created. Your previous orders are linked to it.',
+            'data' => $user->fresh(),
         ]);
     }
 }

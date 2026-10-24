@@ -11,7 +11,17 @@ class Cart extends Model
 
     protected $fillable = [
         'user_id',
+        'guest_token_hash',
     ];
+
+    protected $hidden = [
+        'guest_token_hash',
+    ];
+
+    public function isGuest(): bool
+    {
+        return $this->user_id === null;
+    }
 
     public function user()
     {

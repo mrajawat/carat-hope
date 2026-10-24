@@ -18,6 +18,7 @@ use App\Http\Resources\ProductDetailResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PublicController extends Controller
 {
@@ -242,7 +243,9 @@ class PublicController extends Controller
         }
 
         return DB::transaction(function () use ($request, $existingUser) {
-            if (auth('sanctum')->check()) {
+            $isGuestCheckout = !auth('sanctum')->check();
+
+            if (!$isGuestCheckout) {
                 $user = auth('sanctum')->user();
             } else {
                 $user = $existingUser;
@@ -346,9 +349,15 @@ class PublicController extends Controller
 
             $totalAmount = round($subtotal - $discount + $gstTotal, 2);
 
+            // A guest gets a one-order access token for the confirmation / tracking page,
+            // so they can see the order without logging in. Only its hash is stored.
+            $orderAccessToken = $isGuestCheckout ? 'ot_' . Str::random(60) : null;
+
             // Create Order
             $order = Order::create([
                 'user_id' => $user->id,
+                'placed_as_guest' => $isGuestCheckout,
+                'access_token_hash' => $orderAccessToken ? hash('sha256', $orderAccessToken) : null,
                 'subtotal_amount' => $subtotal,
                 'discount_amount' => $discount,
                 'gst_amount' => $gstTotal,
@@ -396,6 +405,8 @@ class PublicController extends Controller
                     'total_amount' => (float)$totalAmount,
                     'currency' => $order->currency,
                     'payment' => $payment,
+                    'is_guest' => $isGuestCheckout,
+                    'order_access_token' => $orderAccessToken,
                     'message' => 'Order placed successfully.'
                 ]
             ], 201);

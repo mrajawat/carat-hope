@@ -250,6 +250,47 @@ class AttributeController extends Controller
     }
 
     /**
+     * Variants linked under one value, e.g. Gold -> 14k, 18k, 22k.
+     */
+    public function valueVariants($valueId)
+    {
+        $value = AttributeValue::findOrFail($valueId);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Variants retrieved successfully',
+            'data' => $value->variants()->with('attribute:id,name')->get()
+        ]);
+    }
+
+    /**
+     * Replace the variants linked under one value. variant_value_ids order is
+     * the display order; an empty array removes all links.
+     */
+    public function syncValueVariants(Request $request, $valueId)
+    {
+        $value = AttributeValue::findOrFail($valueId);
+
+        $validated = $request->validate([
+            'variant_value_ids' => 'present|array',
+            'variant_value_ids.*' => 'integer|distinct|exists:attribute_values,id|not_in:' . $value->id,
+        ]);
+
+        $value->variants()->sync(
+            collect($validated['variant_value_ids'])
+                ->values()
+                ->mapWithKeys(fn ($id, $index) => [$id => ['sort_order' => $index]])
+                ->all()
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Variants updated successfully',
+            'data' => $value->variants()->with('attribute:id,name')->get()
+        ]);
+    }
+
+    /**
      * Remove an attribute value option.
      */
     public function destroyValue($valueId)

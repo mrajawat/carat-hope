@@ -48,10 +48,21 @@ class CartTest extends TestCase
         Sanctum::actingAs($this->user);
     }
 
-    public function test_cart_requires_authentication(): void
+    public function test_cart_without_authentication_is_an_empty_guest_cart(): void
     {
         $this->app['auth']->forgetGuards();
-        $this->withHeaders(['Authorization' => ''])->getJson('/api/public/cart')->assertUnauthorized();
+        $this->withHeaders(['Authorization' => ''])->getJson('/api/public/cart')
+            ->assertOk()
+            ->assertJsonPath('data.is_guest', true)
+            ->assertJsonPath('data.items', []);
+    }
+
+    public function test_merge_requires_authentication(): void
+    {
+        $this->app['auth']->forgetGuards();
+        $this->withHeaders(['Authorization' => ''])
+            ->postJson('/api/public/cart/merge', ['guest_token' => 'gc_x'])
+            ->assertUnauthorized();
     }
 
     public function test_empty_cart(): void

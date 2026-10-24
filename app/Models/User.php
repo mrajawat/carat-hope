@@ -51,6 +51,7 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
             'email_verified_at' => 'datetime',
+            'is_guest' => 'boolean',
         ];
     }
 

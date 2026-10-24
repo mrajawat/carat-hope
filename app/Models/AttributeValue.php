@@ -29,4 +29,17 @@ class AttributeValue extends Model
     {
         return $this->belongsTo(Attribute::class);
     }
+
+    /**
+     * Variants offered under this value, e.g. "Gold" -> 14k, 18k, 22k.
+     * Used by the custom order form's metal type -> variant dropdowns.
+     */
+    public function variants()
+    {
+        return $this->belongsToMany(AttributeValue::class, 'attribute_value_variants', 'parent_value_id', 'variant_value_id')
+            ->withPivot('sort_order')
+            ->withTimestamps()
+            ->orderByPivot('sort_order')
+            ->orderBy('attribute_values.value');
+    }
 }

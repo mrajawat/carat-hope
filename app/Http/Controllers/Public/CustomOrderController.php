@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Helpers\ImageHelper;
+use App\Models\Attribute;
+use App\Models\AttributeValue;
+use App\Models\Category;
 use App\Models\CustomOrder;
-use App\Models\CustomOrderOption;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -13,86 +15,51 @@ use Illuminate\Validation\Rule;
 
 class CustomOrderController extends Controller
 {
-    public const OPTIONS_CACHE_KEY = 'public_custom_order_options';
-
     /** Max size of a single reference image, in kilobytes. */
     private const MAX_IMAGE_KB = 5120;
 
     /**
      * All dropdown values for the custom order form in one call.
-     * Metal types carry their sub types under "sub_types".
+     *  - jewellery_types: active categories
+     *  - metal_types:     values of the "metal-type" attribute, each with its
+     *                     variants (e.g. Gold -> 14k, 18k) under "variants"
+     *  - gemstones:       values of the "gemstone" attribute
      */
     public function options()
     {
-        $data = cache()->remember(self::OPTIONS_CACHE_KEY, now()->addHours(24), function () {
-            $options = CustomOrderOption::active()->ordered()
-                ->get(['id', 'type', 'parent_id', 'name', 'sort_order']);
-
-            $byType = $options->groupBy('type');
-            $subTypes = $byType->get('metal_sub_type', collect())->groupBy('parent_id');
-
-            return [
-                'jewellery_types' => $this->present($byType->get('jewellery_type')),
-                'metal_types' => $this->present($byType->get('metal_type'))->map(function ($metal) use ($subTypes) {
-                    $metal['sub_types'] = $this->present($subTypes->get($metal['id']));
-                    return $metal;
-                })->values(),
-                'gemstones' => $this->present($byType->get('gemstone')),
-                'occasions' => $this->present($byType->get('occasion')),
-            ];
-        });
+        $metalTypes = $this->attributeValues(CustomOrder::METAL_TYPE_ATTRIBUTE)
+            ->with('variants')
+            ->get(['id', 'value'])
+            ->map(fn ($metal) => [
+                'id' => $metal->id,
+                'name' => $metal->value,
+                'variants' => $this->present($metal->variants),
+            ]);
 
         return response()->json([
             'success' => true,
-            'data' => $data
+            'data' => [
+                'jewellery_types' => Category::where('status', 'active')
+                    ->orderBy('name')
+                    ->get(['id', 'parent_id', 'name', 'image']),
+                'metal_types' => $metalTypes,
+                'gemstones' => $this->present(
+                    $this->attributeValues(CustomOrder::GEMSTONE_ATTRIBUTE)->get(['id', 'value'])
+                ),
+            ]
         ]);
     }
 
     /**
-     * Dropdown values of a single type. metal_sub_type accepts ?parent_id= to
-     * scope to one metal type.
+     * Variants (e.g. 14k / 18k / 22k) of one metal type.
      */
-    public function optionsByType(Request $request, $type)
+    public function metalVariants($metalTypeId)
     {
-        if (!in_array($type, CustomOrderOption::TYPES)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid option type. Allowed: ' . implode(', ', CustomOrderOption::TYPES) . '.'
-            ], 404);
-        }
-
-        $request->validate([
-            'parent_id' => 'nullable|integer',
-        ]);
-
-        $options = CustomOrderOption::active()->ordered()
-            ->where('type', $type)
-            ->when($request->filled('parent_id'), fn ($q) => $q->where('parent_id', $request->integer('parent_id')))
-            ->get(['id', 'parent_id', 'name']);
+        $metal = $this->attributeValues(CustomOrder::METAL_TYPE_ATTRIBUTE)->findOrFail($metalTypeId);
 
         return response()->json([
             'success' => true,
-            'data' => $options
-        ]);
-    }
-
-    /**
-     * Sub types (e.g. 14K / 18K / 22K) of one metal type.
-     */
-    public function metalSubTypes($metalTypeId)
-    {
-        $metal = CustomOrderOption::active()
-            ->where('type', 'metal_type')
-            ->findOrFail($metalTypeId);
-
-        $subTypes = CustomOrderOption::active()->ordered()
-            ->where('type', 'metal_sub_type')
-            ->where('parent_id', $metal->id)
-            ->get(['id', 'parent_id', 'name']);
-
-        return response()->json([
-            'success' => true,
-            'data' => $subTypes
+            'data' => $this->present($metal->variants)
         ]);
     }
 
@@ -110,15 +77,21 @@ class CustomOrderController extends Controller
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:30',
             'country' => 'required|string|max:100',
-            'type_of_jewellery_id' => ['required', 'integer', $this->activeOption('jewellery_type')],
-            'metal_type_id' => ['nullable', 'required_with:metal_sub_type_id', 'integer', $this->activeOption('metal_type')],
+            'type_of_jewellery_id' => ['required', 'integer', Rule::exists('categories', 'id')->where('status', 'active')],
+            'metal_type_id' => [
+                'nullable',
+                'required_with:metal_sub_type_id',
+                'integer',
+                $this->attributeValueRule(CustomOrder::METAL_TYPE_ATTRIBUTE),
+            ],
             'metal_sub_type_id' => [
                 'nullable',
                 'integer',
-                $this->activeOption('metal_sub_type')->where('parent_id', (int) $request->input('metal_type_id')),
+                Rule::exists('attribute_value_variants', 'variant_value_id')
+                    ->where('parent_value_id', (int) $request->input('metal_type_id')),
             ],
-            'primary_gemstone_id' => ['nullable', 'integer', $this->activeOption('gemstone')],
-            'occasion_id' => ['nullable', 'integer', $this->activeOption('occasion')],
+            'primary_gemstone_id' => ['nullable', 'integer', $this->attributeValueRule(CustomOrder::GEMSTONE_ATTRIBUTE)],
+            'occasion_name' => 'nullable|string|max:100',
             'description' => 'required|string|max:5000',
             'target_date' => 'nullable|date|after:today',
             'engraving_text' => 'nullable|string|max:100',
@@ -126,7 +99,7 @@ class CustomOrderController extends Controller
             'images.*' => 'required',
             'image_description' => 'nullable|string|max:2000',
         ], [
-            'metal_sub_type_id.exists' => 'The selected metal sub type does not belong to the selected metal type.',
+            'metal_sub_type_id.exists' => 'The selected variant does not belong to the selected metal type.',
             'images.max' => 'You can upload up to ' . CustomOrder::MAX_IMAGES . ' images.',
         ]);
 
@@ -166,7 +139,7 @@ class CustomOrderController extends Controller
             'metal_type_id' => $request->metal_type_id,
             'metal_sub_type_id' => $request->metal_sub_type_id,
             'primary_gemstone_id' => $request->primary_gemstone_id,
-            'occasion_id' => $request->occasion_id,
+            'occasion_name' => $request->occasion_name,
             'description' => $request->description,
             'target_date' => $request->target_date,
             'engraving_text' => $request->engraving_text,
@@ -221,11 +194,21 @@ class CustomOrderController extends Controller
         });
     }
 
-    private function activeOption(string $type)
+    /**
+     * Values of one attribute (by slug), in display order.
+     */
+    private function attributeValues(string $slug)
     {
-        return Rule::exists('custom_order_options', 'id')
-            ->where('type', $type)
-            ->where('status', 'active');
+        return AttributeValue::whereHas('attribute', fn ($q) => $q->where('slug', $slug))
+            ->orderBy('sort_order')
+            ->orderBy('value');
+    }
+
+    private function attributeValueRule(string $slug)
+    {
+        return Rule::exists('attribute_values', 'id')->where(
+            fn ($q) => $q->whereIn('attribute_id', Attribute::where('slug', $slug)->select('id'))
+        );
     }
 
     /**
@@ -272,6 +255,6 @@ class CustomOrderController extends Controller
 
     private function present($options)
     {
-        return collect($options)->map(fn ($o) => ['id' => $o->id, 'name' => $o->name])->values();
+        return collect($options)->map(fn ($o) => ['id' => $o->id, 'name' => $o->value])->values();
     }
 }

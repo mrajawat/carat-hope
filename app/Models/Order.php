@@ -9,8 +9,30 @@ class Order extends Model
 {
     use HasFactory;
 
+    // Values mirror the enum columns on the orders table; used for public dropdowns.
+    public const ORDER_STATUSES = [
+        'pending' => 'Pending',
+        'processing' => 'Processing',
+        'shipped' => 'Shipped',
+        'delivered' => 'Delivered',
+        'cancelled' => 'Cancelled',
+    ];
+
+    public const PAYMENT_STATUSES = [
+        'unpaid' => 'Unpaid',
+        'paid' => 'Paid',
+        'refunded' => 'Refunded',
+    ];
+
+    public const PAYMENT_METHODS = [
+        'razorpay' => 'Pay Online (Razorpay)',
+        'cod' => 'Cash on Delivery',
+    ];
+
     protected $fillable = [
         'user_id',
+        'placed_as_guest',
+        'access_token_hash',
         'subtotal_amount',
         'discount_amount',
         'gst_amount',
@@ -30,7 +52,12 @@ class Order extends Model
         'paid_at',
     ];
 
+    protected $hidden = [
+        'access_token_hash',
+    ];
+
     protected $casts = [
+        'placed_as_guest' => 'boolean',
         'total_amount' => 'decimal:2',
         'subtotal_amount' => 'decimal:2',
         'discount_amount' => 'decimal:2',

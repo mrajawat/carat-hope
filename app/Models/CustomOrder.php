@@ -14,6 +14,10 @@ class CustomOrder extends Model
 
     public const MAX_IMAGES = 5;
 
+    /** Attribute slugs whose values feed the metal type and gemstone dropdowns. */
+    public const METAL_TYPE_ATTRIBUTE = 'metal-type';
+    public const GEMSTONE_ATTRIBUTE = 'gemstone';
+
     protected $fillable = [
         'reference_no',
         'user_id',
@@ -25,7 +29,7 @@ class CustomOrder extends Model
         'metal_type_id',
         'metal_sub_type_id',
         'primary_gemstone_id',
-        'occasion_id',
+        'occasion_name',
         'description',
         'target_date',
         'engraving_text',
@@ -60,27 +64,22 @@ class CustomOrder extends Model
 
     public function typeOfJewellery()
     {
-        return $this->belongsTo(CustomOrderOption::class, 'type_of_jewellery_id');
+        return $this->belongsTo(Category::class, 'type_of_jewellery_id');
     }
 
     public function metalType()
     {
-        return $this->belongsTo(CustomOrderOption::class, 'metal_type_id');
+        return $this->belongsTo(AttributeValue::class, 'metal_type_id');
     }
 
     public function metalSubType()
     {
-        return $this->belongsTo(CustomOrderOption::class, 'metal_sub_type_id');
+        return $this->belongsTo(AttributeValue::class, 'metal_sub_type_id');
     }
 
     public function primaryGemstone()
     {
-        return $this->belongsTo(CustomOrderOption::class, 'primary_gemstone_id');
-    }
-
-    public function occasion()
-    {
-        return $this->belongsTo(CustomOrderOption::class, 'occasion_id');
+        return $this->belongsTo(AttributeValue::class, 'primary_gemstone_id');
     }
 
     /**
@@ -90,10 +89,9 @@ class CustomOrder extends Model
     {
         return [
             'typeOfJewellery:id,name',
-            'metalType:id,name',
-            'metalSubType:id,name',
-            'primaryGemstone:id,name',
-            'occasion:id,name',
+            'metalType:id,value',
+            'metalSubType:id,value',
+            'primaryGemstone:id,value',
         ];
     }
 }
